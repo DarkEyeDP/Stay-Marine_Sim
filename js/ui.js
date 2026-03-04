@@ -1013,7 +1013,7 @@ const UI = {
                 <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Leadership credentials remain current on your resume</span></div>
                 <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Security clearance maintained through reserve service</span></div>
                 <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>USERRA protects your civilian job if mobilized</span></div>
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>GWOT mobilization risk is real — reserve units are deploying in 2003</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>GWOT mobilization risk is real — reserve units are actively deploying</span></div>
                 <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>Some civilian employers hesitate to hire reservists (illegal to discriminate, but it happens)</span></div>
                 <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>One weekend/month + two weeks/year away from family and civilian career</span></div>
               </div>
@@ -1093,6 +1093,42 @@ const UI = {
           </div>
         `;
       }
+
+      // ── VA Disability estimate ───────────────────────────────────────────
+      const va = Career.estimateVADisability(marine, tis);
+      html += `
+        <div class="eo-section">
+          <div class="eo-section-title">VA DISABILITY ESTIMATE</div>
+          <p class="eo-va-note">Based on your service record. File your claim before you out-process — VA claims take months to process and the clock starts at separation, not when you file.</p>
+          <div class="eo-pension-block">
+            <div class="eo-pension-label">Monthly VA compensation (est., tax-free)</div>
+            <div class="eo-pension-amount">$${va.monthlyLow.toLocaleString()} – $${va.monthlyHigh.toLocaleString()}/mo</div>
+            <div class="eo-pension-sub">Based on estimated ${va.ratingLow}%–${va.ratingHigh}% combined disability rating</div>
+          </div>
+          <div class="eo-factors">
+            ${va.conditions.map(c => `
+              <div class="eo-factor eo-factor-neutral">
+                <span class="eo-factor-icon">·</span>
+                <span>${c}</span>
+              </div>
+            `).join('')}
+          </div>
+          ${va.thresholds.length ? `
+            <div class="eo-section-title eo-section-title-sub">BENEFITS LIKELY UNLOCKED</div>
+            <div class="eo-factors">
+              ${va.thresholds.map(t => `
+                <div class="eo-factor eo-factor-good">
+                  <span class="eo-factor-icon">✓</span>
+                  <span>${t}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+          ${va.tdiuEligible ? `
+            <p class="eo-body eo-body-muted">At 70%+ combined, you may qualify for TDIU — receiving 100%-equivalent monthly pay ($3,831) if the disability prevents substantially gainful employment.</p>
+          ` : ''}
+        </div>
+      `;
     }
 
     // ── Retirement — benefits + civilian comparison ───────────────────────
@@ -1133,6 +1169,32 @@ const UI = {
             You played the long game. The pension is yours. Semper Fi.
           </p>
         </div>
+        ${(() => {
+          const va = Career.estimateVADisability(marine, tis);
+          return `
+            <div class="eo-section">
+              <div class="eo-section-title">VA DISABILITY ESTIMATE</div>
+              <p class="eo-va-note">Retirees can receive VA disability pay on top of retirement pay. Don't leave this on the table — document everything at your separation physical.</p>
+              <div class="eo-pension-block">
+                <div class="eo-pension-label">Monthly VA compensation (est., tax-free)</div>
+                <div class="eo-pension-amount">$${va.monthlyLow.toLocaleString()} – $${va.monthlyHigh.toLocaleString()}/mo</div>
+                <div class="eo-pension-sub">Based on estimated ${va.ratingLow}%–${va.ratingHigh}% combined disability rating</div>
+                ${(va.crdpEligible || va.crdpPossible) ? `<div class="eo-pension-lifetime">CRDP: ${va.crdpEligible ? 'Eligible' : 'Possible'} — full pension + full VA pay simultaneously at 50%+</div>` : ''}
+              </div>
+              ${(va.crdpEligible || va.crdpPossible) ? `
+                <p class="eo-body eo-body-muted">At 50%+ VA rating, CRDP means you receive your full retirement pension AND your full VA disability check simultaneously. DFAS applies this automatically — no application needed.</p>
+              ` : ''}
+              <div class="eo-factors">
+                ${va.conditions.map(c => `
+                  <div class="eo-factor eo-factor-neutral">
+                    <span class="eo-factor-icon">·</span>
+                    <span>${c}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        })()}
       `;
     }
 

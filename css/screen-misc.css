@@ -255,6 +255,10 @@
   color: var(--red);
 }
 
+.eo-val-good {
+  color: var(--green);
+}
+
 .eo-factors {
   margin: 0.6rem 0;
   display: flex;
@@ -276,6 +280,24 @@
 
 .eo-factor-good {
   color: var(--green);
+}
+
+.eo-factor-neutral {
+  color: var(--muted);
+}
+
+.eo-va-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.eo-section-title-sub {
+  border-bottom: none;
+  padding-bottom: 0.2rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0.4rem;
 }
 
 .eo-factor-bad {

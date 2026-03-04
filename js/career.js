@@ -461,4 +461,104 @@ const Career = {
 
     Character.clampAll(marine);
   },
+
+  /**
+   * Estimate VA disability rating range and monthly compensation based on the
+   * marine's service record. Returns a low/high range — actual rating depends
+   * on C&P exam and documentation.
+   */
+  estimateVADisability(marine, tis) {
+    const tisYears = Math.floor(tis / 12);
+
+    // 2025 VA monthly rates (no dependents, rounded)
+    const VA_PAY = { 0:0, 10:175, 20:347, 30:537, 40:774, 50:1102, 60:1396, 70:1759, 80:2045, 90:2298, 100:3831 };
+
+    let rating = 0;
+    const conditions = [];
+
+    // Tinnitus / hearing loss — nearly universal after any military service
+    rating += 10;
+    conditions.push('Tinnitus / hearing loss — nearly universal after military service (10% baseline)');
+
+    // Musculoskeletal — accumulates with time in service
+    if (tisYears >= 2) {
+      rating += 10;
+      conditions.push('Back, knees, shoulders — wear and tear from service');
+    }
+    if (tisYears >= 5) {
+      rating += 10; // longer service = additional cumulative damage
+    }
+
+    // Injury history
+    if (marine.injury === 'minor') {
+      rating += 10;
+      conditions.push('Service-connected injury (minor profile history)');
+    } else if (marine.injury === 'major') {
+      rating += 30;
+      conditions.push('Service-connected injury (major) — 30–50% on its own is realistic');
+    }
+
+    // Mental health — stress is a proxy for PTSD / adjustment disorder risk
+    if (marine.stress >= 80) {
+      rating += 30;
+      conditions.push('PTSD / adjustment disorder — high-stress career (30–70% range)');
+    } else if (marine.stress >= 65) {
+      rating += 20;
+      conditions.push('Adjustment disorder / mild PTSD — elevated stress history (10–30%)');
+    } else if (marine.stress >= 50) {
+      rating += 10;
+      conditions.push('Anxiety / adjustment issues — some stress exposure');
+    }
+
+    // Combat MOS — additional physical and mental exposure
+    if (['infantry', 'artillery'].includes(marine.mosField)) {
+      rating += 10;
+      conditions.push('Combat MOS — higher exposure to blast, noise, physical strain');
+    }
+
+    // High optempo / multiple deployments
+    if ((marine.optempo || 0) >= 3) {
+      rating += 10;
+      conditions.push('Multiple deployments — cumulative wear and exposure');
+    }
+
+    // Sleep apnea — common secondary claim (stress + deployment history)
+    if (marine.stress >= 60 && (marine.optempo || 0) >= 2) {
+      conditions.push('Sleep apnea — common secondary claim; rated 50% if CPAP is required');
+    }
+
+    // Cap and round to nearest 10
+    rating = Math.min(rating, 90);
+    rating = Math.round(rating / 10) * 10;
+
+    const ratingLow  = Math.max(0,   rating - 10);
+    const ratingHigh = Math.min(100, rating + 10);
+
+    // CRDP: retiree (20+ yrs) + 50%+ VA = full pension AND full VA pay simultaneously
+    const isRetiree   = tis >= 240;
+    const crdpEligible = isRetiree && ratingLow  >= 50;
+    const crdpPossible = isRetiree && ratingHigh >= 50;
+
+    // TDIU: 70%+ combined → 100%-equivalent monthly pay
+    const tdiuEligible = ratingLow >= 70;
+
+    // Key benefit thresholds unlocked at the low end of the estimate
+    const thresholds = [];
+    if (ratingLow >= 10) thresholds.push('VA healthcare — Priority Group 3 (service-connected conditions covered)');
+    if (ratingLow >= 30) thresholds.push('Dependent pay supplement — additional monthly compensation per dependent');
+    if (ratingLow >= 50) thresholds.push('Full VA healthcare free — all conditions, no co-pays, no premiums');
+    if (tdiuEligible)    thresholds.push('TDIU eligibility — 100%-equivalent pay ($3,831/mo) without a 100% rating');
+
+    return {
+      ratingLow,
+      ratingHigh,
+      monthlyLow:  VA_PAY[ratingLow]  || 0,
+      monthlyHigh: VA_PAY[ratingHigh] || 0,
+      conditions,
+      crdpEligible,
+      crdpPossible,
+      tdiuEligible,
+      thresholds,
+    };
+  },
 };
