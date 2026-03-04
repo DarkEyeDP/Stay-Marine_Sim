@@ -24,7 +24,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: 1400, morale: 5 },
-      logEntry: 'Tax refund received.',
     }],
   },
 
@@ -41,7 +40,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: 240, morale: 3 },
-      logEntry: 'BAH rate increased.',
     }],
   },
 
@@ -58,7 +56,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: 900, stress: -4 },
-      logEntry: 'Back pay received — pay discrepancy corrected.',
     }],
   },
 
@@ -75,7 +72,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: 4, reputationWithLeadership: 4, morale: 6 },
-      logEntry: 'Unit Meritorious Unit Citation received.',
     }],
   },
 
@@ -92,7 +88,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { morale: 8, reputationWithLeadership: 8, profConduct: 3 },
-      logEntry: 'Coined by the Sergeant Major.',
     }],
   },
 
@@ -109,7 +104,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { civilianEmployability: 10, morale: 4 },
-      logEntry: 'Security clearance upgraded.',
     }],
   },
 
@@ -126,7 +120,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: 6, reputationWithLeadership: 7, morale: 5 },
-      logEntry: 'Received outstanding fitness report.',
     }],
   },
 
@@ -143,7 +136,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { educationCredits: 15, civilianEmployability: 3, morale: 4 },
-      logEntry: 'Passed CLEP exam — 15 college credits earned.',
     }],
   },
 
@@ -160,7 +152,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: 1500, morale: 6 },
-      logEntry: 'SRB rate increase — better bonus window.',
     }],
   },
 
@@ -177,7 +168,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { physicalFitness: 5, morale: 5, stress: -3 },
-      logEntry: 'Annual physical — full duty medical clearance.',
     }],
   },
 
@@ -194,7 +184,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { civilianEmployability: 6, networkStrength: 6, morale: 3 },
-      logEntry: 'Attended employer hiring fair — expanded civilian network.',
     }],
   },
 
@@ -211,7 +200,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: 5, reputationWithLeadership: 5, morale: 6 },
-      logEntry: 'Award package approved — NAM in service record.',
     }],
   },
 
@@ -230,7 +218,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -600, stress: 6, morale: -4 },
-      logEntry: 'Vehicle broken into — gear stolen.',
     }],
   },
 
@@ -247,7 +234,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { debt: 800, stress: 8, morale: -5 },
-      logEntry: 'Credit card fraud — dispute in progress.',
     }],
   },
 
@@ -264,7 +250,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: -5, disciplineRisk: 6, stress: 7 },
-      logEntry: 'Flagged at BCP check — borderline body composition.',
     }],
   },
 
@@ -281,7 +266,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: -5, reputationWithLeadership: -6, disciplineRisk: 5 },
-      logEntry: 'Received Page 11 counseling for social media post.',
     }],
   },
 
@@ -298,7 +282,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { disciplineRisk: 8, savings: -150, stress: 4 },
-      logEntry: 'On-base traffic citation — CO notified.',
     }],
   },
 
@@ -315,7 +298,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -400, stress: 5, morale: -4 },
-      logEntry: 'Barracks water damage — replaced personal gear.',
     }],
   },
 
@@ -332,7 +314,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -1000, stress: 7, familyStability: 3 },
-      logEntry: 'Emergency funds wired to family.',
     }],
   },
 
@@ -349,7 +330,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -700, stress: 8, morale: -5 },
-      logEntry: 'Payroll overpayment recovered — deductions applied.',
     }],
   },
 
@@ -366,7 +346,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { physicalFitness: -8, stress: 8, morale: -5 },
-      logEntry: 'Placed on limited duty profile.',
       setInjury: 'minor',
     }],
   },
@@ -384,7 +363,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { stress: 7, disciplineRisk: 6, morale: -5 },
-      logEntry: 'Barracks roommate situation creating issues.',
     }],
   },
 
@@ -401,7 +379,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -350, disciplineRisk: 5, stress: 4 },
-      logEntry: 'Vehicle impounded — expired registration on base.',
     }],
   },
 
@@ -418,7 +395,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { reputationWithLeadership: -6, stress: 8, morale: -5 },
-      logEntry: 'Marine in section arrested — unit reputation impact.',
     }],
   },
 
@@ -435,7 +411,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -240, stress: 5, morale: -3 },
-      logEntry: 'BAH rate reduced this quarter.',
     }],
   },
 
@@ -452,7 +427,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { savings: -550, stress: 5 },
-      logEntry: 'Unexpected Tricare cost-share — out of pocket.',
     }],
   },
 
@@ -469,7 +443,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: -4, disciplineRisk: 8, stress: 10, savings: -500 },
-      logEntry: 'FLIPL initiated — missing equipment investigation.',
     }],
   },
 
@@ -486,7 +459,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { stress: 8, morale: -8 },
-      logEntry: 'Early separation request denied.',
     }],
   },
 
@@ -506,7 +478,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'FACE THE CHARGES',
       effects: { profConduct: -50, disciplineRisk: 50 },
-      logEntry: 'DUI arrest on base — court-martial initiated.',
       gameOverState: 'brig_discharge',
     }],
   },
@@ -524,7 +495,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'FACE THE CONSEQUENCES',
       effects: { profConduct: -50, disciplineRisk: 50 },
-      logEntry: 'UA positive — administrative separation initiated.',
       gameOverState: 'brig_discharge',
     }],
   },
@@ -542,7 +512,6 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'FACE THE CHARGES',
       effects: { profConduct: -50, disciplineRisk: 50 },
-      logEntry: 'Assault charges — UCMJ Article 128 court-martial.',
       gameOverState: 'brig_discharge',
     }],
   },
