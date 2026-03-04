@@ -100,7 +100,6 @@ const RifleQual = {
   _breathX: 0, _breathY: 0,
   _breathT: 0,
   _velX:  0, _velY:  0,
-  _impulseTick: 0,
 
   // Hold state
   _isHolding: false,
@@ -374,7 +373,6 @@ const RifleQual = {
     RifleQual._breathT = Math.random() * Math.PI * 2;
     RifleQual._targetR = RifleQual._baseTargetR * (pos.targetScale || 1.0);
     RifleQual._ringStep = (RifleQual._targetR - RifleQual._bullR) / 3;
-    RifleQual._impulseTick = 99999;
     RifleQual._isHolding   = false;
     RifleQual._relDragActive = false;
     RifleQual._phase       = 'idle';
@@ -731,7 +729,7 @@ const RifleQual = {
 
   _drawRcoReticle(ctx, chX, chY, scopeR) {
     const pos = RifleQual.POSITIONS[RifleQual._posIdx];
-    const activeTick = pos ? (pos.holdTick || 5) : 5;
+    const activeTick = pos && pos.holdTick != null ? pos.holdTick : 5;
     const on  = 'rgba(232, 44, 44, 0.98)';
     const off = 'rgba(216, 38, 38, 0.80)';
     const arrowHalfW = scopeR * 0.055;
