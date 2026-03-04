@@ -3,7 +3,7 @@
    Player aims with mouse / finger. Physics sway
    drifts the crosshair around the aim point.
    Hold to fill ring, release to fire.
-   3 positions × 5 shots = 15 total (max 150 pts).
+   3 positions × 5 shots = 15 total (max 75 pts).
    ═══════════════════════════════════════════════ */
 
 const RifleQual = {
@@ -11,38 +11,58 @@ const RifleQual = {
   // ── Position configs ─────────────────────────
   POSITIONS: [
     {
-      id: 'sitting',
-      label: 'SITTING',
-      desc: '5 shots, sitting. Most stable position. Mouse: hover to aim. Mobile: tap anywhere and drag to move the crosshair — hold to fill the ring, release to fire.',
+      id: 'prone',
+      label: 'PRONE',
+      desc: '5 shots, prone at 500 meters. Use the 5 tick on the reticle. Mouse: hover to aim. Mobile: tap anywhere and drag to move the reticle — hold to fill the ring, release to fire.',
       holdMs: 3000,
       impulseStrength: 1.1,
       maxSway: 26,
       errorRad: 4,
+      distanceYds: 500,
+      holdTick: 5,
+      targetScale: 0.323,
+      breathAmp: 0.92,
     },
     {
       id: 'kneeling',
       label: 'KNEELING',
-      desc: '5 shots, kneeling. Less stable — the crosshair drifts more. Time your shot when it passes over the target.',
+      desc: '5 shots, kneeling at 300 meters. Less stable — the reticle drifts more. Use the 4 tick for holdover and time your shot as it passes over center.',
       holdMs: 2200,
       impulseStrength: 2.0,
       maxSway: 44,
       errorRad: 8,
+      distanceYds: 300,
+      holdTick: 4,
+      targetScale: 0.391,
+      breathAmp: 1.00,
     },
     {
       id: 'standing',
       label: 'STANDING',
-      desc: '5 shots, standing offhand. Hardest position. Sway ramps up the longer you hold — fire quickly at the right moment.',
+      desc: '5 shots, standing offhand at 100 meters. Hardest position. Use the top marker for holdover. Sway ramps up the longer you hold — fire quickly at the right moment.',
       holdMs: 1800,
       impulseStrength: 3.2,
       maxSway: 60,
       errorRad: 13,
       standupShake: true,
+      distanceYds: 100,
+      holdTick: 0,
+      targetScale: 0.476,
+      breathAmp: 1.08,
     },
   ],
 
   SHOTS_PER_POS: 5,
-  SPRING_K:      0.030,
-  DAMPING:       0.88,
+  SPRING_K:      0.014,
+  DAMPING:       0.965,
+  WIND_BIAS_MULT: 2.35,
+
+  // Input lag / inertia model (reticle trails input heavily)
+  AIM_LAG_K:       0.010,
+  AIM_LAG_DAMPING: 0.90,
+  BREATH_SPEED: 0.036,
+  BREATH_AMP_X: 3.4,
+  BREATH_AMP_Y: 7.6,
 
   // ── Weapons knowledge data ────────────────────
   SAFETY_RULES: [
@@ -67,6 +87,8 @@ const RifleQual = {
 
   // Aim point — player moves this with mouse/touch (relative to canvas center)
   _aimX: 0, _aimY: 0,
+  _targetAimX: 0, _targetAimY: 0,
+  _aimVelX: 0, _aimVelY: 0,
 
   // Relative drag state (touch: crosshair tracks delta from initial tap, not absolute position)
   _relDragActive: false,
@@ -75,6 +97,8 @@ const RifleQual = {
 
   // Physics sway — perturbation around the aim point
   _swayX: 0, _swayY: 0,
+  _breathX: 0, _breathY: 0,
+  _breathT: 0,
   _velX:  0, _velY:  0,
   _impulseTick: 0,
 
@@ -106,8 +130,9 @@ const RifleQual = {
   _size:    0,
   _cx: 0, _cy: 0,
   _bullR:    0,    // radius of the score-10 dot
-  _ringStep: 0,    // width of each score 1-9 ring
+  _ringStep: 0,    // width of each score 2-4 ring
   _scopeR:  0,
+  _baseTargetR: 0,
   _targetR: 0,
 
   // Shot impact cached for pit animation
@@ -129,6 +154,13 @@ const RifleQual = {
     RifleQual._isHolding  = false;
     RifleQual._aimX       = 0;
     RifleQual._aimY       = 0;
+    RifleQual._targetAimX = 0;
+    RifleQual._targetAimY = 0;
+    RifleQual._aimVelX    = 0;
+    RifleQual._aimVelY    = 0;
+    RifleQual._breathX    = 0;
+    RifleQual._breathY    = 0;
+    RifleQual._breathT    = 0;
 
     RifleQual._rollWind();
     UI.showScreen('screen-rifle-qual');
@@ -173,9 +205,10 @@ const RifleQual = {
     RifleQual._cx      = size / 2;
     RifleQual._cy      = size / 2;
     RifleQual._scopeR   = size / 2 - 4;
-    RifleQual._targetR  = size * 0.40;
+    RifleQual._baseTargetR = size * 0.20;
+    RifleQual._targetR  = RifleQual._baseTargetR;
     RifleQual._bullR    = size * 0.013;   // tiny 10-ring dot
-    RifleQual._ringStep = (RifleQual._targetR - RifleQual._bullR) / 9;
+    RifleQual._ringStep = (RifleQual._targetR - RifleQual._bullR) / 3;
 
     canvas.width        = size * dpr;
     canvas.height       = size * dpr;
@@ -213,11 +246,11 @@ const RifleQual = {
     const mag    = Math.sqrt(raw_x * raw_x + raw_y * raw_y);
     if (mag > maxAim) {
       const s = maxAim / mag;
-      RifleQual._aimX = raw_x * s;
-      RifleQual._aimY = raw_y * s;
+      RifleQual._targetAimX = raw_x * s;
+      RifleQual._targetAimY = raw_y * s;
     } else {
-      RifleQual._aimX = raw_x;
-      RifleQual._aimY = raw_y;
+      RifleQual._targetAimX = raw_x;
+      RifleQual._targetAimY = raw_y;
     }
   },
 
@@ -233,11 +266,11 @@ const RifleQual = {
         const mag    = Math.sqrt(nx * nx + ny * ny);
         if (mag > maxAim) {
           const s = maxAim / mag;
-          RifleQual._aimX = nx * s;
-          RifleQual._aimY = ny * s;
+          RifleQual._targetAimX = nx * s;
+          RifleQual._targetAimY = ny * s;
         } else {
-          RifleQual._aimX = nx;
-          RifleQual._aimY = ny;
+          RifleQual._targetAimX = nx;
+          RifleQual._targetAimY = ny;
         }
       }
     } else {
@@ -332,12 +365,21 @@ const RifleQual = {
     RifleQual._velY  = (Math.random() - 0.5) * pos.impulseStrength * 0.4;
     RifleQual._aimX  = 0;
     RifleQual._aimY  = 0;
-    RifleQual._impulseTick = 12 + Math.floor(Math.random() * 20);
+    RifleQual._targetAimX = 0;
+    RifleQual._targetAimY = 0;
+    RifleQual._aimVelX = 0;
+    RifleQual._aimVelY = 0;
+    RifleQual._breathX = 0;
+    RifleQual._breathY = 0;
+    RifleQual._breathT = Math.random() * Math.PI * 2;
+    RifleQual._targetR = RifleQual._baseTargetR * (pos.targetScale || 1.0);
+    RifleQual._ringStep = (RifleQual._targetR - RifleQual._bullR) / 3;
+    RifleQual._impulseTick = 99999;
     RifleQual._isHolding   = false;
     RifleQual._relDragActive = false;
     RifleQual._phase       = 'idle';
     RifleQual._updateTopbar();
-    RifleQual._setInstruction('AIM WITH MOUSE / FINGER — HOLD TO FIRE');
+    RifleQual._setInstruction(`AIM ${RifleQual._getHoldLabel(pos)} — HOLD TO FIRE`);
 
     const fireBtn = document.getElementById('rq-btn-fire');
     if (fireBtn) { fireBtn.textContent = 'HOLD TO FIRE'; fireBtn.classList.remove('holding'); }
@@ -387,9 +429,28 @@ const RifleQual = {
     const pos = RifleQual.POSITIONS[RifleQual._posIdx];
     const k   = RifleQual.SPRING_K * dt;
     const d   = Math.pow(RifleQual.DAMPING, dt);
+    const aimK = RifleQual.AIM_LAG_K * dt;
+    const aimD = Math.pow(RifleQual.AIM_LAG_DAMPING, dt);
+
+    // Reticle input inertia: heavily lagged movement with drift on release.
+    RifleQual._aimVelX = RifleQual._aimVelX * aimD + (RifleQual._targetAimX - RifleQual._aimX) * aimK;
+    RifleQual._aimVelY = RifleQual._aimVelY * aimD + (RifleQual._targetAimY - RifleQual._aimY) * aimK;
+    RifleQual._aimX += RifleQual._aimVelX * dt;
+    RifleQual._aimY += RifleQual._aimVelY * dt;
+
+    // Allow some overshoot but keep reticle in scope.
+    const maxAimLive = RifleQual._scopeR * 0.93;
+    const aimMag = Math.sqrt(RifleQual._aimX ** 2 + RifleQual._aimY ** 2);
+    if (aimMag > maxAimLive) {
+      const s = maxAimLive / aimMag;
+      RifleQual._aimX *= s;
+      RifleQual._aimY *= s;
+      RifleQual._aimVelX *= 0.82;
+      RifleQual._aimVelY *= 0.82;
+    }
 
     // Wind shifts where sway naturally settles (relative to aim point)
-    const windBiasX = RifleQual._wind.dir * RifleQual._wind.strength * pos.maxSway * 0.90;
+    const windBiasX = RifleQual._wind.dir * RifleQual._wind.strength * pos.maxSway * RifleQual.WIND_BIAS_MULT;
 
     // Standing shake: holding longer = more sway range + wilder impulses
     let extraImpulse = 0, extraSway = 0;
@@ -406,107 +467,251 @@ const RifleQual = {
     RifleQual._swayX += RifleQual._velX * dt;
     RifleQual._swayY += RifleQual._velY * dt;
 
-    // Random impulses
-    RifleQual._impulseTick -= dt;
-    if (RifleQual._impulseTick <= 0) {
-      const imp = pos.impulseStrength + extraImpulse;
-      RifleQual._velX += (Math.random() - 0.5) * imp * 2;
-      RifleQual._velY += (Math.random() - 0.5) * imp * 2;
-      RifleQual._impulseTick = 12 + Math.floor(Math.random() * 24);
-    }
+    // Smooth micro-perturbation: far less jerky than burst impulses.
+    const imp = pos.impulseStrength + extraImpulse;
+    RifleQual._velX += (Math.random() - 0.5) * imp * 0.11 * dt;
+    RifleQual._velY += (Math.random() - 0.5) * imp * 0.11 * dt;
 
     // Clamp sway magnitude
-    const maxS    = pos.maxSway + extraSway;
+    const maxS    = (pos.maxSway * 1.70) + extraSway;
     const swayMag = Math.sqrt(RifleQual._swayX ** 2 + RifleQual._swayY ** 2);
     if (swayMag > maxS) {
       const s = maxS / swayMag;
       RifleQual._swayX *= s;
       RifleQual._swayY *= s;
     }
+
+    // Breathing oscillator: pronounced, continuous figure-8 style chest movement.
+    const breathAmp = pos.breathAmp || 1.0;
+    RifleQual._breathT += dt * RifleQual.BREATH_SPEED;
+    RifleQual._breathX = Math.sin(RifleQual._breathT * 0.85) * RifleQual.BREATH_AMP_X * breathAmp;
+    RifleQual._breathY = Math.cos(RifleQual._breathT) * RifleQual.BREATH_AMP_Y * breathAmp
+      + Math.sin(RifleQual._breathT * 2.05) * (RifleQual.BREATH_AMP_Y * 0.25) * breathAmp;
+  },
+
+  _getHoldoverPx(pos) {
+    const mark = (pos.holdTick === undefined || pos.holdTick === null) ? 5 : pos.holdTick;
+    if (mark === 0) return 0;
+    const offsets = RifleQual._getBdcTickOffsets(RifleQual._scopeR * 0.75);
+    return offsets[mark] || offsets[5];
+  },
+
+  _getHoldLabel(pos) {
+    if (!pos || !pos.distanceYds) return 'WITH MOUSE / FINGER';
+    if (pos.holdTick === 0) return `${pos.distanceYds} M — USE TOP MARKER`;
+    return `${pos.distanceYds} M — USE ${pos.holdTick || 5} TICK`;
+  },
+
+  _getBdcTickOffsets(useR) {
+    const r = useR || RifleQual._scopeR;
+    const arrowH = r * 0.06;
+    const gapHeadTo4 = r * 0.026; // move 4 tick higher (closer to reticle tip)
+    const gap45 = r * 0.056;
+    const gap56 = r * 0.076;
+    const gap67 = r * 0.098;
+    const gap78 = r * 0.125; // largest separation
+    const y4 = arrowH + gapHeadTo4;
+    const y5 = y4 + gap45;
+    const y6 = y5 + gap56;
+    const y7 = y6 + gap67;
+    const y8 = y7 + gap78;
+    return { 4: y4, 5: y5, 6: y6, 7: y7, 8: y8 };
   },
 
   // ── Drawing ───────────────────────────────────
   _drawTargetRings(ctx) {
     const { _cx: cx, _cy: cy, _targetR: targetR, _bullR: bullR, _ringStep: ringStep } = RifleQual;
-    // Scores 1-9: each ring is ringStep wide, drawn outside-in so each overwrites previous
+    const pos = RifleQual.POSITIONS[RifleQual._posIdx] || {};
+    const dist = pos.distanceYds || 100;
+    const blurPx = dist >= 500 ? 0.6 : dist >= 300 ? 0.3 : 0;
+
+    ctx.save();
+    if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
+
+    // Scores 2-4: each ring is ringStep wide, drawn outside-in so each overwrites previous
     const fills = [
-      '#1c2218', '#222a1c',   // 1-2: beyond target zone
-      '#d4d0b8', '#c0bc9e',   // 3-4: white scoring zone
-      '#6a1414', '#7c1c1c',   // 5-6: red zone
-      '#1a1a1a', '#141414',   // 7-8: black zone
-      '#0e0e0e',              // 9: black bull ring
+      '#0f0f0f',              // 2: outer score ring
+      '#1d1d1d',              // 3
+      '#2a2a2a',              // 4
     ];
-    for (let score = 1; score <= 9; score++) {
+    for (let score = 2; score <= 4; score++) {
       // Outer edge of this score's ring
-      const r = bullR + (10 - score) * ringStep;
+      const r = bullR + (5 - score) * ringStep;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = fills[score - 1];
+      ctx.fillStyle = fills[score - 2];
       ctx.fill();
       ctx.strokeStyle = 'rgba(255,255,255,0.055)';
       ctx.lineWidth   = 0.5;
       ctx.stroke();
     }
-    // Score 10: tiny white dot in the center
+    // Score 5: center dot
     ctx.beginPath();
     ctx.arc(cx, cy, bullR, 0, Math.PI * 2);
     ctx.fillStyle = '#f0ede0';
     ctx.fill();
+
+    ctx.restore();
+  },
+
+  _drawOuterRangeBackdrop(ctx) {
+    const w = RifleQual._size;
+    const h = RifleQual._size;
+
+    // Very blurry field/range backdrop for area outside the optic tube.
+    const sky = ctx.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0.00, '#95a4b0');
+    sky.addColorStop(0.45, '#7f8d96');
+    sky.addColorStop(0.46, '#76826d');
+    sky.addColorStop(1.00, '#5f6a54');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.save();
+    ctx.filter = 'blur(4.5px)';
+    ctx.globalAlpha = 0.75;
+
+    // Soft berm/horizon bands.
+    ctx.fillStyle = '#6f7a5f';
+    ctx.fillRect(-10, h * 0.52, w + 20, h * 0.12);
+    ctx.fillStyle = '#5c664f';
+    ctx.fillRect(-10, h * 0.64, w + 20, h * 0.20);
+    ctx.fillStyle = '#4d5746';
+    ctx.fillRect(-10, h * 0.81, w + 20, h * 0.22);
+
+    // Blurry distant forms.
+    ctx.fillStyle = 'rgba(58, 65, 55, 0.55)';
+    ctx.beginPath();
+    ctx.ellipse(w * 0.28, h * 0.58, w * 0.24, h * 0.08, -0.08, 0, Math.PI * 2);
+    ctx.ellipse(w * 0.70, h * 0.56, w * 0.26, h * 0.09, 0.06, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  },
+
+  _drawFieldBackdrop(ctx, tubeX, tubeY, tubeR) {
+    const w = RifleQual._size;
+    const h = RifleQual._size;
+    const sky = ctx.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0.00, '#89a8d3');
+    sky.addColorStop(0.42, '#7fa1cc');
+    sky.addColorStop(0.43, '#7c915e');
+    sky.addColorStop(1.00, '#50643e');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+
+    // Ground bands with visible texture so grass looks sharper in-scope.
+    ctx.fillStyle = '#6f8750';
+    ctx.fillRect(0, h * 0.45, w, h * 0.16);
+    ctx.fillStyle = '#5a7442';
+    ctx.fillRect(0, h * 0.61, w, h * 0.22);
+    ctx.fillStyle = '#4e6439';
+    ctx.fillRect(0, h * 0.83, w, h * 0.17);
+
+    // Sharp grass blades / streaks.
+    ctx.strokeStyle = 'rgba(38,56,27,0.32)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 7) {
+      const y0 = h * (0.63 + (x % 23) * 0.0007);
+      ctx.beginPath();
+      ctx.moveTo(x, y0);
+      ctx.lineTo(x + 1, y0 - 7 - ((x * 3) % 9));
+      ctx.stroke();
+    }
+  },
+
+  _drawTargetPost(ctx) {
+    const x = RifleQual._cx;
+    const y = RifleQual._cy;
+    const r = RifleQual._targetR;
+
+    // Brown post under target.
+    ctx.fillStyle = '#6a4a2a';
+    ctx.fillRect(x - r * 0.12, y + r * 0.94, r * 0.24, r * 1.9);
+    ctx.fillStyle = '#845a34';
+    ctx.fillRect(x - r * 0.06, y + r * 0.94, r * 0.12, r * 1.9);
+  },
+
+  _drawTinyBlurredTarget(ctx, tubeX, tubeY, tubeR) {
+    const x = RifleQual._cx;
+    const y = RifleQual._cy;
+    const r = Math.max(2, RifleQual._targetR * 0.20);
+
+    // Only show small ghost target when target is outside or near edge of tube.
+    const dx = x - tubeX;
+    const dy = y - tubeY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < tubeR * 0.75) return;
+
+    ctx.save();
+    ctx.filter = 'blur(1.25px)';
+    ctx.globalAlpha = 0.68;
+    ctx.fillStyle = '#d6d3c8';
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#4f3720';
+    ctx.fillRect(x - r * 0.12, y + r * 0.8, r * 0.24, r * 2.2);
+    ctx.restore();
   },
 
   _drawFrame(holdPct) {
     const ctx = RifleQual._ctx;
     const { _cx: cx, _cy: cy, _scopeR: scopeR } = RifleQual;
+    const tubeR = scopeR * 0.75;
 
     // Crosshair is aim point PLUS sway perturbation
-    const chX = cx + RifleQual._aimX + RifleQual._swayX;
-    const chY = cy + RifleQual._aimY + RifleQual._swayY;
+    const chX = cx + RifleQual._aimX + RifleQual._swayX + RifleQual._breathX;
+    const chY = cy + RifleQual._aimY + RifleQual._swayY + RifleQual._breathY;
+    const tubeX = chX;
+    const tubeY = chY;
 
     ctx.clearRect(0, 0, RifleQual._size, RifleQual._size);
+    RifleQual._drawOuterRangeBackdrop(ctx);
+    RifleQual._drawTinyBlurredTarget(ctx, tubeX, tubeY, tubeR);
 
     // Clip to circular scope
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, scopeR, 0, Math.PI * 2);
+    ctx.arc(tubeX, tubeY, tubeR, 0, Math.PI * 2);
     ctx.clip();
 
-    ctx.fillStyle = '#050705';
-    ctx.fillRect(0, 0, RifleQual._size, RifleQual._size);
+    RifleQual._drawFieldBackdrop(ctx, tubeX, tubeY, tubeR);
+    RifleQual._drawTargetPost(ctx);
 
     RifleQual._drawTargetRings(ctx);
 
     // Vignette
-    const vig = ctx.createRadialGradient(cx, cy, scopeR * 0.6, cx, cy, scopeR);
+    const vig = ctx.createRadialGradient(tubeX, tubeY, tubeR * 0.6, tubeX, tubeY, tubeR);
     vig.addColorStop(0, 'rgba(0,0,0,0)');
     vig.addColorStop(1, 'rgba(0,0,0,0.6)');
     ctx.beginPath();
-    ctx.arc(cx, cy, scopeR, 0, Math.PI * 2);
+    ctx.arc(tubeX, tubeY, tubeR, 0, Math.PI * 2);
     ctx.fillStyle = vig;
     ctx.fill();
 
-    // Crosshair lines (gap at center so bull center is visible)
-    const chLen = scopeR * 0.30;
-    const gapR  = 7;
-    ctx.strokeStyle = 'rgba(220, 50, 50, 0.9)';
-    ctx.lineWidth   = 1.5;
-    ctx.beginPath(); ctx.moveTo(chX - chLen, chY); ctx.lineTo(chX - gapR, chY); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(chX + gapR,  chY); ctx.lineTo(chX + chLen, chY); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(chX, chY - chLen); ctx.lineTo(chX, chY - gapR); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(chX, chY + gapR);  ctx.lineTo(chX, chY + chLen); ctx.stroke();
-
-    // Center dot
+    // Black horizontal reference line across the tube, with a center gap so it never intersects reticle.
+    const tubeLineY = chY;
+    const tubeLineGap = 24;
+    const tubeLineSeg = (tubeR * 2) / 3; // each side = 1/3 of tube diameter
+    ctx.strokeStyle = 'rgba(0,0,0,0.95)';
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.arc(chX, chY, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(220, 50, 50, 0.92)';
-    ctx.fill();
+    ctx.moveTo(chX - tubeLineGap - tubeLineSeg, tubeLineY);
+    ctx.lineTo(chX - tubeLineGap, tubeLineY);
+    ctx.moveTo(chX + tubeLineGap, tubeLineY);
+    ctx.lineTo(chX + tubeLineGap + tubeLineSeg, tubeLineY);
+    ctx.stroke();
+
+    RifleQual._drawRcoReticle(ctx, chX, chY, tubeR);
 
     ctx.restore();
 
-    // Scope outer ring
+    // Scope outer ring hugs the visible tube.
     ctx.beginPath();
-    ctx.arc(cx, cy, scopeR, 0, Math.PI * 2);
-    ctx.strokeStyle = '#0a0e07';
-    ctx.lineWidth   = 8;
+    ctx.arc(tubeX, tubeY, tubeR + 2, 0, Math.PI * 2);
+    ctx.strokeStyle = '#5a5f63';
+    ctx.lineWidth   = 4;
     ctx.stroke();
 
     // Hold ring (clockwise arc from 12 o'clock)
@@ -515,12 +720,60 @@ const RifleQual = {
       const endAngle   = startAngle + holdPct * Math.PI * 2;
       const arcColor   = holdPct < 0.40 ? '#4caf50' : holdPct < 0.72 ? '#f0b429' : '#e53935';
       ctx.beginPath();
-      ctx.arc(cx, cy, scopeR - 3, startAngle, endAngle);
+      // Keep progress indicator independent of moving tube and clearly visible.
+      ctx.arc(cx, cy, scopeR - 8, startAngle, endAngle);
       ctx.strokeStyle = arcColor;
       ctx.lineWidth   = 5;
       ctx.lineCap     = 'round';
       ctx.stroke();
     }
+  },
+
+  _drawRcoReticle(ctx, chX, chY, scopeR) {
+    const pos = RifleQual.POSITIONS[RifleQual._posIdx];
+    const activeTick = pos ? (pos.holdTick || 5) : 5;
+    const on  = 'rgba(232, 44, 44, 0.98)';
+    const off = 'rgba(216, 38, 38, 0.80)';
+    const arrowHalfW = scopeR * 0.055;
+    const arrowH = scopeR * 0.06;
+    const offsets = RifleQual._getBdcTickOffsets(scopeR);
+    const lw = 1.0;
+    const vLw = lw * 2;
+
+    // Top marker: upside-down V (no triangle base).
+    ctx.strokeStyle = on;
+    ctx.lineWidth = vLw;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(chX - arrowHalfW, chY + arrowH);
+    ctx.lineTo(chX, chY);
+    ctx.lineTo(chX + arrowHalfW, chY + arrowH);
+    ctx.stroke();
+
+    // Main vertical line down to the 8 mark.
+    const y8 = chY + offsets[8];
+    ctx.strokeStyle = off;
+    ctx.lineWidth = lw;
+    ctx.beginPath();
+    ctx.moveTo(chX, chY + arrowH - 4);
+    ctx.lineTo(chX, y8);
+    ctx.stroke();
+
+    const tickW = scopeR * 0.055;
+    const ticks = [{ mark: 4 }, { mark: 5 }, { mark: 6 }, { mark: 7 }, { mark: 8 }];
+
+    ticks.forEach((t) => {
+      const y = chY + offsets[t.mark];
+      const active = activeTick === t.mark;
+      ctx.strokeStyle = active ? on : off;
+      ctx.lineWidth = lw;
+      ctx.beginPath();
+      // Straight horizontal hashes that meet in the middle.
+      ctx.moveTo(chX - tickW / 2, y);
+      ctx.lineTo(chX + tickW / 2, y);
+      ctx.stroke();
+    });
   },
 
   _drawPit(elapsed) {
@@ -542,6 +795,9 @@ const RifleQual = {
     const { _cx: cx, _cy: cy, _scopeR: scopeR } = RifleQual;
 
     ctx.clearRect(0, 0, RifleQual._size, RifleQual._size);
+    // Keep tube mask during pit animation too.
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, RifleQual._size, RifleQual._size);
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, scopeR, 0, Math.PI * 2);
@@ -559,7 +815,7 @@ const RifleQual = {
     if (resultAlpha > 0.01) {
       ctx.globalAlpha = resultAlpha;
       const score      = RifleQual._lastScore;
-      const scoreColor = score >= 8 ? '#4caf50' : score >= 5 ? '#f0b429' : '#e53935';
+      const scoreColor = score >= 4 ? '#4caf50' : score >= 3 ? '#f0b429' : '#e53935';
       ctx.fillStyle    = scoreColor;
       ctx.font         = `bold ${Math.floor(scopeR * 0.55)}px monospace`;
       ctx.textAlign    = 'center';
@@ -592,9 +848,10 @@ const RifleQual = {
 
     const angle = Math.random() * Math.PI * 2;
     const mag   = Math.random() * jitterR;
+    const holdDy = RifleQual._getHoldoverPx(pos);
     // Impact = aim + sway + jitter (all relative to canvas center = target center)
-    const dx    = RifleQual._aimX + RifleQual._swayX + Math.cos(angle) * mag;
-    const dy    = RifleQual._aimY + RifleQual._swayY + Math.sin(angle) * mag;
+    const dx    = RifleQual._aimX + RifleQual._swayX + RifleQual._breathX + Math.cos(angle) * mag;
+    const dy    = RifleQual._aimY + RifleQual._swayY + RifleQual._breathY + holdDy + Math.sin(angle) * mag;
     const score = RifleQual._scoreShot(dx, dy);
 
     RifleQual._lastScore = score;
@@ -605,7 +862,7 @@ const RifleQual = {
     const flash = document.getElementById('rq-flash');
     if (flash) {
       flash.textContent = score === 0 ? 'MISS' : String(score);
-      flash.className   = 'rq-flash ' + (score >= 8 ? 'rq-flash-good' : score >= 5 ? 'rq-flash-ok' : 'rq-flash-bad');
+      flash.className   = 'rq-flash ' + (score >= 4 ? 'rq-flash-good' : score >= 3 ? 'rq-flash-ok' : 'rq-flash-bad');
       setTimeout(() => { if (flash) flash.className = 'rq-flash hidden'; }, 420);
     }
 
@@ -618,9 +875,9 @@ const RifleQual = {
 
   _scoreShot(dx, dy) {
     const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist <= RifleQual._bullR)      return 10;
+    if (dist <= RifleQual._bullR)      return 5;
     if (dist >  RifleQual._targetR)    return 0;
-    return Math.max(1, 10 - Math.ceil((dist - RifleQual._bullR) / RifleQual._ringStep));
+    return Math.max(2, 5 - Math.ceil((dist - RifleQual._bullR) / RifleQual._ringStep));
   },
 
   _afterPit() {
@@ -648,7 +905,7 @@ const RifleQual = {
     const pos    = RifleQual.POSITIONS[posIdx];
     const get    = (id) => document.getElementById(id);
     if (get('rq-pos-name'))   get('rq-pos-name').textContent   = pos.label;
-    if (get('rq-pos-num'))    get('rq-pos-num').textContent    = `POSITION ${posIdx + 1} OF ${RifleQual.POSITIONS.length}`;
+    if (get('rq-pos-num'))    get('rq-pos-num').textContent    = `POSITION ${posIdx + 1} OF ${RifleQual.POSITIONS.length} · ${pos.distanceYds || 500} M`;
     if (get('rq-shot-count')) get('rq-shot-count').textContent = `SHOT ${RifleQual._shotIdx + 1} OF ${RifleQual.SHOTS_PER_POS}`;
   },
 
@@ -686,7 +943,7 @@ const RifleQual = {
       if (!cell) continue;
       const s      = scores[i];
       cell.textContent = s;
-      cell.className   = 'rq-sc-cell rq-sc-filled ' + (s >= 8 ? 'rq-sc-good' : s >= 5 ? 'rq-sc-ok' : 'rq-sc-bad');
+      cell.className   = 'rq-sc-cell rq-sc-filled ' + (s >= 4 ? 'rq-sc-good' : s >= 3 ? 'rq-sc-ok' : 'rq-sc-bad');
     }
     for (let col = 0; col < RifleQual.POSITIONS.length; col++) {
       const start = col * RifleQual.SHOTS_PER_POS;
@@ -1094,9 +1351,9 @@ const RifleQual = {
 
   // ── Results ───────────────────────────────────
   _qualLevel(total) {
-    if (total >= 130) return 'Expert';
-    if (total >= 110) return 'Sharpshooter';
-    if (total >= 90)  return 'Marksman';
+    if (total >= 65) return 'Expert';
+    if (total >= 55) return 'Sharpshooter';
+    if (total >= 45) return 'Marksman';
     return 'UNQ';
   },
 
@@ -1109,12 +1366,12 @@ const RifleQual = {
     const qualEl  = document.getElementById('rq-results-qual');
     qualEl.textContent = level.toUpperCase();
     qualEl.className   = 'rq-results-qual rq-qual-' + level.toLowerCase();
-    document.getElementById('rq-results-score').textContent = `${total} / 150`;
+    document.getElementById('rq-results-score').textContent = `${total} / 75`;
 
     document.getElementById('rq-results-breakdown').innerHTML =
       RifleQual.POSITIONS.map((pos, i) => {
         const slice = RifleQual._scores.slice(i * RifleQual.SHOTS_PER_POS, (i + 1) * RifleQual.SHOTS_PER_POS);
-        return `<span>${pos.label}: ${slice.reduce((a, b) => a + b, 0)}/50</span>`;
+        return `<span>${pos.label}: ${slice.reduce((a, b) => a + b, 0)}/25</span>`;
       }).join('');
 
     const effectText = {
@@ -1150,7 +1407,7 @@ const RifleQual = {
     State.game.rifleQualCompleted = true;
     State.game.log.unshift({
       date:  Engine._dateStr(),
-      text:  `Annual rifle qualification: ${level} (${total}/150)`,
+      text:  `Annual rifle qualification: ${level} (${total}/75)`,
       major: true,
     });
     State.save();
