@@ -89,13 +89,14 @@ const RifleQual = {
   _quizItems:    [],        // [{id, text}] — items for the current quiz round
 
   // Quiz drag-and-drop state
-  _dragId:      null,   // id of item currently being dragged (ghost visible)
-  _dragGhost:   null,   // ghost DOM element
-  _dragPendId:  null,   // id of pending drag (pointerdown but not yet moved > threshold)
-  _dragStartX:  0,
-  _dragStartY:  0,
-  _dragStarted: false,  // true once drag threshold exceeded
-  _docListen:   false,  // whether doc pointermove/up listeners are attached
+  _dragId:       null,   // id of item currently being dragged (ghost visible)
+  _dragGhost:    null,   // ghost DOM element
+  _dragPendId:   null,   // id of pending drag (pointerdown but not yet moved > threshold)
+  _dragStartX:   0,
+  _dragStartY:   0,
+  _dragStarted:  false,  // true once drag threshold exceeded
+  _docListen:    false,  // whether doc pointermove/up listeners are attached
+  _hoverSlotIdx: null,   // slot index the ghost is currently hovering over (null = none)
 
   // Canvas
   _canvas:  null,
@@ -725,6 +726,7 @@ const RifleQual = {
     RifleQual._dragId       = null;
     RifleQual._dragPendId   = null;
     RifleQual._dragStarted  = false;
+    RifleQual._hoverSlotIdx = null;
     if (RifleQual._dragGhost) { RifleQual._dragGhost.remove(); RifleQual._dragGhost = null; }
     if (RifleQual._docListen) {
       document.removeEventListener('pointermove', RifleQual._onDocPointerMove);
@@ -837,11 +839,24 @@ const RifleQual = {
       document.body.appendChild(ghost);
       RifleQual._dragGhost = ghost;
 
-      document.getElementById('rqp-slots').setAttribute('data-drag-active', '1');
       RifleQual._renderQuizState();
     }
     if (RifleQual._dragStarted && RifleQual._dragGhost) {
       RifleQual._moveDragGhost(e.clientX, e.clientY);
+      // Hit-test ghost center to find which slot it's over (ghost is above finger)
+      const g  = RifleQual._dragGhost;
+      const gh = g.offsetHeight || 40;
+      const gx = e.clientX;
+      const gy = e.clientY - gh / 2 - 12;
+      g.style.visibility = 'hidden';
+      const under    = document.elementFromPoint(gx, gy);
+      g.style.visibility = '';
+      const slotArea = under ? under.closest('.rqp-slot-area') : null;
+      const newHover = slotArea ? parseInt(slotArea.dataset.slot, 10) : null;
+      if (newHover !== RifleQual._hoverSlotIdx) {
+        RifleQual._hoverSlotIdx = newHover;
+        RifleQual._renderQuizState();
+      }
     }
   },
 
@@ -865,29 +880,25 @@ const RifleQual = {
     RifleQual._dragPendId = null;
 
     if (RifleQual._dragStarted) {
-      // Finish drag — detect drop target
-      RifleQual._dragStarted = false;
-      RifleQual._dragId      = null;
+      // Capture hovered slot before resetting state
+      const dropSlotIdx = RifleQual._hoverSlotIdx;
+      RifleQual._dragStarted  = false;
+      RifleQual._dragId       = null;
+      RifleQual._hoverSlotIdx = null;
 
       if (RifleQual._dragGhost) {
         RifleQual._dragGhost.remove();
         RifleQual._dragGhost = null;
       }
-      document.getElementById('rqp-slots').removeAttribute('data-drag-active');
 
-      // elementFromPoint after ghost is removed
-      const el       = document.elementFromPoint(e.clientX, e.clientY);
-      const slotArea = el ? el.closest('.rqp-slot-area') : null;
-
-      if (slotArea) {
-        const slotIdx = parseInt(slotArea.dataset.slot, 10);
+      if (dropSlotIdx !== null) {
         // Remove card from its previous slot if it was there
         const prevSlot = RifleQual._quizSlots.indexOf(id);
         if (prevSlot >= 0) RifleQual._quizSlots[prevSlot] = null;
-        // If target slot is occupied, swap (occupant returns to pool)
-        RifleQual._quizSlots[slotIdx] = id;
+        // Place into target slot (any occupant returns to pool automatically)
+        RifleQual._quizSlots[dropSlotIdx] = id;
       } else {
-        // Dropped outside — return to pool (remove from any slot)
+        // Dropped outside any slot — return card to pool
         const prevSlot = RifleQual._quizSlots.indexOf(id);
         if (prevSlot >= 0) RifleQual._quizSlots[prevSlot] = null;
       }
@@ -939,16 +950,22 @@ const RifleQual = {
     const poolEl  = document.getElementById('rqp-pool');
 
     // Update slot areas
+    const isDragging = RifleQual._dragId !== null;
     slotsEl.querySelectorAll('.rqp-slot-area').forEach((area, i) => {
-      const occ = RifleQual._quizSlots[i];
+      const occ     = RifleQual._quizSlots[i];
+      const isHover = isDragging && i === RifleQual._hoverSlotIdx;
       if (occ !== null) {
         area.textContent = RifleQual._quizItems[occ].text;
-        area.className   = 'rqp-slot-area slot-filled';
+        area.className   = isHover ? 'rqp-slot-area slot-filled slot-hover' : 'rqp-slot-area slot-filled';
       } else {
         area.textContent = '— drag here —';
-        area.className   = RifleQual._quizSelected !== null
-          ? 'rqp-slot-area slot-target'   // hint: this slot can receive a card
-          : 'rqp-slot-area';
+        if (isHover) {
+          area.className = 'rqp-slot-area slot-hover';
+        } else if (RifleQual._quizSelected !== null) {
+          area.className = 'rqp-slot-area slot-target';
+        } else {
+          area.className = 'rqp-slot-area';
+        }
       }
     });
 

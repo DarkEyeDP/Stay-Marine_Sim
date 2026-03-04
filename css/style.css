@@ -2706,8 +2706,9 @@ input {
 }
 
 /* Empty slots highlight green while a drag is active */
-.rqp-slots[data-drag-active] .rqp-slot-area:not(.slot-filled) {
+.rqp-slot-area.slot-hover {
   border-color: var(--green);
   border-style: solid;
-  background: rgba(74, 135, 65, 0.10);
+  background: rgba(74, 135, 65, 0.14);
+  box-shadow: 0 0 8px rgba(74, 135, 65, 0.28);
 }
