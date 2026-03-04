@@ -8,6 +8,32 @@ const Engine = {
   // ── Quarterly focus choices ─────────────────
   // cost: bandwidth points required to select this choice (budget = Engine.focusBudget())
   MONTHLY_CHOICES: [
+    // ── Cost 3 ────────────────────────────────────────────────────────
+    {
+      id: 'focus_education',
+      label: 'Take college courses (TA)',
+      hint: '+Edu Credits, +Civilian Employ., ++Stress, -Family, -MOS Focus',
+      effects: { educationCredits: 6, civilianEmployability: 4, stress: 10, familyStability: -6, mosProficiency: -4 },
+      cost: 3,
+      unavailableWhenDeployed: true,
+    },
+    {
+      id: 'focus_pme',
+      label: 'Complete PME / correspondence course',
+      hint: '+PME unlocked, +ProCon — required for promotion to next grade',
+      effects: { profConduct: 3, mosProficiency: 3, stress: 4 },
+      cost: 3,
+      requiresNextDistancePME: true,
+    },
+    {
+      id: 'focus_cover_down',
+      label: 'Cover down on a vacant billet (deployed)',
+      hint: '+ProCon, +Reputation, ++Stress — prove yourself downrange',
+      effects: { profConduct: 5, reputationWithLeadership: 8, mosProficiency: 4, stress: 10 },
+      cost: 3,
+      requiresDeployed: true,
+    },
+    // ── Cost 2 ────────────────────────────────────────────────────────
     {
       id: 'focus_pt',
       label: 'Train PT hard this quarter',
@@ -24,34 +50,11 @@ const Engine = {
       cost: 2,
     },
     {
-      id: 'focus_education',
-      label: 'Take college courses (TA)',
-      hint: '+Edu Credits, +Civilian Employ., ++Stress, -Family, -MOS Focus',
-      effects: { educationCredits: 6, civilianEmployability: 4, stress: 10, familyStability: -6, mosProficiency: -4 },
-      cost: 3,
-      unavailableWhenDeployed: true,
-    },
-    {
       id: 'focus_volunteer',
       label: 'Volunteer for extra duties',
       hint: '+ProCon, +Reputation, +Stress',
       effects: { profConduct: 4, reputationWithLeadership: 6, stress: 6 },
       cost: 2,
-    },
-    {
-      id: 'focus_recovery',
-      label: 'Rest and recover (lay low)',
-      hint: '-Stress significantly, slight reputation cost, minor morale lift',
-      effects: { stress: -12, morale: 2, reputationWithLeadership: -2 },
-      cost: 1,
-    },
-    {
-      id: 'focus_family',
-      label: 'Invest time in family',
-      hint: '++FamilyStability, -Stress, modest morale lift',
-      effects: { familyStability: 10, morale: 3, stress: -4 },
-      cost: 1,
-      unavailableWhenDeployed: true,
     },
     {
       id: 'focus_savings',
@@ -68,17 +71,14 @@ const Engine = {
       cost: 2,
     },
     {
-      id: 'focus_paydebt',
-      label: 'Make extra debt payment',    // overridden by dynamicLabel at render time
-      hint:  'Pay toward debt from savings, -Stress',
-      dynamicLabel: (m) => `Make extra debt payment (${Finance.fmt(Math.min(m.debt, 1500))})`,
-      dynamicHint:  (m) => `-${Finance.fmt(Math.min(m.debt, 1500))} from savings → debt paydown · -Stress`,
-      effects: {},    // handled specially in applyFocusChoice — NOT applied via Character.applyEffects
-      cost: 1,
-      requiresSavings: 1500,  // used as the max threshold; actual gate uses min(debt, 1500)
-      requiresDebt: true,
+      id: 'focus_leadership',
+      label: 'Develop your junior Marines',
+      hint: '+Reputation, +ProCon, +Network — NCO responsibility',
+      effects: { reputationWithLeadership: 6, profConduct: 4, networkStrength: 4, stress: 3 },
+      cost: 2,
+      requiresMinRank: 'E-5',
     },
-    // ── MOS-specific focus choices ─────────────────────────────────────
+    // ── Cost 2 — MOS-specific ─────────────────────────────────────────
     {
       id: 'focus_mos_intel_tradecraft',
       label: 'Refine analytical tradecraft',
@@ -119,30 +119,32 @@ const Engine = {
       cost: 2,
       requiresMosField: 'aviation',
     },
-    // ── Context-dependent choices ──────────────────────────────────────
+    // ── Cost 1 ────────────────────────────────────────────────────────
     {
-      id: 'focus_pme',
-      label: 'Complete PME / correspondence course',
-      hint: '+PME unlocked, +ProCon — required for promotion to next grade',
-      effects: { profConduct: 3, mosProficiency: 3, stress: 4 },
-      cost: 3,
-      requiresNextDistancePME: true,  // only shown when a distance PME is needed
+      id: 'focus_recovery',
+      label: 'Rest and recover (lay low)',
+      hint: '-Stress significantly, slight reputation cost, minor morale lift',
+      effects: { stress: -12, morale: 2, reputationWithLeadership: -2 },
+      cost: 1,
     },
     {
-      id: 'focus_leadership',
-      label: 'Develop your junior Marines',
-      hint: '+Reputation, +ProCon, +Network — NCO responsibility',
-      effects: { reputationWithLeadership: 6, profConduct: 4, networkStrength: 4, stress: 3 },
-      cost: 2,
-      requiresMinRank: 'E-5',         // only available Sgt and above
+      id: 'focus_family',
+      label: 'Invest time in family',
+      hint: '++FamilyStability, -Stress, modest morale lift',
+      effects: { familyStability: 10, morale: 3, stress: -4 },
+      cost: 1,
+      unavailableWhenDeployed: true,
     },
     {
-      id: 'focus_cover_down',
-      label: 'Cover down on a vacant billet (deployed)',
-      hint: '+ProCon, +Reputation, ++Stress — prove yourself downrange',
-      effects: { profConduct: 5, reputationWithLeadership: 8, mosProficiency: 4, stress: 10 },
-      cost: 3,
-      requiresDeployed: true,         // only shown when deployed
+      id: 'focus_paydebt',
+      label: 'Make extra debt payment',    // overridden by dynamicLabel at render time
+      hint:  'Pay toward debt from savings, -Stress',
+      dynamicLabel: (m) => `Make extra debt payment (${Finance.fmt(Math.min(m.debt, 1500))})`,
+      dynamicHint:  (m) => `-${Finance.fmt(Math.min(m.debt, 1500))} from savings → debt paydown · -Stress`,
+      effects: {},    // handled specially in applyFocusChoice — NOT applied via Character.applyEffects
+      cost: 1,
+      requiresSavings: 1500,
+      requiresDebt: true,
     },
   ],
 
