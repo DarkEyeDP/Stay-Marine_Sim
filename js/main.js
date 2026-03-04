@@ -686,7 +686,7 @@ const Main = {
         },
         {
           title:  'Individual Ready Reserve (IRR)',
-          desc:   `Non-drilling. No commitment, no pay, no benefits. Subject to involuntary recall — and in 2003, the IRR is being activated. Marines with combat MOS are being pulled back.`,
+          desc:   `Non-drilling. No commitment, no pay, no benefits. You remain subject to involuntary recall for the remainder of your MSO. During periods of high optempo, IRR Marines — especially those with combat MOS — get pulled back.`,
           effect: 'No pay | No drill commitment | Recall risk (GWOT era)',
           onSelect: () => {
             m.reserveStatus = 'IRR';
