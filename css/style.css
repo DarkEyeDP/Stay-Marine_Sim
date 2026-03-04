@@ -2588,6 +2588,25 @@ input {
   border-style: solid;
 }
 
+.rqp-slot-area.slot-wrong {
+  border-color: #e53935;
+  border-style: solid;
+  background: rgba(229, 57, 53, 0.12);
+  color: #ff6b6b;
+}
+
+.rqp-quiz-error {
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.07em;
+  color: #ff6b6b;
+  background: rgba(229, 57, 53, 0.10);
+  border-left: 3px solid #e53935;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+
 /* Pool */
 .rqp-pool-label {
   font-size: 0.6rem;

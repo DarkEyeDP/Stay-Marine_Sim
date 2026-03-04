@@ -83,10 +83,12 @@ const RifleQual = {
   _holdStart: 0,
 
   // Pre-range quiz state
-  _quizPhase:    'brief',   // 'brief' | 'safety' | 'conditions' | 'fail' | 'pass' | 'done'
-  _quizSlots:    [],        // [null | itemId] — what's in each numbered slot
-  _quizSelected: null,      // id of the currently selected pool card (or null)
-  _quizItems:    [],        // [{id, text}] — items for the current quiz round
+  _quizPhase:     'brief',  // 'brief' | 'safety' | 'conditions' | 'fail' | 'pass' | 'done'
+  _quizSlots:     [],       // [null | itemId] — what's in each numbered slot
+  _quizSelected:  null,     // id of the currently selected pool card (or null)
+  _quizItems:     [],       // [{id, text}] — items for the current quiz round
+  _quizAttempts:  0,        // wrong submissions this phase (3 = kicked off range)
+  _quizShowWrong: false,    // true = highlight incorrect slots in red
 
   // Quiz drag-and-drop state
   _dragId:       null,   // id of item currently being dragged (ghost visible)
@@ -720,8 +722,10 @@ const RifleQual = {
   },
 
   _startQuiz(type) {
-    RifleQual._quizPhase    = type;
-    RifleQual._quizSelected = null;
+    RifleQual._quizPhase     = type;
+    RifleQual._quizSelected  = null;
+    RifleQual._quizAttempts  = 0;
+    RifleQual._quizShowWrong = false;
     // Reset drag state
     RifleQual._dragId       = null;
     RifleQual._dragPendId   = null;
@@ -892,6 +896,7 @@ const RifleQual = {
       }
 
       if (dropSlotIdx !== null) {
+        RifleQual._clearQuizError();
         // Remove card from its previous slot if it was there
         const prevSlot = RifleQual._quizSlots.indexOf(id);
         if (prevSlot >= 0) RifleQual._quizSlots[prevSlot] = null;
@@ -911,6 +916,7 @@ const RifleQual = {
   },
 
   _onCardClick(id) {
+    RifleQual._clearQuizError();
     const slotIdx = RifleQual._quizSlots.indexOf(id);
     if (slotIdx >= 0) {
       // Card is in a slot — pull it back to pool and select it
@@ -924,6 +930,7 @@ const RifleQual = {
   },
 
   _onSlotClick(slotIdx) {
+    RifleQual._clearQuizError();
     const occupied = RifleQual._quizSlots[slotIdx];
     if (occupied !== null) {
       if (RifleQual._quizSelected !== null) {
@@ -954,9 +961,13 @@ const RifleQual = {
     slotsEl.querySelectorAll('.rqp-slot-area').forEach((area, i) => {
       const occ     = RifleQual._quizSlots[i];
       const isHover = isDragging && i === RifleQual._hoverSlotIdx;
+      const isWrong = RifleQual._quizShowWrong && occ !== null && occ !== i;
       if (occ !== null) {
         area.textContent = RifleQual._quizItems[occ].text;
-        area.className   = isHover ? 'rqp-slot-area slot-filled slot-hover' : 'rqp-slot-area slot-filled';
+        let cls = 'rqp-slot-area slot-filled';
+        if (isWrong) cls += ' slot-wrong';
+        if (isHover) cls += ' slot-hover';
+        area.className = cls;
       } else {
         area.textContent = '— drag here —';
         if (isHover) {
@@ -996,20 +1007,42 @@ const RifleQual = {
     const allCorrect = RifleQual._quizSlots.every((occupantId, slotIdx) => occupantId === slotIdx);
 
     if (allCorrect) {
+      RifleQual._clearQuizError();
       if (RifleQual._quizPhase === 'safety') {
-        // Passed safety rules — now quiz weapon conditions
         RifleQual._startQuiz('conditions');
       } else {
-        // Passed both — show pass screen before stepping to the line
         RifleQual._quizPhase = 'pass';
         RifleQual._showPassScreen();
       }
-    } else {
-      const msg = RifleQual._quizPhase === 'safety'
-        ? 'You failed to correctly order the Four Weapons Safety Rules. The Range Safety Officer removes you from the firing line. You are assigned UNQUALIFIED. Your platoon sergeant will be notified.'
-        : 'You failed to correctly identify the Weapon Conditions for the M16/M4. The Range Safety Officer removes you from the firing line. You are assigned UNQUALIFIED. Your platoon sergeant will be notified.';
-      RifleQual._quizFail(msg);
+      return;
     }
+
+    RifleQual._quizAttempts++;
+
+    if (RifleQual._quizAttempts >= 3) {
+      // Three strikes — removed from range as a safety violator
+      RifleQual._quizShowWrong = false;
+      const msg = RifleQual._quizPhase === 'safety'
+        ? 'After three failed attempts to recite the Four Weapons Safety Rules in order, the RSO steps in front of you. "You are a safety violator. Get off my range." Your platoon sergeant is notified before you reach the parking lot. Assigned UNQUALIFIED.'
+        : 'After three failed attempts to identify the Weapon Conditions for the M16/M4, the RSO steps in front of you. "You are a safety risk. Get off my range." Your platoon sergeant is notified. Assigned UNQUALIFIED.';
+      RifleQual._quizFail(msg);
+    } else {
+      // Show inline error with wrong slots highlighted — player can fix and retry
+      const remaining = 3 - RifleQual._quizAttempts;
+      RifleQual._quizShowWrong = true;
+      const errEl = document.getElementById('rqp-quiz-error');
+      if (errEl) {
+        errEl.textContent = `INCORRECT — ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining. Fix the highlighted slots and resubmit.`;
+        errEl.classList.remove('hidden');
+      }
+      RifleQual._renderQuizState();
+    }
+  },
+
+  _clearQuizError() {
+    RifleQual._quizShowWrong = false;
+    const el = document.getElementById('rqp-quiz-error');
+    if (el) el.classList.add('hidden');
   },
 
   _showPassScreen() {
