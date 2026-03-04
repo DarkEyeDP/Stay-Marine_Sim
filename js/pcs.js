@@ -9,7 +9,7 @@ const PCS = {
    * Check if PCS orders should be cut this quarter.
    * - Not eligible if currently deployed.
    * - IPCOT protection: no PCS within 12 months of EAS.
-   * - Eligible after 24 months at current station.
+   * - Eligible after 30 months at first station, 36–48 months at subsequent stations.
    */
   isPCSDue(marine) {
     if (marine.isDeployed) return false;
@@ -122,8 +122,8 @@ const PCS = {
     marine.assignmentId    = stationId;
     marine.monthsAtStation = 0;
     marine.optempo         = station.optempo;
-    // Randomize next PCS window: 21, 24, 27, or 30 months (1 random quarter of variance each side)
-    marine.pcsEligibleAt   = 21 + Math.floor(Math.random() * 4) * 3;
+    // Randomize next PCS window: 36–48 months (3–4 year tours, 3-month steps)
+    marine.pcsEligibleAt   = 36 + Math.floor(Math.random() * 5) * 3;
 
     // Moving stress and adjustment period
     marine.stress         = clamp(marine.stress         + 8,  0, 100);

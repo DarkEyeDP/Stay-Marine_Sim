@@ -73,7 +73,7 @@ const Character = {
       isDeployed:      false,
       deploymentMonthsLeft: 0,
       monthsAtStation: 0,   // months at current duty station (PCS trigger)
-      pcsEligibleAt:   24,  // randomized threshold (21/24/27/30 mo) for when PCS orders fire
+      pcsEligibleAt:   30,  // threshold (months at station) before PCS orders fire; randomized 36-48 after each move
       ordersDeclined:  false, // true = declined PCS; blocks PCS, deployments, TA for rest of contract
 
       // ── Hidden mechanics ─────────────────

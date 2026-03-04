@@ -232,7 +232,7 @@ const Main = {
     const monthsAtStation = m.monthsAtStation || 0;
     const forced = monthsAtStation >= 36;
     const monthsToEAS = m.contractEnd - m.timeInService;
-    const needsExtension = monthsToEAS < 24;
+    const needsExtension = monthsToEAS < 12;
 
     // Safety: no eligible stations found (shouldn't happen, but guard anyway)
     if (options.length === 0) {
@@ -280,7 +280,7 @@ const Main = {
         title: forced ? 'MANDATORY PCS — EXTENSION REQUIRED' : 'PCS ORDERS — SHORT CONTRACT',
         body: `
           <p>Orders have been cut, but you only have <strong>${contractLabel}</strong> left on your current contract.</p>
-          <p>HQMC requires at least <strong>24 months</strong> remaining on contract to accept PCS orders.</p>
+          <p>HQMC requires at least <strong>12 months</strong> remaining on contract to accept PCS orders.</p>
           ${forced ? '<p><strong>These orders are non-negotiable — an extension is required.</strong></p>' : ''}
         `,
         choices: extChoices,
