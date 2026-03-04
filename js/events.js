@@ -6,9 +6,9 @@
 const Events = {
 
   /** Roll for 0 or 1 random events this month */
-  rollEvent(marine) {
-    // Base 35% chance of an event per quarter
-    if (Math.random() > 0.35) return null;
+  rollEvent(marine, forced = false) {
+    // Base 35% chance of a second event; first event is always guaranteed
+    if (!forced && Math.random() > 0.35) return null;
 
     // Filter eligible events — exclude recently fired events (last 2 quarters / 6 slots)
     const recentIds = (State.game && State.game.recentEventIds) || [];

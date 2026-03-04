@@ -202,10 +202,10 @@ const Engine = {
     }
 
     // ── Step 4: Roll 1–2 events this quarter ────
-    const e1 = Events.rollEvent(m);
+    const e1 = Events.rollEvent(m, true);   // guaranteed first event
     if (e1) result.events.push(e1);
     if (Math.random() < 0.45) {
-      const e2 = Events.rollEvent(m);
+      const e2 = Events.rollEvent(m);       // optional second event (35% gate inside)
       if (e2 && (!e1 || e2.id !== e1.id)) result.events.push(e2);
     }
 
