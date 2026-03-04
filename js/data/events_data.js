@@ -551,8 +551,8 @@ const EVENTS_DATA = [
     id: 'evt_first_payday',
     category: 'finance',
     title: 'First Real Paycheck',
-    weight: 8,
-    trigger: { minTIS: 3, maxTIS: 9 },
+    weight: 20,
+    trigger: { minTIS: 3, maxTIS: 15 },
     narrative: 'It\'s your first full paycheck as a Marine — more money than you\'ve ever had at once. The guys are already talking about what to buy. There\'s a car lot just off base and a predatory "military friendly" lender right next to it.',
     choices: [
       {
