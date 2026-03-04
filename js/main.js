@@ -31,6 +31,93 @@ document.addEventListener('DOMContentLoaded', () => {
     UI._checkCreateReady();
   });
 
+  // ── Name Generator ────────────────────────────
+  const _GEN_LAST = [
+    'Smith','Garcia','Johnson','Williams','Brown','Jones','Davis','Miller','Wilson','Moore',
+    'Taylor','Anderson','Thomas','Jackson','White','Harris','Martin','Thompson','Martinez',
+    'Robinson','Clark','Rodriguez','Lewis','Walker','Hall','Allen','Young','Hernandez','King',
+    'Wright','Lopez','Hill','Scott','Green','Adams','Baker','Nelson','Carter','Mitchell',
+    'Perez','Roberts','Turner','Phillips','Campbell','Parker','Evans','Edwards','Collins',
+    'Stewart','Morris','Rogers','Reed','Cook','Morgan','Bell','Murphy','Bailey','Rivera',
+    'Cooper','Richardson','Cox','Howard','Ward','Torres','Peterson','Gray','Ramirez','James',
+    'Watson','Brooks','Kelly','Sanders','Price','Bennett','Wood','Barnes','Ross','Henderson',
+    'Coleman','Jenkins','Perry','Powell','Long','Patterson','Hughes','Flores','Washington',
+  ];
+  const _GEN_MALE = [
+    'James','John','Robert','Michael','William','David','Richard','Joseph','Thomas','Christopher',
+    'Charles','Daniel','Matthew','Anthony','Mark','Donald','Steven','Paul','Andrew','Kenneth',
+    'Joshua','Kevin','Brian','George','Edward','Ronald','Timothy','Jason','Jeffrey','Ryan',
+    'Jacob','Gary','Nicholas','Eric','Jonathan','Stephen','Larry','Justin','Scott','Brandon',
+    'Raymond','Frank','Gregory','Samuel','Patrick','Alexander','Jack','Dennis','Jerry','Tyler',
+    'Aaron','Jose','Adam','Nathan','Henry','Douglas','Zachary','Peter','Kyle','Walter',
+    'Ethan','Jeremy','Harold','Keith','Christian','Roger','Noah','Gerald','Carl','Terry',
+  ];
+  const _GEN_FEMALE = [
+    'Mary','Patricia','Jennifer','Linda','Barbara','Elizabeth','Susan','Jessica','Sarah','Karen',
+    'Lisa','Nancy','Betty','Margaret','Sandra','Ashley','Dorothy','Kimberly','Emily','Donna',
+    'Michelle','Carol','Amanda','Melissa','Deborah','Stephanie','Rebecca','Sharon','Laura',
+    'Cynthia','Kathleen','Amy','Angela','Anna','Brenda','Pamela','Emma','Nicole','Helen',
+    'Samantha','Katherine','Christine','Rachel','Carolyn','Janet','Catherine','Maria','Heather',
+    'Diane','Virginia','Julie','Joyce','Victoria','Kelly','Christina','Lauren','Joan','Evelyn',
+    'Olivia','Judith','Megan','Cheryl','Martha','Andrea','Frances','Hannah','Jacqueline','Ann',
+  ];
+  // Legendary Easter eggs — weighted by array size (~15% chance when rolled into this pool)
+  const _GEN_LEGEND = [
+    { last: 'Puller',    m: 'Lewis',   f: 'Lewis'   }, // Chesty Puller
+    { last: 'Daly',      m: 'Dan',     f: 'Dana'    }, // Dan Daly — "Do you want to live forever?"
+    { last: 'Basilone',  m: 'John',    f: 'Lena'    }, // John Basilone / Lena Basilone
+    { last: 'Hathcock',  m: 'Carlos',  f: 'Carlene' }, // Carlos Hathcock, legendary sniper
+    { last: 'Butler',    m: 'Smedley', f: 'Smedley' }, // Smedley Butler, double MOH
+    { last: 'Mattis',    m: 'James',   f: 'Jamie'   }, // Mad Dog Mattis
+    { last: 'Lejeune',   m: 'John',    f: 'Jean'    }, // Gen John Lejeune
+    { last: 'Vandegrift', m: 'Alexander', f: 'Alexandra' }, // Gen Vandegrift, Guadalcanal
+  ];
+  // Funny Easter eggs
+  const _GEN_FUNNY = [
+    { last: 'Crayon',    m: 'Blue',    f: 'Scarlet' },
+    { last: 'Motrin',    m: 'Brandon', f: 'Beth'    },
+    { last: 'Silkies',   m: 'Hugh',    f: 'Sherry'  }, // "Huge Silkies" / "Sure, Silkies"
+    { last: 'Oorah',     m: 'John',    f: 'Jane'    },
+    { last: 'Devildog',  m: 'Marc',    f: 'Sara'    },
+    { last: 'Tun',       m: 'Tavern',  f: 'Tavern'  }, // Birthplace of the Corps
+    { last: 'Bootcamp',  m: 'Justin',  f: 'Justine' }, // "Just in Boot Camp"
+  ];
+
+  function _pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  document.getElementById('btn-gen-name').addEventListener('click', () => {
+    // Determine gender — auto-select if none chosen
+    let genderBtn = document.querySelector('#gender-select .gender-btn.selected');
+    if (!genderBtn) {
+      const btns = document.querySelectorAll('#gender-select .gender-btn');
+      genderBtn = btns[Math.floor(Math.random() * btns.length)];
+      btns.forEach(b => b.classList.remove('selected'));
+      genderBtn.classList.add('selected');
+      UI._checkCreateReady();
+    }
+    const isMale = genderBtn.dataset.gender === 'male';
+
+    // Roll for name type: 0-12 = legendary, 13-19 = funny, 20-99 = normal
+    const roll = Math.floor(Math.random() * 100);
+    let last, first;
+    if (roll < 13) {
+      const entry = _pick(_GEN_LEGEND);
+      last  = entry.last;
+      first = isMale ? entry.m : entry.f;
+    } else if (roll < 20) {
+      const entry = _pick(_GEN_FUNNY);
+      last  = entry.last;
+      first = isMale ? entry.m : entry.f;
+    } else {
+      last  = _pick(_GEN_LAST);
+      first = isMale ? _pick(_GEN_MALE) : _pick(_GEN_FEMALE);
+    }
+
+    const nameInput = document.getElementById('input-name');
+    nameInput.value = `${last}, ${first}`;
+    nameInput.dispatchEvent(new Event('input'));
+  });
+
   document.getElementById('btn-start-bootcamp').addEventListener('click', () => {
     const { name, backgroundId, mosId, gender } = UI.getCreateSelections();
     const marine = Character.create(name, mosId, backgroundId, gender);

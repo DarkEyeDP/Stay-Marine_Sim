@@ -256,6 +256,99 @@ input {
   border-color: var(--green);
 }
 
+.name-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.name-row .form-input {
+  flex: 1;
+  width: auto;
+}
+
+.btn-gen-name {
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 0.85rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+/* Spinning conic gradient — the tron chase */
+.btn-gen-name::before {
+  content: '';
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 230deg,
+    rgba(74, 135, 65, 0.12) 260deg,
+    var(--green) 300deg,
+    rgba(74, 135, 65, 0.12) 330deg,
+    transparent 360deg
+  );
+  animation: tron-border-spin 2s linear infinite;
+  z-index: 0;
+}
+
+/* Inner fill that creates the "border only" illusion */
+.btn-gen-name::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: var(--bg-input);
+  border-radius: calc(var(--radius) - 1px);
+  z-index: 1;
+}
+
+.gen-label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.btn-gen-name:hover .gen-label {
+  color: var(--green);
+}
+
+/* Pulsing dot */
+.gen-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 5px var(--green);
+  animation: gen-dot-pulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes tron-border-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes gen-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1);   box-shadow: 0 0 5px var(--green), 0 0 10px rgba(74,135,65,0.35); }
+  50%       { opacity: 0.3; transform: scale(0.65); box-shadow: none; }
+}
+
 /* Card select (background / MOS picker) */
 .card-select {
   display: flex;

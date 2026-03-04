@@ -32,15 +32,18 @@
       <h2 class="screen-title">YOUR MARINE</h2>
 
       <div class="form-group">
-        <label class="form-label">Name</label>
-        <input id="input-name" class="form-input" type="text" maxlength="30" placeholder="Last Name, First Name" />
-      </div>
-
-      <div class="form-group">
         <label class="form-label">Gender</label>
         <div id="gender-select" class="gender-select">
           <button class="gender-btn" data-gender="male">MALE</button>
           <button class="gender-btn" data-gender="female">FEMALE</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <div class="name-row">
+          <input id="input-name" class="form-input" type="text" maxlength="30" placeholder="Last Name, First Name" />
+          <button id="btn-gen-name" class="btn-gen-name" type="button"><span class="gen-label"><span class="gen-dot"></span>GENERATE</span></button>
         </div>
       </div>
 
@@ -385,7 +388,8 @@
                 <ul class="orient-list">
                   <li><span class="orient-label">EVENTS</span> Random situations will appear each quarter — deployments,
                     career opportunities, personal crises. Each one requires a choice. Resolve all events before you can
-                    advance.</li>
+                    advance. Some events are marked <strong>CHANCE</strong> — these resolve immediately with a single
+                    acknowledge button. No choice, just consequences.</li>
                   <li><span class="orient-label">BANDWIDTH</span> You have a limited pool of <strong>Bandwidth</strong>
                     points each quarter — your capacity for effort beyond normal duties. Spend them on focus choices
                     (cost
@@ -403,10 +407,13 @@
                   <li><span class="orient-label">DEBT</span> Grows every month — $10k triggers command involvement.</li>
                   <li><span class="orient-label">PME</span> Required for promotion past Corporal. Look for the PME focus
                     option.</li>
-                  <li><span class="orient-label">PCS MOVES</span> Happen ~every 2 years. They cost money and temporarily
-                    shake morale.</li>
+                  <li><span class="orient-label">PCS MOVES</span> First move arrives after roughly 2–3 years; then
+                    every 3–4 years after that. They cost money and temporarily shake morale.</li>
                   <li><span class="orient-label">REENLISTMENT</span> Windows have Sign-On Bonuses (SRB). Timing and your
                     ProCon score affect the offer.</li>
+                  <li><span class="orient-label">RIFLE QUAL</span> Each contract you'll be sent to the range. A
+                    pre-range safety quiz comes first — know your Four Safety Rules and weapon conditions or the RSO
+                    will send you home. Qual scores affect your record.</li>
                 </ul>
               </div>
 
