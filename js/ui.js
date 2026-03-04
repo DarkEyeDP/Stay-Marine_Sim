@@ -1017,6 +1017,9 @@ const UI = {
                 <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>Some civilian employers hesitate to hire reservists (illegal to discriminate, but it happens)</span></div>
                 <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>One weekend/month + two weeks/year away from family and civilian career</span></div>
               </div>
+              <div class="eo-reserve-hub">
+                <a href="https://reservehub.swf.army.mil/" target="_blank" rel="noopener noreferrer" class="eo-reserve-hub-link"><span>Find Open SMCR Billets Nationwide → Reserve Hub</span></a>
+              </div>
             </div>
           `;
         } else if (marine.reserveStatus === 'IRR') {

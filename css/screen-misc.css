@@ -390,6 +390,77 @@
   color: var(--tan);
 }
 
+.eo-reserve-hub {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.eo-reserve-hub-link {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--green);
+  transition: color 0.15s;
+}
+
+/* Spinning tron border — must be square so the sweep arc only hits one edge at a time */
+.eo-reserve-hub-link::before {
+  content: '';
+  position: absolute;
+  width: 300%;
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 230deg,
+    rgba(74, 135, 65, 0.12) 260deg,
+    var(--green) 300deg,
+    rgba(74, 135, 65, 0.12) 330deg,
+    transparent 360deg
+  );
+  animation: tron-border-spin 2s linear infinite;
+  z-index: 0;
+}
+
+/* Inner fill — border-only illusion; turns green on hover */
+.eo-reserve-hub-link::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  background: var(--bg-input);
+  border-radius: calc(var(--radius) - 1px);
+  z-index: 1;
+  transition: background 0.15s;
+}
+
+.eo-reserve-hub-link span {
+  position: relative;
+  z-index: 2;
+}
+
+.eo-reserve-hub-link:hover,
+.eo-reserve-hub-link:focus {
+  color: #000;
+}
+
+.eo-reserve-hub-link:hover::after,
+.eo-reserve-hub-link:focus::after {
+  background: var(--green);
+}
+
 /* ══════════════════════════════════════════════
    UTILITY
 ══════════════════════════════════════════════ */
