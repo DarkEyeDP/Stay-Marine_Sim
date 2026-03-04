@@ -1713,6 +1713,28 @@ input {
   color: var(--tan);
 }
 
+.footer-coffee {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  animation: coffee-pulse 12s ease-in-out infinite;
+}
+
+.footer-coffee:hover {
+  color: var(--yellow);
+  animation: none;
+}
+
+@keyframes coffee-pulse {
+  0%, 70%   { color: var(--muted); }
+  75%       { color: var(--yellow); }
+  80%       { color: var(--muted); }
+  85%       { color: var(--yellow); }
+  90%, 100% { color: var(--muted); }
+}
+
 /* ══════════════════════════════════════════════
    DECISION MODAL
 ══════════════════════════════════════════════ */
