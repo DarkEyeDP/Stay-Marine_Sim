@@ -1,0 +1,208 @@
+/* ═══════════════════════════════════════════════
+   STAY MARINE — Boot Camp Screen + Game Screen Layout
+   ═══════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════
+   BOOT CAMP
+══════════════════════════════════════════════ */
+#screen-bootcamp {
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+}
+
+.bootcamp-wrapper {
+  max-width: 600px;
+  width: 100%;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.bootcamp-header {
+  margin-bottom: 1.5rem;
+}
+
+.bc-phase-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.bootcamp-wrapper h2 {
+  font-size: 1.4rem;
+  color: var(--tan);
+  letter-spacing: 0.1em;
+}
+
+.narrative-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  min-height: 120px;
+}
+
+.bc-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.bc-stat-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  color: var(--green);
+}
+
+/* ══════════════════════════════════════════════
+   MAIN GAME LAYOUT
+══════════════════════════════════════════════ */
+#screen-game {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* Mobile tab strip */
+.mobile-tabs {
+  display: flex;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.6rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+/* Alert indicator dots inside the STATS tab */
+.tab-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-left: 4px;
+  /* hidden until a stat needs attention */
+  background: transparent;
+  transition: background 0.3s;
+}
+
+.tab-indicator.caution {
+  background: var(--yellow);
+  animation: ind-pulse 1.3s ease-in-out infinite;
+}
+
+.tab-indicator.danger {
+  background: var(--red);
+  animation: ind-pulse 0.65s ease-in-out infinite;
+}
+
+@keyframes ind-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.2; transform: scale(0.6); }
+}
+
+/* Mobile panel transition animations
+   Uses small directional fade — avoids GPU-composited transform
+   escaping overflow:hidden on mobile browsers. */
+@keyframes tab-slide-from-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes tab-slide-from-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.tab-slide-from-right {
+  animation: tab-slide-from-right 0.18s ease-out;
+}
+
+.tab-slide-from-left {
+  animation: tab-slide-from-left 0.18s ease-out;
+}
+
+.game-layout {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+
+/* Panels */
+.game-panel {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile: only one panel visible at a time */
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Panel divider — hidden on mobile */
+#resize-handle {
+  display: none;
+}
+
+/* Desktop: all panels visible side-by-side */
+@media (min-width: 900px) {
+  .mobile-tabs {
+    display: none;
+  }
+
+  .tab-panel {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  #panel-stats {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  #panel-events {
+    flex: 1 1 0;
+    min-width: 0;
+    border-right: 1px solid var(--border);
+  }
+
+  /* Static visual divider between the two panels */
+  #resize-handle {
+    display: block;
+    width: 6px;
+    flex-shrink: 0;
+    background: var(--border);
+  }
+}

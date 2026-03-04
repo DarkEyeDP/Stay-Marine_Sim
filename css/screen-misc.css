@@ -1,0 +1,419 @@
+/* ═══════════════════════════════════════════════
+   STAY MARINE — Decision Modal, End State, Utility, Tooltip
+   ═══════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════
+   DECISION MODAL
+══════════════════════════════════════════════ */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.modal-content {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-hi);
+  border-top: 3px solid var(--tan);
+  border-radius: var(--radius);
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-icon {
+  font-size: 2rem;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: var(--white);
+}
+
+.modal-body {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+
+.modal-body p+p {
+  margin-top: 0.6rem;
+}
+
+.modal-body strong {
+  color: var(--tan);
+}
+
+.modal-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-choice-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--white);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  min-height: 52px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.modal-choice-btn:hover {
+  border-color: var(--green);
+  border-left: 3px solid var(--green);
+  background: rgba(76, 175, 80, 0.10);
+  padding-left: calc(1rem - 2px);
+}
+
+.modal-choice-btn .mc-title {
+  color: var(--tan);
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.modal-choice-btn .mc-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.modal-choice-btn .mc-effect {
+  font-size: 0.72rem;
+  margin-top: 0.3rem;
+  color: var(--green);
+}
+
+/* ══════════════════════════════════════════════
+   END STATE SCREEN
+══════════════════════════════════════════════ */
+#screen-end {
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  background: radial-gradient(ellipse at center, #1a2a12 0%, #0a0d07 80%);
+  padding: 1rem;
+}
+
+.end-wrapper {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.end-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.end-title {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  letter-spacing: 0.1em;
+  color: var(--tan);
+  margin-bottom: 0.5rem;
+}
+
+.end-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.end-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.end-stat-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+}
+
+.end-stat-chip .esc-label {
+  color: var(--muted);
+  display: block;
+  font-size: 0.65rem;
+}
+
+.end-stat-chip .esc-val {
+  color: var(--white);
+  font-weight: bold;
+}
+
+.end-narrative {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ── End Outlook (civilian/retirement outcome analysis) ─────────────── */
+#end-outlook {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.eo-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.eo-section-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.eo-tier {
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+}
+
+.eo-tier-good {
+  color: var(--green);
+}
+
+.eo-tier-warn {
+  color: var(--yellow);
+}
+
+.eo-tier-bad {
+  color: var(--red);
+}
+
+.eo-salary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  padding: 0.2rem 0;
+}
+
+.eo-label {
+  color: var(--muted);
+}
+
+.eo-salary-val {
+  color: var(--white);
+  font-weight: bold;
+}
+
+.eo-val-bad {
+  color: var(--red);
+}
+
+.eo-factors {
+  margin: 0.6rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.eo-factor {
+  font-size: 0.78rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.eo-factor-icon {
+  flex-shrink: 0;
+}
+
+.eo-factor-good {
+  color: var(--green);
+}
+
+.eo-factor-bad {
+  color: var(--red);
+}
+
+.eo-family-row {
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+.eo-family-row .eo-label {
+  color: var(--white);
+}
+
+.eo-body {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.eo-body-muted {
+  font-style: italic;
+  font-size: 0.76rem;
+}
+
+.eo-comparison {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 0.6rem 0;
+}
+
+.eo-comp-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.eo-comp-row:last-child {
+  border-bottom: none;
+}
+
+.eo-comp-label {
+  color: var(--muted);
+}
+
+.eo-comp-val {
+  color: var(--white);
+  font-weight: bold;
+}
+
+.eo-pension-block {
+  background: rgba(200, 169, 110, 0.07);
+  border: 1px solid rgba(200, 169, 110, 0.25);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  text-align: center;
+  margin: 0.6rem 0;
+}
+
+.eo-pension-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.eo-pension-amount {
+  font-size: 1.5rem;
+  color: var(--tan);
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.eo-pension-sub {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.eo-pension-lifetime {
+  font-size: 0.75rem;
+  color: var(--tan);
+}
+
+/* ══════════════════════════════════════════════
+   UTILITY
+══════════════════════════════════════════════ */
+.hidden {
+  display: none !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 99px;
+}
+
+/* ── Tooltip ──────────────────────────────────── */
+.game-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: #1a2015;
+  border: 1px solid var(--border-hi);
+  border-left: 3px solid var(--tan);
+  color: var(--white);
+  font-family: var(--font-main);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  padding: 7px 10px;
+  max-width: 240px;
+  pointer-events: none;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* On mobile, touch-triggered tooltips get a slightly more prominent style */
+@media (hover: none) {
+  .game-tooltip {
+    font-size: 0.82rem;
+    padding: 9px 12px;
+    max-width: min(280px, calc(100vw - 16px));
+  }
+}

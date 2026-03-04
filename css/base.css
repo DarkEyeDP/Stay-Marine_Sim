@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════
+   STAY MARINE — Global Variables, Reset, Screens
+   ═══════════════════════════════════════════════ */
+
+/* ── Variables ───────────────────────────────── */
+:root {
+  --bg: #0d0f0a;
+  --bg-panel: #131810;
+  --bg-card: #1a2015;
+  --bg-input: #1e2419;
+  --border: #2e3828;
+  --border-hi: #4a5e3a;
+
+  --green: #4caf50;
+  --green-dim: #2d6e30;
+  --yellow: #f0b429;
+  --red: #e53935;
+  --red-dim: #7b1a18;
+  --blue: #42a5f5;
+  --tan: #c8a96e;
+  --white: #e8e8e0;
+  --muted: #7a8a6a;
+
+  --font-main: 'Courier New', Courier, monospace;
+  --radius: 4px;
+  --gap: 12px;
+}
+
+/* ── Reset ───────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--white);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+input {
+  font-family: var(--font-main);
+}
+
+/* ── Screens ─────────────────────────────────── */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  overflow-y: auto;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+}
