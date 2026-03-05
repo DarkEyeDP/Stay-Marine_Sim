@@ -51,6 +51,18 @@
 .rq-header-title { color: var(--tan); }
 .rq-header-dist  { color: var(--muted); }
 
+.rq-dist-chip {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+  border: 1px solid var(--border-hi);
+  background: rgba(74, 94, 58, 0.25);
+  color: var(--tan);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  font-weight: bold;
+}
+
 /* Overlays (intro + results) */
 .rq-overlay {
   position: absolute;

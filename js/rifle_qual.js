@@ -13,7 +13,7 @@ const RifleQual = {
     {
       id: 'prone',
       label: 'PRONE',
-      desc: '5 shots, prone at 500 meters. Use the 5 tick on the reticle. Mouse: hover to aim. Mobile: tap anywhere and drag to move the reticle — hold to fill the ring, release to fire.',
+      desc: '5 shots, prone at 500 yards. Use the 5 tick on the reticle. Mouse: hover to aim. Mobile: tap anywhere and drag to move the reticle — hold to fill the ring, release to fire.',
       holdMs: 3000,
       impulseStrength: 1.1,
       maxSway: 26,
@@ -26,7 +26,7 @@ const RifleQual = {
     {
       id: 'kneeling',
       label: 'KNEELING',
-      desc: '5 shots, kneeling at 300 meters. Less stable — the reticle drifts more. Use the 4 tick for holdover and time your shot as it passes over center.',
+      desc: '5 shots, kneeling at 300 yards. Less stable — the reticle drifts more. Use the 4 tick for holdover and time your shot as it passes over center.',
       holdMs: 2200,
       impulseStrength: 2.0,
       maxSway: 44,
@@ -39,7 +39,7 @@ const RifleQual = {
     {
       id: 'standing',
       label: 'STANDING',
-      desc: '5 shots, standing offhand at 100 meters. Hardest position. Use the top marker for holdover. Sway ramps up the longer you hold — fire quickly at the right moment.',
+      desc: '5 shots, standing offhand at 100 yards. Hardest position. Use the top marker for holdover. Sway ramps up the longer you hold — fire quickly at the right moment.',
       holdMs: 1800,
       impulseStrength: 3.2,
       maxSway: 60,
@@ -528,8 +528,8 @@ const RifleQual = {
 
   _getHoldLabel(pos) {
     if (!pos || !pos.distanceYds) return 'WITH MOUSE / FINGER';
-    if (pos.holdTick === 0) return `${pos.distanceYds} M — USE TOP MARKER`;
-    return `${pos.distanceYds} M — USE ${pos.holdTick || 5} TICK`;
+    if (pos.holdTick === 0) return `${pos.distanceYds} YD — USE TOP MARKER`;
+    return `${pos.distanceYds} YD — USE ${pos.holdTick || 5} TICK`;
   },
 
   _getBdcTickOffsets(useR) {
@@ -935,8 +935,9 @@ const RifleQual = {
     const pos    = RifleQual.POSITIONS[posIdx];
     const get    = (id) => document.getElementById(id);
     if (get('rq-pos-name'))   get('rq-pos-name').textContent   = pos.label;
-    if (get('rq-pos-num'))    get('rq-pos-num').textContent    = `POSITION ${posIdx + 1} OF ${RifleQual.POSITIONS.length} · ${pos.distanceYds || 500} M`;
+    if (get('rq-pos-num'))    get('rq-pos-num').textContent    = `POSITION ${posIdx + 1} OF ${RifleQual.POSITIONS.length}`;
     if (get('rq-shot-count')) get('rq-shot-count').textContent = `SHOT ${RifleQual._shotIdx + 1} OF ${RifleQual.SHOTS_PER_POS}`;
+    if (get('rq-dist-chip'))  get('rq-dist-chip').textContent  = `${pos.distanceYds || 500} YD`;
   },
 
   _setInstruction(text) {
