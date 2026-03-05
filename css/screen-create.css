@@ -125,6 +125,18 @@
   color: #fff;
 }
 
+.btn-tertiary {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 0.8em;
+}
+
+.btn-tertiary:not(:disabled):hover {
+  border-color: var(--border-hi);
+  color: var(--white);
+}
+
 .btn-ghost {
   background: transparent;
   color: var(--white);

@@ -79,7 +79,8 @@ const RifleQual = {
   ],
 
   // ── Runtime state ────────────────────────────
-  _onComplete: null,
+  _onComplete:   null,
+  _practiceMode: false,   // true = standalone practice; skips quiz, no stat effects
   _scores:     [],
   _posIdx:     0,
   _shotIdx:    0,
@@ -145,8 +146,9 @@ const RifleQual = {
 
   // ── Entry point ──────────────────────────────
   start(onComplete) {
-    RifleQual._onComplete = onComplete;
-    RifleQual._scores     = [];
+    RifleQual._onComplete   = onComplete;
+    RifleQual._practiceMode = false;
+    RifleQual._scores       = [];
     RifleQual._posIdx     = 0;
     RifleQual._shotIdx    = 0;
     RifleQual._phase      = 'idle';
@@ -166,6 +168,36 @@ const RifleQual = {
     RifleQual._setupCanvas();
     RifleQual._initScorecard();
     RifleQual._showPreRange();
+  },
+
+  /** Launch the range as a standalone practice session (no quiz, no stat effects). */
+  startPractice() {
+    RifleQual._practiceMode = true;
+    RifleQual._onComplete   = null;
+    RifleQual._scores       = [];
+    RifleQual._posIdx       = 0;
+    RifleQual._shotIdx      = 0;
+    RifleQual._phase        = 'idle';
+    RifleQual._isHolding    = false;
+    RifleQual._aimX         = 0;
+    RifleQual._aimY         = 0;
+    RifleQual._targetAimX   = 0;
+    RifleQual._targetAimY   = 0;
+    RifleQual._aimVelX      = 0;
+    RifleQual._aimVelY      = 0;
+    RifleQual._breathX      = 0;
+    RifleQual._breathY      = 0;
+    RifleQual._breathT      = 0;
+
+    RifleQual._rollWind();
+    UI.showScreen('screen-rifle-qual');
+    // rq-prerange has no hidden class by default — explicitly hide it so the
+    // pre-range brief/quiz overlay doesn't appear over the position intro
+    document.getElementById('rq-prerange').classList.add('hidden');
+    RifleQual._setupCanvas();
+    RifleQual._initScorecard();
+    // Skip the weapons knowledge quiz — go straight to the firing line
+    RifleQual._showPositionIntro(0);
   },
 
   // ── Wind ─────────────────────────────────────
@@ -1361,6 +1393,9 @@ const RifleQual = {
     const results = document.getElementById('rq-results');
     results.classList.remove('hidden');
 
+    document.querySelector('#rq-results .rq-results-label').textContent =
+      RifleQual._practiceMode ? 'RIFLE RANGE — PRACTICE' : 'ANNUAL RIFLE QUALIFICATION';
+
     const qualEl  = document.getElementById('rq-results-qual');
     qualEl.textContent = level.toUpperCase();
     qualEl.className   = 'rq-results-qual rq-qual-' + level.toLowerCase();
@@ -1372,17 +1407,23 @@ const RifleQual = {
         return `<span>${pos.label}: ${slice.reduce((a, b) => a + b, 0)}/25</span>`;
       }).join('');
 
-    const effectText = {
-      'Expert':       '+5 ProCon  |  +8 Morale  |  +6 Reputation',
-      'Sharpshooter': '+3 ProCon  |  +5 Morale  |  +3 Reputation',
-      'Marksman':     '+1 ProCon  |  +2 Morale',
-      'UNQ':          '-5 ProCon  |  -8 Morale  |  -6 Reputation  |  +10 DisciplineRisk',
-    };
-    document.getElementById('rq-results-effects').textContent = effectText[level] || '';
+    const effectsEl = document.getElementById('rq-results-effects');
+    if (RifleQual._practiceMode) {
+      effectsEl.textContent = 'Practice score — no career effects applied.';
+    } else {
+      const effectText = {
+        'Expert':       '+5 ProCon  |  +8 Morale  |  +6 Reputation',
+        'Sharpshooter': '+3 ProCon  |  +5 Morale  |  +3 Reputation',
+        'Marksman':     '+1 ProCon  |  +2 Morale',
+        'UNQ':          '-5 ProCon  |  -8 Morale  |  -6 Reputation  |  +10 DisciplineRisk',
+      };
+      effectsEl.textContent = effectText[level] || '';
+    }
 
     const old  = document.getElementById('rq-btn-done');
     const done = old.cloneNode(true);
     old.parentNode.replaceChild(done, old);
+    done.textContent = RifleQual._practiceMode ? 'BACK TO MAIN MENU' : 'RETURN TO UNIT';
     done.addEventListener('click', () => {
       results.classList.add('hidden');
       RifleQual._applyAndFinish(level, total);
@@ -1390,6 +1431,13 @@ const RifleQual = {
   },
 
   _applyAndFinish(level, total) {
+    if (RifleQual._practiceMode) {
+      // Practice mode — no stat effects, no save; return to the title screen
+      RifleQual._practiceMode = false;
+      UI.showScreen('screen-title');
+      return;
+    }
+
     const m = State.game.marine;
     m.rifleQualLevel = level;
     m.rifleQualScore = total;
