@@ -182,7 +182,7 @@ const BILLET_TIERS = {
   intelligence: {
     1: { label: 'Intelligence Analyst',       desc: 'E1–E3, processing and analyzing raw intelligence products' },
     2: { label: 'All-Source Analysis Team Leader', desc: 'E4–E5, leading a SIGINT or HUMINT collection team' },
-    3: { label: 'Intelligence Chief',         desc: 'E6–E7, running the S-2 shop, briefing the commanding officer' },
+    3: { label: 'Intelligence Chief',         desc: 'E6–E7, running the S-2 shop, briefing the Commanding Officer' },
     4: { label: 'G-2 Staff SNCO',             desc: 'E7–E8, MEF-level intelligence coordination and production' },
     5: { label: 'Senior Intel Advisor',       desc: 'E8–E9, advising the CG on theater intelligence assessments' },
   },
