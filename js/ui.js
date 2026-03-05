@@ -237,7 +237,9 @@ const UI = {
 
     // Assignment
     const asgn = ASSIGNMENTS_DATA.find(a => a.id === m.assignmentId) || ASSIGNMENTS_DATA[0];
-    document.getElementById('billet-label').textContent = m.isDeployed ? '⚔ DEPLOYED' : BILLET_TIERS[m.billetTier]?.label;
+    const _billetField = m.mosField || 'infantry';
+    const _billetTierRow = (BILLET_TIERS[_billetField] || BILLET_TIERS['infantry'])[m.billetTier];
+    document.getElementById('billet-label').textContent = m.isDeployed ? '⚔ DEPLOYED' : _billetTierRow?.label;
     document.getElementById('billet-location').textContent = m.isDeployed ? `Return in ${m.deploymentMonthsLeft}mo` : asgn.name;
 
     // Stat bars
