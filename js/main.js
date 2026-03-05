@@ -257,8 +257,8 @@ const Main = {
         Main.triggerRetirement();
         return;
       }
-      // Orders declined — ineligible to reenlist; EAS directly (retirement still awarded if 20yrs)
-      if (m.ordersDeclined) {
+      // Orders declined or EAS already decided — skip the modal; execute EAS directly
+      if (m.ordersDeclined || State.game.easDecided) {
         if (m.timeInService >= 240) {
           Main.triggerRetirement();
         } else {
@@ -295,9 +295,16 @@ const Main = {
             major: true,
           });
         } else {
-          // Player chose to EAS
-          Main.triggerEAS();
-          return;
+          // Player chose EAS — begin wind-down period instead of ending immediately.
+          // Out-processing events will fire each quarter until the contract expires.
+          State.game.easDecided = true;
+          const monthsLeft = m.contractEnd - m.timeInService;
+          State.game.log.unshift({
+            date: Engine._dateStr(),
+            text: `EAS decision made — beginning out-processing. ${monthsLeft} months remaining on contract.`,
+            major: true,
+          });
+          State.save();
         }
         Main._runAndRender();
       });
@@ -305,7 +312,8 @@ const Main = {
     }
 
     // 4. Check for PCS orders (24-month rotation, IPCOT-protected within 12mo of EAS)
-    if (PCS.isPCSDue(m)) {
+    // Suppressed during EAS wind-down — no orders will move a Marine already out-processing
+    if (!State.game.easDecided && PCS.isPCSDue(m)) {
       Main.showPCSDecision(() => Main._runAndRender());
       return;
     }

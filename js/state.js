@@ -33,6 +33,9 @@ const State = {
       orientationDismissed: false,
       // Rifle qualification — fires once per enlistment contract; reset on reenlist
       rifleQualCompleted: false,
+      // EAS wind-down — true after player chooses EAS in the reenlistment window;
+      // enables out-processing events and suppresses PCS/deployments until contract expires
+      easDecided: false,
     };
     State.save();
   },

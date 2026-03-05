@@ -150,6 +150,17 @@ const Events = {
     return choice.logEntry;
   },
 
+  /**
+   * Roll the next EAS wind-down event from the EVENTS_EAS pool.
+   * Events are returned in sequential order; already-seen IDs (via recentEventIds)
+   * are skipped so each fires once before cycling.
+   */
+  rollEASPrepEvent() {
+    const recentIds = (State.game && State.game.recentEventIds) || [];
+    const next = EVENTS_EAS.find(e => !recentIds.includes(e.id));
+    return next || null;
+  },
+
   /** Check if a deployment is ending this month */
   checkDeploymentEnd(marine) {
     if (!marine.isDeployed) return false;

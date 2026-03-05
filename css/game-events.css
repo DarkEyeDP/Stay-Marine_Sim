@@ -321,6 +321,10 @@
   border-left-color: var(--muted);
 }
 
+.cat-border-eas {
+  border-left-color: #b0a060;
+}
+
 .event-card-header {
   padding: 0.6rem 0.75rem;
   background: rgba(255, 255, 255, 0.03);
@@ -370,6 +374,11 @@
 .cat-unit {
   background: rgba(150, 150, 150, 0.15);
   color: var(--muted);
+}
+
+.cat-eas {
+  background: rgba(176, 160, 96, 0.2);
+  color: #c8b870;
 }
 
 .evt-resolved-badge {
