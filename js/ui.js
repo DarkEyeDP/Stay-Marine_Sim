@@ -902,7 +902,7 @@ const UI = {
 
     document.getElementById('end-icon').textContent = config.icon;
     document.getElementById('end-title').textContent = config.title;
-    document.getElementById('end-subtitle').textContent = `${m.rankAbbr} ${m.name} — ${config.subtitle}`;
+    document.getElementById('end-subtitle').textContent = `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${config.subtitle}`;
     document.getElementById('end-narrative').innerHTML = config.narrative(m, tis);
 
     const statsEl = document.getElementById('end-stats');
@@ -1326,54 +1326,54 @@ const END_STATES = {
     icon: '🎖',
     title: 'RETIREMENT — 20 YEARS OF SERVICE',
     subtitle: 'Honor. Commitment. Semper Fidelis.',
-    narrative: (m, tis) => `After ${Math.floor(tis / 12)} years of service, ${m.rankAbbr} ${m.name} hangs up the uniform. The retirement ceremony is attended by Marines who served alongside you across multiple deployments, duty stations, and challenges that civilians will never understand. Your monthly retirement check is a small measure of what you earned. The brotherhood is forever.`,
+    narrative: (m, tis) => `After ${Math.floor(tis / 12)} years of service, ${m.rankAbbr} ${m.name.split(',')[0].trim()} hangs up the uniform. The retirement ceremony is attended by Marines who served alongside you across multiple deployments, duty stations, and challenges that civilians will never understand. Your monthly retirement check is a small measure of what you earned. The brotherhood is forever.`,
   },
   high_achiever_retirement: {
     icon: '⭐',
     title: 'MASTER GUNNERY SERGEANT / SERGEANT MAJOR',
     subtitle: 'You reached the pinnacle of enlisted service.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} — after ${Math.floor(tis / 12)} years of service, you have shaped the careers of hundreds of Marines. Your last formation is a sea of dress blues. Young Lance Corporals watch you with the same awe you once had for your first GySgt. The Marine Corps is better because you stayed.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — after ${Math.floor(tis / 12)} years of service, you have shaped the careers of hundreds of Marines. Your last formation is a sea of dress blues. Young Lance Corporals watch you with the same awe you once had for your first GySgt. The Marine Corps is better because you stayed.`,
   },
   smooth_civilian: {
     icon: '🎓',
     title: 'SMOOTH TRANSITION',
     subtitle: 'Education, savings, and a clear path forward.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} separates after ${Math.floor(tis / 12)} years with ${m.educationCredits} college credits, ${Finance.fmt(m.savings)} in savings, and skills that translate directly to the civilian sector. The GI Bill funds the degree. The MOS experience lands the interviews. This is what a successful EAS looks like.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} separates after ${Math.floor(tis / 12)} years with ${m.educationCredits} college credits, ${Finance.fmt(m.savings)} in savings, and skills that translate directly to the civilian sector. The GI Bill funds the degree. The MOS experience lands the interviews. This is what a successful EAS looks like.`,
   },
   family_first: {
     icon: '🏠',
     title: 'FAMILY FIRST',
     subtitle: 'You chose what mattered most.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} gets out after ${Math.floor(tis / 12)} years. The decision wasn't easy — the Corps was family too. But the real family at home needed more. The VA provides healthcare. The civilian career isn't glamorous yet, but the work-life balance lets you be present. Some Marines find their purpose after the Corps. You're one of them.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} gets out after ${Math.floor(tis / 12)} years. The decision wasn't easy — the Corps was family too. But the real family at home needed more. The VA provides healthcare. The civilian career isn't glamorous yet, but the work-life balance lets you be present. Some Marines find their purpose after the Corps. You're one of them.`,
   },
   high_achiever_eas: {
     icon: '💼',
     title: 'HIGH-VALUE TRANSITION',
     subtitle: 'Your career record opens every door.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} — ${Math.floor(tis / 12)} years, multiple deployments, ${m.pmeCompleted.length} PME courses, billets that most Marines never see. Defense contractors, federal agencies, and private sector employers are competing for your resume. You leave the Corps on your terms.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${Math.floor(tis / 12)} years, multiple deployments, ${m.pmeCompleted.length} PME courses, billets that most Marines never see. Defense contractors, federal agencies, and private sector employers are competing for your resume. You leave the Corps on your terms.`,
   },
   bad_discharge: {
     icon: '⚠',
     title: 'INVOLUNTARY SEPARATION',
     subtitle: 'The Corps ended it before you did.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name}'s time in the Marine Corps ends not by choice. After ${Math.floor(tis / 12)} years, the combination of disciplinary issues and eroded trust with leadership resulted in separation proceedings. It doesn't have to define you — but it will take time and deliberate effort to move forward. Many Marines have rebuilt. You can too.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()}'s time in the Marine Corps ends not by choice. After ${Math.floor(tis / 12)} years, the combination of disciplinary issues and eroded trust with leadership resulted in separation proceedings. It doesn't have to define you — but it will take time and deliberate effort to move forward. Many Marines have rebuilt. You can too.`,
   },
   medical_discharge: {
     icon: '🏥',
     title: 'MEDICAL SEPARATION',
     subtitle: 'The body gave everything it had.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} is medically separated after ${Math.floor(tis / 12)} years. The injuries and stress accumulated over a career of service finally made continuation impossible. The VA disability rating provides some financial support. The transition is difficult — but your service was real, and the Marine Corps is grateful.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} is medically separated after ${Math.floor(tis / 12)} years. The injuries and stress accumulated over a career of service finally made continuation impossible. The VA disability rating provides some financial support. The transition is difficult — but your service was real, and the Marine Corps is grateful.`,
   },
   basic_eas: {
     icon: '🪖',
     title: 'END OF ACTIVE SERVICE',
     subtitle: 'You served. That matters.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} completes their service commitment and separates from active duty after ${Math.floor(tis / 12)} years. The DD-214 is signed. The uniform goes in the closet. Whatever comes next — college, work, family — you carry the title of Marine with you. Once a Marine, always a Marine.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} completes their service commitment and separates from active duty after ${Math.floor(tis / 12)} years. The DD-214 is signed. The uniform goes in the closet. Whatever comes next — college, work, family — you carry the title of Marine with you. Once a Marine, always a Marine.`,
   },
   brig_discharge: {
     icon: '⛓',
     title: 'COURT-MARTIAL — DISHONORABLE DISCHARGE',
     subtitle: 'Career over. This one was preventable.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name} — ${Math.floor(tis / 12)} years of service ends in a courtroom. The urinalysis came back positive. The legal process moves fast when the evidence is clear. Court-martial proceedings, forfeiture of pay, confinement, and a dishonorable discharge. That characterization follows every background check, security clearance inquiry, and VA claim for decades to come. The Corps gave you everything it had. This is the hardest kind of ending — because it didn't have to go this way.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${Math.floor(tis / 12)} years of service ends in a courtroom. The urinalysis came back positive. The legal process moves fast when the evidence is clear. Court-martial proceedings, forfeiture of pay, confinement, and a dishonorable discharge. That characterization follows every background check, security clearance inquiry, and VA claim for decades to come. The Corps gave you everything it had. This is the hardest kind of ending — because it didn't have to go this way.`,
   },
 };
