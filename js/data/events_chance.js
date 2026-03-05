@@ -50,7 +50,7 @@ const EVENTS_CHANCE = [
     weight: 7,
     trigger: {},
     isChance: true,
-    narrative: 'Finance finally corrected a pay error from three months ago. You\'d flagged it twice and were starting to think it would just disappear. The back pay hit your account this morning.',
+    narrative: 'Disbursing finally corrected a pay error from three months ago. You\'d flagged it twice and were starting to think it would just disappear. The back pay hit your account this morning.',
     chanceImpact: '+$900 Savings',
     chanceType: 'positive',
     choices: [{
@@ -324,7 +324,7 @@ const EVENTS_CHANCE = [
     weight: 7,
     trigger: {},
     isChance: true,
-    narrative: 'Finance discovered they\'ve been overpaying you for the past two months — a clerical error on their end. That doesn\'t matter. The money is owed back. They set up automatic deductions from your next three paychecks. This is a known Marine Corps experience.',
+    narrative: 'Disbursing discovered they\'ve been overpaying you for the past two months — a clerical error on their end. That doesn\'t matter. The money is owed back. They set up automatic deductions from your next three paychecks. This is a known Marine Corps experience.',
     chanceImpact: '-$700 Savings',
     chanceType: 'negative',
     choices: [{

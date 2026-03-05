@@ -84,7 +84,7 @@ const EVENTS_RETIREMENT = [
     title: 'Checking Out of the Unit',
     weight: 28,
     trigger: { retirementSubmitted: true, notDeployed: true },
-    narrative: 'You\'re officially on the checkout sheet — S-1, S-4, armory, dental, JAG, finance, housing, medical records. Every office wants your signature and your gear. It\'s bureaucratic chaos, but it\'s the final lap. How you handle this last stretch says a lot about who you are as a Marine.',
+    narrative: 'You\'re officially on the checkout sheet — S-1, S-4, armory, dental, base library, disbursing, housing, medical records. Every office wants your signature and your gear. It\'s bureaucratic chaos, but it\'s the final lap. How you handle this last stretch says a lot about who you are as a Marine.',
     choices: [
       {
         text: 'Be meticulous. Every chit signed, every record squared away before you leave.',
