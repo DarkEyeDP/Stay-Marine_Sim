@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     RifleQual.startPractice();
   });
 
+  document.getElementById('btn-create-back').addEventListener('click', () => {
+    UI.showScreen('screen-title');
+  });
+
   // ── Character Creation ────────────────────────
   document.getElementById('input-name').addEventListener('input', () => {
     UI._checkCreateReady();
