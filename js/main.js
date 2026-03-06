@@ -160,29 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.showScreen('screen-create');
   });
 
-  // ── Start Over (mid-game) ─────────────────────
+  // Main Menu (mid-game)
   document.getElementById('btn-start-over').addEventListener('click', () => {
-    UI.showDecisionModal({
-      icon: '↩',
-      title: 'Start a New Career?',
-      body: '<p>This will end your current career and delete your save file. There\'s no going back, Marine.</p>',
-      choices: [
-        {
-          title: 'Yes — start over',
-          desc: 'End this career and return to character creation.',
-          onSelect: () => {
-            State.clearSave();
-            UI.renderCreateScreen();
-            UI.showScreen('screen-create');
-          },
-        },
-        {
-          title: 'Cancel — stay the course',
-          desc: 'Return to the current career.',
-          onSelect: () => { },
-        },
-      ],
-    });
+    State.save();
+    continueBtn.disabled = false;
+    document.getElementById('save-hint').textContent = 'Career saved. Continue Career to resume where you left off.';
+    UI.showScreen('screen-title');
   });
 
   // ── Init title screen ─────────────────────────
@@ -717,3 +700,4 @@ const Main = {
   },
 
 };
+
