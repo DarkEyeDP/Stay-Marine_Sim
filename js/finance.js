@@ -166,7 +166,78 @@ const Finance = {
     return { gross, expenses, net, savings: marine.savings, debt: marine.debt, checking: marine.checking };
   },
 
-  /** Format a dollar amount for display â€” always full dollar figures */
+  /** Disposable cash estimate used for decision pricing previews. */
+  monthlyDisposable(marine) {
+    return Finance.monthlyGross(marine) - Finance.monthlyExpenses(marine);
+  },
+
+  /**
+   * Estimate one-time cost for a decision.
+   * spec:
+   *  - number: fixed dollar amount
+   *  - { amount, pctDisposable, min, max }
+   */
+  previewDecisionCost(marine, spec) {
+    if (!spec) return 0;
+    if (typeof spec === 'number') return Math.max(0, Math.round(spec));
+
+    let total = 0;
+    if (typeof spec.amount === 'number') total += spec.amount;
+    if (typeof spec.pctDisposable === 'number') {
+      const gross = Finance.monthlyGross(marine);
+      const disposable = Finance.monthlyDisposable(marine);
+      // If disposable is low/negative, still assign a realistic spend floor.
+      const baseline = Math.max(disposable, gross * 0.12, 220);
+      total += baseline * spec.pctDisposable;
+    }
+
+    if (typeof spec.min === 'number') total = Math.max(total, spec.min);
+    if (typeof spec.max === 'number') total = Math.min(total, spec.max);
+    return Math.max(0, Math.round(total));
+  },
+
+  /**
+   * Charge a decision cost with payment order:
+   * checking -> savings -> debt.
+   */
+  applyDecisionCost(marine, spec) {
+    const amount = Finance.previewDecisionCost(marine, spec);
+    if (amount <= 0) return null;
+
+    let remaining = amount;
+    const checkingStart = marine.checking || 0;
+    const savingsStart = marine.savings || 0;
+
+    const fromChecking = Math.min(checkingStart, remaining);
+    marine.checking = checkingStart - fromChecking;
+    remaining -= fromChecking;
+
+    const fromSavings = Math.min(savingsStart, remaining);
+    marine.savings = savingsStart - fromSavings;
+    remaining -= fromSavings;
+
+    const debtAdded = Math.max(0, remaining);
+    if (debtAdded > 0) marine.debt += debtAdded;
+
+    if (fromSavings > 0) {
+      marine.stress = clamp(marine.stress + 2, 0, 100);
+      marine.morale = clamp(marine.morale - 1, 0, 100);
+    }
+    if (debtAdded > 0) {
+      marine.stress = clamp(marine.stress + 5, 0, 100);
+      marine.morale = clamp(marine.morale - 3, 0, 100);
+    }
+
+    Character.clampAll(marine);
+    return {
+      amount,
+      fromChecking,
+      fromSavings,
+      debtAdded,
+      summary: `Decision cost ${Finance.fmt(amount)} (Checking ${Finance.fmt(fromChecking)}, Savings ${Finance.fmt(fromSavings)}, Debt +${Finance.fmt(debtAdded)})`,
+    };
+  },
+  /** Format a dollar amount for display — always full dollar figures */
   fmt(amount) {
     const n = Math.round(amount);
     if (n < 0) return `-$${(-n).toLocaleString()}`;
@@ -215,3 +286,5 @@ const Finance = {
     };
   },
 };
+
+

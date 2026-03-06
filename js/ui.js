@@ -427,7 +427,9 @@ const UI = {
         evt.choices.forEach((choice, idx) => {
           const btn = document.createElement('button');
           btn.className = 'event-choice-btn';
-          btn.innerHTML = `${choice.text}<span class="choice-hint">${choice.hint || ''}</span>`;
+          const decisionCost = Finance.previewDecisionCost(State.game.marine, Events.decisionCostSpec(evt, choice, idx));
+          const costHtml = decisionCost > 0 ? `<span class="choice-cost-inline">Cost: ${Finance.fmt(decisionCost)}</span>` : '';
+          btn.innerHTML = `${choice.text}<span class="choice-hint">${choice.hint || ''}</span>${costHtml}`;
           btn.addEventListener('click', () => {
             UI._selectEventChoice(evt, idx, card, choicesEl);
           });
@@ -604,10 +606,12 @@ const UI = {
           : '';
         const label = choice.dynamicLabel ? choice.dynamicLabel(m) : choice.label;
         const hint  = choice.dynamicHint  ? choice.dynamicHint(m)  : choice.hint;
+        const moneyCost = Finance.previewDecisionCost(m, Engine._focusDecisionCostSpec(choice));
+        const moneyHint = moneyCost > 0 ? ` Cost: ${Finance.fmt(moneyCost)}` : '';
         btn.innerHTML = `
           <div class="choice-main">
             <span class="choice-label">${label}</span>
-            <span class="choice-effects">${hint}</span>
+            <span class="choice-effects">${hint || ''}${moneyHint}</span>
           </div>
           <div class="choice-right">
             ${decrementHtml}
@@ -1269,6 +1273,7 @@ const UI = {
     const disposable = gross - bills;
     const goal = m.savingsGoal || 0;
     const lifestyle = Math.max(0, disposable - goal);
+    const checkingBal = Math.max(0, m.checking || 0);
 
     el.innerHTML = `
       <div class="sp-row">
@@ -1287,7 +1292,17 @@ const UI = {
         <span class="sp-label">Discretionary</span>
         <span class="sp-val">${Finance.fmt(lifestyle)}/mo</span>
       </div>
-      <div class="sp-note">${goal === 0 ? 'Saving nothing \u2014 spending everything.' : lifestyle > 300 ? 'You\'re living well and saving.' : 'Tight budget. Discipline.'}</div>
+      <div class="sp-row sp-transfer-row">
+        <span class="sp-label">Move to Savings</span>
+        <div class="sp-transfer-controls">
+          <button class="sp-transfer-btn" data-amt="100">$100</button>
+          <button class="sp-transfer-btn" data-amt="250">$250</button>
+          <button class="sp-transfer-btn" data-amt="500">$500</button>
+          <button class="sp-transfer-btn" data-amt="max">MAX</button>
+        </div>
+      </div>
+      <div class="sp-transfer-status">Checking available: ${Finance.fmt(checkingBal)}</div>
+      <div class="sp-note">${goal === 0 ? 'Saving nothing � spending everything.' : lifestyle > 300 ? 'You\'re living well and saving.' : 'Tight budget. Discipline.'}</div>
     `;
 
     document.getElementById('sp-minus').addEventListener('click', () => {
@@ -1301,10 +1316,35 @@ const UI = {
       State.save();
       UI.renderSavingsPlanner(m, gross, bills);
     });
+
+    const doTransfer = (amountRaw) => {
+      const available = Math.max(0, m.checking || 0);
+      const desired = amountRaw === 'max' ? available : Number(amountRaw);
+      const transfer = Math.max(0, Math.min(available, desired));
+      if (transfer <= 0) return;
+
+      m.checking -= transfer;
+      m.savings += transfer;
+      State.save();
+
+      const checkingEl = document.getElementById('fin-checking');
+      const savingsEl = document.getElementById('fin-savings');
+      if (checkingEl) checkingEl.textContent = Finance.fmt(m.checking || 0);
+      if (savingsEl) savingsEl.textContent = Finance.fmt(m.savings || 0);
+
+      // Rebuild focus list only when no picks are active, so we do not wipe selections.
+      if ((UI._selectedFocuses?.size || 0) === 0) {
+        UI.renderMonthlyChoices();
+      }
+      UI.renderSavingsPlanner(m, Finance.monthlyGross(m), Finance.monthlyExpenses(m));
+    };
+
+    el.querySelectorAll('.sp-transfer-btn').forEach(btn => {
+      btn.addEventListener('click', () => doTransfer(btn.dataset.amt));
+    });
   },
 
-  // ── Helpers ───────────────────────────────────
-
+  // -- Helpers -----------------------------------
   _statLabel(key) {
     const labels = {
       physicalFitness: 'Physical',
@@ -1377,3 +1417,8 @@ const END_STATES = {
     narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${Math.floor(tis / 12)} years of service ends in a courtroom. The urinalysis came back positive. The legal process moves fast when the evidence is clear. Court-martial proceedings, forfeiture of pay, confinement, and a dishonorable discharge. That characterization follows every background check, security clearance inquiry, and VA claim for decades to come. The Corps gave you everything it had. This is the hardest kind of ending — because it didn't have to go this way.`,
   },
 };
+
+
+
+
+

@@ -429,6 +429,15 @@
   margin-top: 0.2rem;
 }
 
+.choice-cost-inline {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.66rem;
+  color: var(--yellow);
+  letter-spacing: 0.02em;
+}
+
+
 /* ── Chance Events ─────────────────────────── */
 .chance-event {
   border-left-width: 4px !important;
@@ -889,3 +898,4 @@
   85%       { color: var(--yellow); }
   90%, 100% { color: var(--muted); }
 }
+

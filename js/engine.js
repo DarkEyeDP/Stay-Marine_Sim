@@ -157,6 +157,18 @@ const Engine = {
     const stressPenalty = marine.stress > 85 ? 2 : marine.stress > 70 ? 1 : 0;
     return Math.max(2, 5 + rankBonus - stressPenalty);
   },
+  /** Default money cost model for focus choices unless overridden. */
+  _focusDecisionCostSpec(choice) {
+    if (!choice) return null;
+    if (choice.decisionCost === false) return null;
+    if (choice.decisionCost) return choice.decisionCost;
+
+    if (choice.id === 'focus_paydebt' || choice.id === 'focus_savings') return null;
+
+    if (choice.cost >= 3) return { pctDisposable: 0.35, min: 180, max: 900 };
+    if (choice.cost >= 2) return { pctDisposable: 0.22, min: 95, max: 600 };
+    return { pctDisposable: 0.12, min: 45, max: 320 };
+  },
 
   /**
    * Run one quarter (3 months) of simulation.
@@ -274,6 +286,8 @@ const Engine = {
       return;   // skip generic applyEffects and generic log entry
     }
 
+    const decisionCost = Engine._focusDecisionCostSpec(choice);
+    const costReport = Finance.applyDecisionCost(m, decisionCost);
     Character.applyEffects(m, choice.effects || {});
 
     // PME focus: grant the next distance-learning course
@@ -285,7 +299,8 @@ const Engine = {
       }
     }
 
-    State.game.log.unshift({ date: Engine._dateStr(), text: `Focus: ${choice.label}`, major: false });
+    const focusLog = 'Focus: ' + choice.label + (costReport ? ' | ' + costReport.summary : '');
+    State.game.log.unshift({ date: Engine._dateStr(), text: focusLog, major: false });
     State.save();
   },
 
@@ -336,3 +351,5 @@ const Engine = {
     return `${months[g.month - 1]} ${g.year}`;
   },
 };
+
+

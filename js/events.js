@@ -60,11 +60,47 @@ const Events = {
     if (t.retirementSubmitted !== undefined && !!marine.retirementSubmitted !== t.retirementSubmitted) return false;
     return true;
   },
+  /** Determine cost spec for a specific event choice. */
+  decisionCostSpec(evt, choice, choiceIndex) {
+    if (!choice) return null;
+    if (evt.isChance) return null;
+    if (choice.decisionCost === false) return null;
+    if (choice.decisionCost) return choice.decisionCost;
 
+    // Do not auto-charge options that already directly move money.
+    const fx = choice.effects || {};
+    const hasMoneyEffect =
+      Object.prototype.hasOwnProperty.call(fx, 'savings') ||
+      Object.prototype.hasOwnProperty.call(fx, 'debt') ||
+      Object.prototype.hasOwnProperty.call(fx, 'checking');
+    if (hasMoneyEffect) return null;
+
+    const baseByCategory = {
+      personal: 0.18,
+      finance: 0.15,
+      career: 0.12,
+      unit: 0.10,
+      discipline: 0.08,
+      deployment: 0.10,
+      eas: 0.09,
+    };
+    const base = baseByCategory[evt.category];
+    if (!base) return null;
+
+    const idxMult = [1.0, 0.72, 0.58, 1.2][choiceIndex] || 0.7;
+    return {
+      pctDisposable: base * idxMult,
+      min: 40,
+      max: 900,
+    };
+  },
   /** Resolve a player's choice for an event and return log entry */
   resolveChoice(marine, evt, choiceIndex) {
     const choice = evt.choices[choiceIndex];
     if (!choice) return;
+
+    const decisionCost = Events.decisionCostSpec(evt, choice, choiceIndex);
+    const costReport = Finance.applyDecisionCost(marine, decisionCost);
 
     // Apply stat effects
     Character.applyEffects(marine, choice.effects || {});
@@ -147,7 +183,9 @@ const Events = {
     }
 
     Character.clampAll(marine);
-    return choice.logEntry;
+    const baseLog = choice.logEntry || '';
+    if (!costReport) return baseLog || null;
+    return `${baseLog ? `${baseLog} | ` : ''}${costReport.summary}`;
   },
 
   /**
@@ -177,3 +215,6 @@ const Events = {
     return false;
   },
 };
+
+
+

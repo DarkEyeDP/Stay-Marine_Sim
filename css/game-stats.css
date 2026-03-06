@@ -236,6 +236,40 @@
   background: var(--green-dim);
 }
 
+
+.sp-transfer-row {
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sp-transfer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.sp-transfer-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hi);
+  color: var(--tan);
+  border-radius: var(--radius);
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  line-height: 1.35;
+}
+
+.sp-transfer-btn:hover {
+  background: rgba(200, 169, 110, 0.15);
+  border-color: var(--tan);
+}
+
+.sp-transfer-status {
+  font-size: 0.63rem;
+  color: var(--muted);
+  text-align: right;
+  margin-top: -2px;
+}
 .sp-note {
   font-size: 0.65rem;
   color: var(--muted);
@@ -277,3 +311,4 @@
   background: var(--tan);
   transition: width 0.4s ease;
 }
+
