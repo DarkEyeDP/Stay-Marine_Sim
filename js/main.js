@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     RifleQual.startPractice();
   });
 
+  document.getElementById('btn-mcmap-duel').addEventListener('click', () => {
+    MCMAPDuel.startPractice();
+  });
+
   document.getElementById('btn-create-back').addEventListener('click', () => {
     UI.showScreen('screen-title');
   });
@@ -717,3 +721,4 @@ const Main = {
   },
 
 };
+

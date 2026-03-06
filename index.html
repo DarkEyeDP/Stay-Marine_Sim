@@ -46,6 +46,7 @@
         <button id="btn-new-game" class="btn btn-primary">NEW GAME</button>
         <button id="btn-continue" class="btn btn-secondary" disabled>CONTINUE CAREER</button>
         <button id="btn-rifle-practice" class="btn btn-tertiary">RIFLE RANGE</button>
+        <button id="btn-mcmap-duel" class="btn btn-tertiary">MCMAP DUEL</button>
       </div>
       <p class="title-hint" id="save-hint"></p>
       <p class="title-copyright">&copy; 2026 Stay Marine Simulator. All rights reserved.</p>
@@ -215,6 +216,69 @@
   </div>
 
   <!-- ════════════════════════════ MAIN GAME ════════════════════════════ -->
+
+  <!-- MCMAP DUEL MINI-GAME -->
+  <div id="screen-mcmap" class="screen">
+    <div class="mcmap-shell">
+      <div class="mcmap-topbar">
+        <button id="btn-mcmap-back" class="btn btn-tertiary">&larr; BACK TO MAIN MENU</button>
+        <div class="mcmap-title-wrap">
+          <h2 class="mcmap-title">MCMAP DUEL PIT</h2>
+          <p class="mcmap-sub">Street-fighter style sparring drill. Use on-screen controls or keyboard.</p>
+        </div>
+      </div>
+
+      <div class="mcmap-hud">
+        <div class="mcmap-health-card mcmap-health-left">
+          <div class="mcmap-name">YOU</div>
+          <div class="mcmap-health-track"><div id="mcmap-player-health" class="mcmap-health-fill"></div></div>
+        </div>
+        <div class="mcmap-center-status">
+          <div id="mcmap-round">ROUND 1</div>
+          <div id="mcmap-announcer" class="mcmap-announcer">READY</div>
+        </div>
+        <div class="mcmap-health-card mcmap-health-right">
+          <div class="mcmap-name">AI MARINE</div>
+          <div class="mcmap-health-track"><div id="mcmap-ai-health" class="mcmap-health-fill"></div></div>
+        </div>
+      </div>
+
+      <div id="mcmap-arena" class="mcmap-arena">
+        <div class="mcmap-bg"></div>
+        <div id="mcmap-player" class="mcmap-fighter mcmap-player">
+          <div class="mcmap-label">PLAYER</div>
+          <div class="mcmap-body"></div>
+        </div>
+        <div id="mcmap-ai" class="mcmap-fighter mcmap-ai">
+          <div class="mcmap-label">CPU</div>
+          <div class="mcmap-body"></div>
+        </div>
+      </div>
+
+      <div class="mcmap-move-feed">
+        <div id="mcmap-player-move" class="mcmap-move-chip">-</div>
+        <div id="mcmap-ai-move" class="mcmap-move-chip">-</div>
+      </div>
+
+      <div class="mcmap-controls">
+        <div class="mcmap-dpad">
+          <button class="mcmap-btn mcmap-dir" data-dir="up">UP</button>
+          <div class="mcmap-mid-row">
+            <button class="mcmap-btn mcmap-dir" data-dir="left">LEFT</button>
+            <button class="mcmap-btn mcmap-dir" data-dir="down">DOWN</button>
+            <button class="mcmap-btn mcmap-dir" data-dir="right">RIGHT</button>
+          </div>
+        </div>
+        <div class="mcmap-actions">
+          <button class="mcmap-btn mcmap-action" data-attack="light">LIGHT</button>
+          <button class="mcmap-btn mcmap-action" data-attack="heavy">HEAVY</button>
+          <button class="mcmap-btn mcmap-action" data-attack="grapple">GRAPPLE</button>
+        </div>
+      </div>
+
+      <p class="mcmap-instructions">Combos: Forward+Light (Front Kick), Down+Heavy (Leg Sweep), Forward+Grapple (Hip Throw). Keyboard: arrows + J/K/L.</p>
+    </div>
+  </div>
   <div id="screen-game" class="screen">
 
     <!-- Mobile tab strip -->
@@ -528,8 +592,11 @@
   <script src="js/engine.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/rifle_qual.js"></script>
+  <script src="js/mcmap_duel.js"></script>
   <script src="js/main.js"></script>
 
 </body>
 
 </html>
+
+

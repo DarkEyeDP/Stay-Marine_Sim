@@ -1,0 +1,281 @@
+/* MCMAP Duel Mini-Game */
+
+#screen-mcmap {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(192, 165, 116, 0.18), transparent 40%),
+    radial-gradient(circle at 80% 12%, rgba(88, 124, 68, 0.22), transparent 42%),
+    linear-gradient(180deg, #0a0d08 0%, #11170f 55%, #0a0d08 100%);
+}
+
+.mcmap-shell {
+  width: min(1100px, 100% - 24px);
+  margin: 16px auto;
+  padding: 14px;
+  border: 1px solid var(--border-hi);
+  background: linear-gradient(180deg, rgba(19, 24, 16, 0.96), rgba(14, 19, 12, 0.96));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.mcmap-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.mcmap-title {
+  color: var(--tan);
+  letter-spacing: 0.08em;
+  font-size: 20px;
+}
+
+.mcmap-sub {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mcmap-hud {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.mcmap-health-card {
+  border: 1px solid var(--border);
+  padding: 8px;
+  background: rgba(13, 16, 11, 0.92);
+}
+
+.mcmap-health-right .mcmap-name {
+  text-align: right;
+}
+
+.mcmap-name {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.mcmap-health-track {
+  height: 16px;
+  background: #1a2115;
+  border: 1px solid #32412a;
+  overflow: hidden;
+}
+
+.mcmap-health-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #88c269 0%, #4caf50 65%, #2f802f 100%);
+  transition: width 0.15s linear;
+}
+
+.mcmap-center-status {
+  min-width: 180px;
+  text-align: center;
+}
+
+#mcmap-round {
+  color: var(--tan);
+  font-size: 13px;
+  letter-spacing: 0.07em;
+}
+
+.mcmap-announcer {
+  margin-top: 4px;
+  font-size: 21px;
+  color: #ffdf8c;
+  text-shadow: 0 0 10px rgba(255, 202, 80, 0.45);
+}
+
+.mcmap-arena {
+  position: relative;
+  height: 340px;
+  margin-top: 12px;
+  border: 1px solid #3f5033;
+  overflow: hidden;
+  background: linear-gradient(180deg, #2a3b30 0%, #1b2319 45%, #0d100c 100%);
+}
+
+.mcmap-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(205, 181, 128, 0.08) 0 10px, transparent 10px 20px),
+    linear-gradient(180deg, transparent 0 66%, rgba(0, 0, 0, 0.42) 67% 100%);
+}
+
+.mcmap-arena::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 74px;
+  border-top: 2px dashed rgba(232, 232, 224, 0.2);
+}
+
+.mcmap-fighter {
+  position: absolute;
+  bottom: 76px;
+  width: 62px;
+  height: 134px;
+  transform: translateX(-50%);
+  transition: filter 0.08s linear;
+}
+
+.mcmap-fighter.hit {
+  filter: brightness(1.35) saturate(1.2);
+}
+
+.mcmap-fighter.blocking {
+  filter: saturate(0.78);
+}
+
+.mcmap-label {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #d0dcbe;
+  letter-spacing: 0.06em;
+}
+
+.mcmap-body {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #59684d 0%, #435039 48%, #2f3728 100%);
+  border: 2px solid #8d9f7e;
+  border-radius: 12px 12px 9px 9px;
+}
+
+.mcmap-body::before,
+.mcmap-body::after {
+  content: '';
+  position: absolute;
+  background: #a3b592;
+}
+
+.mcmap-body::before {
+  width: 32px;
+  height: 14px;
+  left: 14px;
+  top: -8px;
+  border-radius: 10px;
+  border: 2px solid #73816a;
+}
+
+.mcmap-body::after {
+  width: 40px;
+  height: 58px;
+  left: 9px;
+  top: 28px;
+  clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
+  background: linear-gradient(180deg, #4a5840, #2b3325);
+}
+
+.mcmap-fighter.attacking .mcmap-body {
+  box-shadow: 0 0 14px rgba(255, 185, 90, 0.45);
+}
+
+.mcmap-player {
+  left: 30%;
+}
+
+.mcmap-ai {
+  left: 70%;
+}
+
+.mcmap-ai .mcmap-body {
+  background: linear-gradient(180deg, #6b5d49 0%, #4f4334 52%, #2b241d 100%);
+  border-color: #c3a985;
+}
+
+.mcmap-move-feed {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.mcmap-move-chip {
+  border: 1px solid var(--border);
+  background: #131910;
+  color: #d0dcbe;
+  padding: 6px 8px;
+  font-size: 12px;
+  min-height: 32px;
+}
+
+.mcmap-controls {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mcmap-dpad,
+.mcmap-actions {
+  border: 1px solid var(--border);
+  background: rgba(16, 22, 13, 0.92);
+  padding: 10px;
+}
+
+.mcmap-mid-row,
+.mcmap-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.mcmap-mid-row {
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 8px;
+}
+
+.mcmap-actions {
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+}
+
+.mcmap-btn {
+  border: 1px solid #536847;
+  color: #f2f3ec;
+  background: linear-gradient(180deg, #36482d 0%, #2a3823 100%);
+  padding: 10px 8px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  user-select: none;
+  touch-action: none;
+}
+
+.mcmap-btn:active,
+.mcmap-btn.active {
+  background: linear-gradient(180deg, #607c4d 0%, #425537 100%);
+  transform: translateY(1px);
+}
+
+.mcmap-instructions {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #9db08f;
+}
+
+@media (max-width: 900px) {
+  .mcmap-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .mcmap-hud {
+    grid-template-columns: 1fr;
+  }
+
+  .mcmap-center-status {
+    order: -1;
+  }
+
+  .mcmap-arena {
+    height: 300px;
+  }
+}
