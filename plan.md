@@ -1,6 +1,6 @@
 # Reenlistment Game — Work Plan
 
-> **Last updated:** Session 7 (Feb 2026)
+> **Last updated:** Session 8 (Mar 2026)
 > **File:** `plan.md` — update this at the end of every session.
 
 ---
@@ -79,6 +79,16 @@ Filling out gameplay: PCS moves, PME tracking, assignment screen, awards visibil
 - [x] Deployment destinations — `deployLocations` arrays on both deployment events (4 options each); `rollEvent()` picks a random one and attaches `chosenLocation`; location banner rendered in event card body
 - [x] Deployment tax-free pay display — `Finance.deploymentBreakdown(marine, months, isCombat)`; event cards show full pay table with TAX-FREE badges, monthly total, tax savings, and total deployment earnings
 - [x] First-turn orientation panel — `#orientation-panel` in events panel; explains left/stats panel sections, bandwidth system, advance flow, and key career warnings; dismiss button sets `State.game.orientationDismissed`; mobile version shows STATS/EVENTS tab tip and responsive section labels
+
+**Completed in Stage 2 (Session 8):**
+- [x] End-state name format — changed from "Rank Last, First" to "Rank Last" in all END_STATES narratives and subtitle (ui.js: `m.name.split(',')[0].trim()`)
+- [x] EAS wind-down system — when player chooses EAS at reenlistment window, game continues for remaining contract months instead of ending immediately; `State.game.easDecided` flag; `EVENTS_EAS` pool (6 sequential out-processing events: TAP/TRS class, final physical, gear turn-in, clearing barracks, coordinating the move, DD-214 review); `Events.rollEASPrepEvent()` cycles pool in order; engine.js injects one EAS prep event per quarter when `easDecided`; PCS suppressed when `easDecided`; when TIS >= contractEnd with `easDecided`, goes straight to `triggerEAS()` without modal
+- [x] EAS events styled — `isChance: true`, `chanceType: 'neutral'`, single ACKNOWLEDGED button; `.cat-eas` chip (gold/khaki `#c8b870`) and `.cat-border-eas` added to `game-events.css`
+- [x] Rifle range practice mode — `RifleQual.startPractice()` skips quiz, sets `_practiceMode = true`, no stat effects, no save; results show "RIFLE RANGE — PRACTICE" label and "Practice score — no career effects applied."; done button says "BACK TO MAIN MENU" and routes to `screen-title`; RIFLE RANGE button (`btn-tertiary`) on title screen; `.btn-tertiary` CSS added
+- [x] Rifle range practice bug fix — `rq-prerange` overlay explicitly hidden in `startPractice()` before `_showPositionIntro(0)` to prevent pre-range brief appearing over position intro
+- [x] Character creation back button — "← BACK TO MAIN MENU" button added to create footer; "SHIP OUT TO MCRD →" arrows added; footer changed to `flex-direction: row` with gap
+- [x] Distance chip on rifle range header — static "500 · 300 · 100 M" replaced with dynamic `#rq-dist-chip` that updates per position in `_updateTopbar()`; `.rq-dist-chip` CSS (rounded pill, tan, `border-hi`); all distances corrected from meters to yards ("M" → "YD") in descriptions, instruction bar text, chip, and HTML default
+- [x] Rifle qual badge distance — `rq-pos-num` previously showed "POSITION X OF 3 · 500 M"; now just shows position; distance shown in chip only
 
 **Remaining in Stage 2:**
 - [ ] PME tracker — visible progress toward each school requirement in UI
@@ -169,6 +179,12 @@ Deep content for replayability and long-term interest.
 - [x] Deployment destinations — `deployLocations` arrays, random selection in `rollEvent()`, location banner in card
 - [x] Deployment tax-free pay table — `Finance.deploymentBreakdown()`, TAX-FREE badges, totals in event card
 - [x] First-turn orientation panel — explains all mechanics, bandwidth, tabs; dismissable; mobile-responsive labels
+- [x] End-state name format — "Rank Last" only (no first name)
+- [x] EAS wind-down system — `easDecided` flag, `EVENTS_EAS` pool, `rollEASPrepEvent()`, engine injection, PCS suppression
+- [x] EAS events styled — `isChance: true`, `.cat-eas` chip, ACKNOWLEDGED button
+- [x] Rifle range practice mode — `startPractice()`, `_practiceMode` flag, title screen RIFLE RANGE button, `.btn-tertiary`
+- [x] Character creation back button — inline with SHIP OUT, arrows on both buttons
+- [x] Distance chip on rifle range — dynamic `#rq-dist-chip`, yards throughout
 - [ ] PME progress visible in UI
 - [ ] Awards list in stats panel
 - [ ] Lateral move event chain
@@ -196,10 +212,10 @@ Deep content for replayability and long-term interest.
 | Stage | Items Complete | Items Total | % |
 |-------|---------------|-------------|---|
 | Stage 1 — Foundation | 30 | 30 | **100%** |
-| Stage 2 — Content Depth | 26 | 30 | **~87%** |
+| Stage 2 — Content Depth | 31 | 35 | **~89%** |
 | Stage 3 — Polish | 0 | 6 | **0%** |
 | Stage 4 — Advanced | 0 | 8 | **0%** |
-| **OVERALL** | **56** | **74** | **~76%** |
+| **OVERALL** | **61** | **79** | **~77%** |
 
 ---
 
@@ -240,6 +256,7 @@ Deep content for replayability and long-term interest.
 | Play Again shows stale event cards as resolved | ✅ Fixed | `showGameScreen()` clears `_pendingEventChoices`, `_selectedFocuses`, event/alert containers |
 | `minDebt` trigger condition missing from events roller | ✅ Fixed | Added `t.minDebt` check in `Events._meetsConditions()` |
 | Unused `netWorth` variable lint warning in ui.js | ✅ Fixed | Removed declaration |
+| Practice mode shows pre-range brief overlay | ✅ Fixed | `rq-prerange` explicitly hidden in `startPractice()` before `_showPositionIntro(0)` |
 
 ---
 
@@ -249,23 +266,37 @@ Deep content for replayability and long-term interest.
 Reenlistment Game/
 ├── plan.md                     ← THIS FILE
 ├── index.html
-├── css/style.css
+├── css/
+│   ├── style.css               Entry point (@import all)
+│   ├── base.css                Variables, reset, .screen
+│   ├── screen-create.css       Title screen, buttons (.btn, .btn-primary/secondary/tertiary), character creation
+│   ├── game-layout.css         Main game two-panel layout
+│   ├── game-stats.css          Stat bars, track chips, finance section
+│   ├── game-events.css         Event cards (cat-border-*, cat-*, chance-impact, chance-ack-btn)
+│   ├── screen-misc.css         Decision modal, end state screen, civilian outlook panels
+│   └── screen-rifle.css        Rifle qual mini-game (canvas, topbar, overlays, dist chip)
 └── js/
-    ├── main.js                 Screen routing, onAdvance(), showReserveDecision(), showPCSDecision(), orientation dismiss
-    ├── state.js                State singleton, save/load; orientationDismissed flag
+    ├── main.js                 Screen routing, onAdvance(), showReserveDecision(), showPCSDecision(), btn-rifle-practice, btn-create-back
+    ├── state.js                State singleton, save/load; orientationDismissed, easDecided flags
     ├── character.js            Marine model, BACKGROUNDS[], clamp(), name auto-capitalize, gender + pronouns
     ├── finance.js              Pay tables, RETIREMENT_BASE_PAY, runMonthly() (debt interest), deploymentBreakdown()
     ├── career.js               Promotions, SRB, civilianOutlook(), retirementProjection(), reserveRetirementPath()
     ├── pcs.js                  PCS.isPCSDue(), getOptions(), movingCost(), apply()
-    ├── events.js               Events.rollEvent() (injects chosenLocation for deployment events), resolveChoice(), _meetsConditions()
-    ├── engine.js               Engine.runMonth() (quarterly), MONTHLY_CHOICES[] (with cost), focusBudget(), applyFocusChoice()
-    ├── ui.js                   All DOM, END_STATES{}, renderEndOutlook(), _deployPayHtml(), _selectedFocuses (Set)
+    ├── events.js               rollEvent(), rollEASPrepEvent(), resolveChoice(), _meetsConditions()
+    ├── engine.js               Engine.runMonth() (EAS wind-down branch), MONTHLY_CHOICES[], focusBudget(), applyFocusChoice()
+    ├── ui.js                   All DOM, END_STATES{} (Rank Last name format), renderEndOutlook(), _deployPayHtml()
+    ├── rifle_qual.js           RifleQual — start(), startPractice(), _practiceMode, _updateTopbar() (dist chip YD)
     └── data/
         ├── mos.js              MOS_DATA[], MOS_FIELDS{}
         ├── assignments.js      ASSIGNMENTS_DATA[], BILLET_TIERS{}
         ├── promotions.js       RANKS[], PME_REQUIREMENTS{}, CONTRACT_LENGTHS[]
         ├── schools.js          SCHOOLS_DATA[]
-        └── events_data.js      EVENTS_DATA[] (50+ events, deployLocations on deployment events)
+        ├── events_core.js      Core events (deployment, career, personal, finance, discipline)
+        ├── events_mos.js       MOS-field-specific events
+        ├── events_chance.js    Chance events (isChance: true, single ACKNOWLEDGED button)
+        ├── events_retirement.js Retirement-path events
+        ├── events_eas.js       EAS wind-down events (isChance: true, cat-eas, sequential via rollEASPrepEvent)
+        └── events_data.js      EVENTS_DATA[] assembler (spreads all event arrays)
 ```
 
 ---
@@ -281,3 +312,4 @@ Reenlistment Game/
 | 5 | Feb 2026 | PCS system (js/pcs.js), end-state outcome system (civilianOutlook/retirementProjection/reserveRetirementPath), SMCR/IRR reserve pathway with drill pay and pension formulas |
 | 6 | Feb 2026 | Career log removed, end screen scroll fix, name capitalize + rank prefix, retirement pay fix (DFAS 2024 table), Play Again stale-events bug, debt interest (12% APR), debt escalation events ($2k/$5k/$10k thresholds) |
 | 7 | Feb 2026 | Multi-select Bandwidth focus system; static panel divider; date corrected to 2026; title screen centering fix; male/female gender selection with pronoun helpers; event cards visually prominent (cat-border, white header, hover accent); promotion alerts gold/glowing (alert-promo); modal improvements (accent bar, larger icon); deployment destinations (deployLocations + chosenLocation injection); deployment tax-free pay table (Finance.deploymentBreakdown, TAX-FREE badges); first-turn orientation panel (dismissable, mobile tab tip, responsive labels) |
+| 8 | Mar 2026 | End-state name format (Rank Last only, no first name); EAS wind-down system (easDecided flag, EVENTS_EAS pool with 6 sequential out-processing events, rollEASPrepEvent(), engine injection, PCS suppression, direct triggerEAS on contract expiry); EAS events styled as chance/acknowledge with cat-eas chip; rifle range practice mode (startPractice(), _practiceMode, title screen RIFLE RANGE button, btn-tertiary style, practice bug fix hiding rq-prerange); character creation back button with inline layout and directional arrows; distance chip on range header (dynamic, yards/YD throughout) |

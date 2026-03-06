@@ -30,6 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
     RifleQual.startPractice();
   });
 
+  document.getElementById('btn-ocourse').addEventListener('click', () => {
+    OcourseGame.launch();
+  });
+
+  document.getElementById('oc-exit-btn').addEventListener('click', () => {
+    OcourseGame.exit();
+  });
+
   document.getElementById('btn-create-back').addEventListener('click', () => {
     UI.showScreen('screen-title');
   });
