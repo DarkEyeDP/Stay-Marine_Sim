@@ -2,7 +2,7 @@
    MAIN — Game Initialization & Screen Routing
    ═══════════════════════════════════════════════ */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initMain() {
 
   // ── Title Screen ──────────────────────────────
   const hasSave = State.hasSave();
@@ -190,7 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Tooltips ──────────────────────────────────
   UI.initTooltips();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMain, { once: true });
+} else {
+  initMain();
+}
 
 // ── Main game flow controller ──────────────────
 const Main = {
