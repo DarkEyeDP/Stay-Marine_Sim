@@ -10,7 +10,12 @@ function initMain() {
   continueBtn.disabled = !hasSave;
 
   if (hasSave) {
-    document.getElementById('save-hint').textContent = 'A saved career was found.';
+    const savedAt = State.getLastSavedAt();
+    if (savedAt) {
+      document.getElementById('save-hint').textContent = 'Saved career found - last save ' + new Date(savedAt).toLocaleString() + '.';
+    } else {
+      document.getElementById('save-hint').textContent = 'A saved career was found.';
+    }
   }
 
   document.getElementById('btn-new-game').addEventListener('click', () => {
@@ -160,6 +165,17 @@ function initMain() {
     UI.showScreen('screen-create');
   });
 
+
+  const saveNowBtn = document.getElementById('btn-save-now');
+  if (saveNowBtn) {
+    saveNowBtn.addEventListener('click', () => {
+      if (!State.game) return;
+      State.save();
+      if (typeof UI.updateSaveStatus === 'function') {
+        UI.updateSaveStatus(true);
+      }
+    });
+  }
   // ── Start Over (mid-game) ─────────────────────
   document.getElementById('btn-start-over').addEventListener('click', () => {
     UI.showDecisionModal({

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { animate } from 'framer-motion';
 import '../css/style.css';
 import './styles.css';
 
@@ -26,6 +27,14 @@ const LEGACY_SCRIPTS = [
   '/js/main.js',
 ] as const;
 
+declare global {
+  interface Window {
+    EndTabAnimator?: {
+      switchPanels: (from: HTMLElement | null, to: HTMLElement | null) => Promise<void>;
+    };
+  }
+}
+
 function loadLegacyScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
@@ -43,8 +52,38 @@ async function bootstrapLegacyGame(): Promise<void> {
   }
 }
 
+function registerEndTabAnimator() {
+  window.EndTabAnimator = {
+    async switchPanels(from, to) {
+      if (!to || from === to) return;
+
+      if (from) {
+        await animate(
+          from,
+          { opacity: [1, 0], x: [0, -14] },
+          { duration: 0.16, ease: 'easeOut' },
+        ).finished;
+      }
+
+      to.classList.add('active');
+      to.style.opacity = '0';
+      to.style.transform = 'translateX(14px)';
+
+      await animate(
+        to,
+        { opacity: [0, 1], x: [14, 0] },
+        { duration: 0.22, ease: 'easeOut' },
+      ).finished;
+
+      to.style.opacity = '';
+      to.style.transform = '';
+    },
+  };
+}
+
 function App() {
   React.useEffect(() => {
+    registerEndTabAnimator();
     void bootstrapLegacyGame();
   }, []);
 

@@ -1,11 +1,11 @@
-/* ═══════════════════════════════════════════════
+/* 
    UI MODULE
    All DOM rendering, screen transitions, stat bars
-   ═══════════════════════════════════════════════ */
+    */
 
 const UI = {
 
-  // ── Screen Management ────────────────────────
+  // "" Screen Management """"""""""""""""""""""""
 
   showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -13,9 +13,15 @@ const UI = {
     if (el) el.classList.add('active');
   },
 
-  // ── Character Creation ───────────────────────
+  // "" Character Creation """""""""""""""""""""""
+
+  _mosFilter: 'all',
+  _mosSearch: '',
 
   renderCreateScreen() {
+    UI._mosFilter = 'all';
+    UI._mosSearch = '';
+
     // Wire gender buttons
     const genderSelect = document.getElementById('gender-select');
     genderSelect.querySelectorAll('.gender-btn').forEach(btn => {
@@ -25,6 +31,40 @@ const UI = {
         UI._checkCreateReady();
       });
     });
+
+    // Quick start presets
+    const presetList = document.getElementById('create-presets');
+    if (presetList) {
+      const presets = [
+        { label: 'COMBAT TRACK', backgroundId: 'bg_blue_collar', mosField: 'infantry' },
+        { label: 'TECH TRACK', backgroundId: 'bg_college', mosField: 'communications' },
+        { label: 'LEADERSHIP TRACK', backgroundId: 'bg_military_family', mosField: 'intelligence' },
+      ];
+      presetList.innerHTML = '';
+      presets.forEach((preset, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'create-preset-btn';
+        btn.textContent = preset.label;
+        btn.addEventListener('click', () => {
+          presetList.querySelectorAll('.create-preset-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const bgItem = document.querySelector(`#background-list .card-select-item[data-id="${preset.backgroundId}"]`);
+          if (bgItem) bgItem.click();
+
+          const filterBtn = document.querySelector(`#mos-filter .filter-btn[data-field="${preset.mosField}"]`);
+          if (filterBtn) filterBtn.click();
+
+          const nameInput = document.getElementById('input-name');
+          if (idx === 0 && nameInput && !nameInput.value.trim()) {
+            nameInput.value = 'Ramirez, Alex';
+            nameInput.dispatchEvent(new Event('input'));
+          }
+        });
+        presetList.appendChild(btn);
+      });
+    }
 
     // Render backgrounds
     const bgList = document.getElementById('background-list');
@@ -66,21 +106,53 @@ const UI = {
       if (!btn) return;
       filterRow.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      UI.renderMOSList(btn.dataset.field);
+      UI._mosFilter = btn.dataset.field || 'all';
+      UI.renderMOSList(UI._mosFilter, UI._mosSearch);
     });
 
-    UI.renderMOSList('all');
+    const mosSearch = document.getElementById('mos-search');
+    if (mosSearch) {
+      mosSearch.value = '';
+      mosSearch.addEventListener('input', () => {
+        UI._mosSearch = mosSearch.value.trim().toLowerCase();
+        UI.renderMOSList(UI._mosFilter, UI._mosSearch);
+      });
+    }
+
+    UI.renderMOSList('all', '');
   },
 
-  renderMOSList(filterField) {
+  renderMOSList(filterField, searchTerm = '') {
+    UI._mosFilter = filterField || UI._mosFilter || 'all';
+    if (typeof searchTerm === 'string') UI._mosSearch = searchTerm.trim().toLowerCase();
+
     const mosList = document.getElementById('mos-list');
     const prev = mosList.querySelector('.card-select-item.selected');
     const prevId = prev ? prev.dataset.id : null;
     mosList.innerHTML = '';
 
-    const filtered = filterField === 'all'
-      ? MOS_DATA
-      : MOS_DATA.filter(m => m.field === filterField);
+    const filtered = MOS_DATA.filter(m => {
+      const fieldMatch = UI._mosFilter === 'all' || m.field === UI._mosFilter;
+      if (!fieldMatch) return false;
+      if (!UI._mosSearch) return true;
+      const haystack = `${m.code} ${m.title} ${m.description}`.toLowerCase();
+      return haystack.includes(UI._mosSearch);
+    });
+
+    const countEl = document.getElementById('mos-result-count');
+    if (countEl) {
+      countEl.textContent = filtered.length === MOS_DATA.length
+        ? `${filtered.length} MOS options`
+        : `${filtered.length} matching options`;
+    }
+
+    if (filtered.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'card-select-item mos-empty';
+      empty.innerHTML = '<div class="cs-title">No MOS match</div><div class="cs-desc">Try a broader search or pick another MOS field.</div>';
+      mosList.appendChild(empty);
+      return;
+    }
 
     filtered.forEach(mos => {
       const el = document.createElement('div');
@@ -91,12 +163,13 @@ const UI = {
       const fieldInfo = MOS_FIELDS[mos.field];
       const fieldColor = fieldInfo ? fieldInfo.color : '#888';
 
+      const opTempoBars = '\u25AE'.repeat(mos.optempo) + '\u25AF'.repeat(5 - mos.optempo);
       el.innerHTML = `
         <div class="cs-title">
-          <span style="color:${fieldColor}">${mos.code}</span> — ${mos.title}
+          <span style="color:${fieldColor}">${mos.code}</span> - ${mos.title}
         </div>
         <div class="cs-desc">${mos.description}</div>
-        <div class="cs-bonuses">Optempo: ${'▮'.repeat(mos.optempo)}${'▯'.repeat(5 - mos.optempo)} | Civilian Value: ${mos.civilianValue}%</div>
+        <div class="cs-bonuses">Optempo: ${opTempoBars} | Civilian Value: ${mos.civilianValue}%</div>
       `;
       el.addEventListener('click', () => {
         mosList.querySelectorAll('.card-select-item').forEach(e => e.classList.remove('selected'));
@@ -106,7 +179,6 @@ const UI = {
       mosList.appendChild(el);
     });
   },
-
   _checkCreateReady() {
     const name = document.getElementById('input-name').value.trim();
     const bg = document.querySelector('#background-list .card-select-item.selected');
@@ -124,12 +196,12 @@ const UI = {
     };
   },
 
-  // ── Boot Camp ────────────────────────────────
+  // "" Boot Camp """"""""""""""""""""""""""""""""
 
   _bcSteps: [
     {
       phase: 'YELLOW FOOTPRINTS',
-      title: 'Receiving — Day 1',
+      title: 'Receiving " Day 1',
       text: 'You step off the bus at MCRD San Diego. A Drill Instructor materializes from the darkness, screaming at you before your feet hit the yellow footprints. Your civilian life is officially over. Welcome to the United States Marine Corps.',
       stats: null,
     },
@@ -202,7 +274,7 @@ const UI = {
     }
   },
 
-  // ── Main Game Screen ─────────────────────────
+  // "" Main Game Screen """""""""""""""""""""""""
 
   showGameScreen() {
     // Clear stale state from any previous game session
@@ -225,7 +297,7 @@ const UI = {
     document.getElementById('rank-badge').textContent = m.payGrade;
     document.getElementById('rank-title-display').textContent = m.rankTitle;
     document.getElementById('marine-name').textContent = m.name;
-    document.getElementById('marine-sub').textContent = `${m.mosCode} · ${m.mosTitle}`;
+    document.getElementById('marine-sub').textContent = `${m.mosCode}  |  ${m.mosTitle}`;
     UI.updateRifleQualBadge(m.rifleQualLevel);
 
     // Date / TIS
@@ -233,13 +305,13 @@ const UI = {
     document.getElementById('turn-date').textContent = `${months[g.month - 1].toUpperCase()} ${g.year}`;
     const tisYears = Math.floor(m.timeInService / 12);
     const tisMons = m.timeInService % 12;
-    document.getElementById('turn-tis').textContent = `${tisYears}y ${tisMons}m · ${m.rankAbbr}`;
+    document.getElementById('turn-tis').textContent = `${tisYears}y ${tisMons}m  |  ${m.rankAbbr}`;
 
     // Assignment
     const asgn = ASSIGNMENTS_DATA.find(a => a.id === m.assignmentId) || ASSIGNMENTS_DATA[0];
     const _billetField = m.mosField || 'infantry';
     const _billetTierRow = (BILLET_TIERS[_billetField] || BILLET_TIERS['infantry'])[m.billetTier];
-    document.getElementById('billet-label').textContent = m.isDeployed ? '⚔ DEPLOYED' : _billetTierRow?.label;
+    document.getElementById('billet-label').textContent = m.isDeployed ? '" DEPLOYED' : _billetTierRow?.label;
     document.getElementById('billet-location').textContent = m.isDeployed ? `Return in ${m.deploymentMonthsLeft}mo` : asgn.name;
 
     // Stat bars
@@ -295,7 +367,7 @@ const UI = {
     UI.renderTrack('track-civilian', 'Smooth EAS', tracks.civilian);
     UI.renderTrack('track-family', 'Family First', tracks.family);
 
-    // Orientation panel — show until dismissed; hide for any loaded save that predates this flag
+    // Orientation panel " show until dismissed; hide for any loaded save that predates this flag
     const orientEl = document.getElementById('orientation-panel');
     if (orientEl) {
       const show = State.game.orientationDismissed === false && m.timeInService < 6;
@@ -307,7 +379,7 @@ const UI = {
       UI.renderAlerts(monthResult.alerts);
       UI.renderEvents(monthResult.events);
     }
-
+    UI.renderStatusStrip(monthResult || null);
     // Show advance button if no pending events
     UI.checkAdvanceReady();
   },
@@ -320,7 +392,7 @@ const UI = {
     let colorClass = '';
     let pulseClass = '';
     if (invert) {
-      // For inverted stats (stress, discipline risk) — high is bad
+      // For inverted stats (stress, discipline risk) " high is bad
       colorClass  = pct > 70 ? 'warning'     : pct > 45 ? 'caution' : 'invert-good';
       pulseClass  = pct > 70 ? 'stat-pulse-danger' : pct > 45 ? 'stat-pulse-caution' : '';
     } else {
@@ -374,6 +446,114 @@ const UI = {
     });
   },
 
+  renderStatusStrip(monthResult) {
+    const m = State.game.marine;
+
+    const statChecks = [
+      { key: 'physicalFitness', label: 'Physical readiness', invert: false },
+      { key: 'profConduct', label: 'Professional conduct', invert: false },
+      { key: 'mosProficiency', label: 'MOS proficiency', invert: false },
+      { key: 'morale', label: 'Morale', invert: false },
+      { key: 'familyStability', label: 'Family stability', invert: false },
+      { key: 'stress', label: 'Stress', invert: true },
+      { key: 'disciplineRisk', label: 'Discipline risk', invert: true },
+    ];
+
+    const isDanger = c => c.invert ? m[c.key] > 70 : m[c.key] < 30;
+    const isCaution = c => c.invert ? m[c.key] > 45 : m[c.key] < 55;
+
+    const dangerLabels = statChecks.filter(isDanger).map(c => c.label);
+    const cautionLabels = statChecks.filter(c => !isDanger(c) && isCaution(c)).map(c => c.label);
+
+    if (m.checking < 0 || m.debt >= 10000) dangerLabels.push('Finances');
+
+    const warnEl = document.getElementById('critical-warnings');
+    if (warnEl) {
+      const parts = [];
+      if (dangerLabels.length) {
+        parts.push(`<div class="critical-warning bad"><strong>Danger:</strong> ${dangerLabels.join(' | ')}</div>`);
+      }
+      if (cautionLabels.length) {
+        parts.push(`<div class="critical-warning warn"><strong>Caution:</strong> ${cautionLabels.join(' | ')}</div>`);
+      }
+      warnEl.innerHTML = parts.length
+        ? parts.join('')
+        : '<div class="critical-warning good">No immediate critical issues.</div>';
+    }
+
+    const progressEl = document.getElementById('career-progress');
+    if (progressEl) {
+      progressEl.innerHTML = '';
+      progressEl.classList.add('hidden');
+    }
+
+    const summaryEl = document.getElementById('quarter-summary');
+    if (!summaryEl) return;
+    if (!monthResult) {
+      summaryEl.classList.add('hidden');
+      summaryEl.innerHTML = '';
+      return;
+    }
+
+    const d = monthResult.statDelta || {};
+    const deltaItems = [
+      ['PFT', d.physicalFitness],
+      ['Pro/Con', d.profConduct],
+      ['MOS', d.mosProficiency],
+      ['Morale', d.morale],
+      ['Stress', d.stress],
+      ['Family', d.familyStability],
+      ['Savings', d.savings],
+      ['Debt', d.debt],
+    ].filter(([, val]) => typeof val === 'number' && val !== 0);
+
+    const deltaHtml = deltaItems.length
+      ? deltaItems.map(([label, val]) => `<span class="delta-chip ${val > 0 ? 'pos' : 'neg'}">${label} ${val > 0 ? '+' : ''}${Math.round(val)}</span>`).join('')
+      : '<span class="delta-chip neutral">No major stat shifts this quarter.</span>';
+
+    const net = monthResult.financeReport?.net || 0;
+    summaryEl.classList.remove('hidden');
+    summaryEl.innerHTML = `
+      <div class="quarter-summary-title">LAST QUARTER SNAPSHOT</div>
+      <div class="quarter-summary-row">
+        <span class="quarter-summary-label">Quarter net:</span>
+        <span class="quarter-summary-value ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : ''}${Finance.fmt(net)}</span>
+      </div>
+      <div class="quarter-summary-row">
+        <span class="quarter-summary-label">Promotions:</span>
+        <span class="quarter-summary-value">${monthResult.promotions?.length || 0}</span>
+      </div>
+      <div class="delta-row">${deltaHtml}</div>
+    `;
+  },
+  updateSaveStatus(manual) {
+    const el = document.getElementById('save-status');
+    if (!el) return;
+
+    const savedAt = State.getLastSavedAt();
+    if (!savedAt) {
+      el.textContent = 'Autosave active';
+      return;
+    }
+
+    const stamp = new Date(savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    el.textContent = manual ? `Saved manually at ${stamp}` : `Autosaved at ${stamp}`;
+  },
+
+  _impactTagsHtml(hint) {
+    if (!hint) return '';
+    const rawTokens = hint.split(',').map(t => t.trim()).filter(Boolean);
+    if (!rawTokens.length) return '';
+
+    const tags = rawTokens.slice(0, 3).map(token => {
+      const pos = token.includes('+');
+      const neg = token.includes('-');
+      const cls = pos && !neg ? 'pos' : neg && !pos ? 'neg' : 'mix';
+      return `<span class="impact-tag ${cls}">${token}</span>`;
+    }).join('');
+
+    return `<span class="impact-tags">${tags}</span>`;
+  },
   renderEvents(events) {
     const container = document.getElementById('events-container');
     container.innerHTML = '';
@@ -388,7 +568,7 @@ const UI = {
       const catClass = `cat-${evt.category}`;
       const locationHtml = evt.chosenLocation ? `
         <div class="deploy-location-banner">
-          <span class="deploy-loc-name">📍 ${evt.chosenLocation.name}</span>
+          <span class="deploy-loc-name">" ${evt.chosenLocation.name}</span>
           <span class="deploy-loc-region">${evt.chosenLocation.region}</span>
           <div class="deploy-loc-context">${evt.chosenLocation.context}</div>
         </div>` : '';
@@ -406,7 +586,7 @@ const UI = {
       const choicesEl = card.querySelector(`#choices-${evt.id}`);
 
       if (evt.isChance) {
-        // Chance event — show impact summary, then a single acknowledge button
+        // Chance event " show impact summary, then a single acknowledge button
         if (evt.chanceImpact) {
           const impactEl = document.createElement('div');
           impactEl.className = `chance-impact ${evt.chanceType || 'neutral'}`;
@@ -427,7 +607,7 @@ const UI = {
         evt.choices.forEach((choice, idx) => {
           const btn = document.createElement('button');
           btn.className = 'event-choice-btn';
-          btn.innerHTML = `${choice.text}<span class="choice-hint">${choice.hint || ''}</span>`;
+          btn.innerHTML = `${choice.text}${UI._impactTagsHtml(choice.hint)}`;
           btn.addEventListener('click', () => {
             UI._selectEventChoice(evt, idx, card, choicesEl);
           });
@@ -449,7 +629,7 @@ const UI = {
     const baseTF = isCombat ? tfBadge : '';
     return `
       <div class="deploy-pay-block">
-        <div class="deploy-pay-title">DEPLOYMENT PAY ESTIMATE — ${months} MONTHS</div>
+        <div class="deploy-pay-title">DEPLOYMENT PAY ESTIMATE " ${months} MONTHS</div>
         <div class="deploy-pay-rows">
           <div class="deploy-pay-row"><span>Base Pay</span><span>${Finance.fmt(b.effectiveBase)}/mo ${baseTF}</span></div>
           <div class="deploy-pay-row"><span>BAH (home station rate)</span><span>${Finance.fmt(b.bah)}/mo</span></div>
@@ -467,11 +647,11 @@ const UI = {
   _pendingEventChoices: {},
   _currentEvents: [],
 
-  /** Soft-select a choice on a regular event card — allows changing before advancing */
+  /** Soft-select a choice on a regular event card " allows changing before advancing */
   _selectEventChoice(evt, choiceIdx, _card, choicesEl) {
     UI._pendingEventChoices[evt.id] = choiceIdx;
 
-    // Highlight selected, de-highlight others — keep all buttons enabled
+    // Highlight selected, de-highlight others " keep all buttons enabled
     choicesEl.querySelectorAll('.event-choice-btn').forEach((btn, i) => {
       if (i === choiceIdx) {
         btn.style.borderColor = 'var(--green)';
@@ -502,7 +682,7 @@ const UI = {
     const ackBtn = choicesEl.querySelector('.chance-ack-btn');
     if (ackBtn) {
       ackBtn.disabled = true;
-      if (!choice.gameOverState) ackBtn.textContent = '✓ ACKNOWLEDGED';
+      if (!choice.gameOverState) ackBtn.textContent = '" ACKNOWLEDGED';
     }
 
     // Add resolved badge to event card header
@@ -521,6 +701,7 @@ const UI = {
     if (State.game.recentEventIds.length > 6) State.game.recentEventIds.pop();
 
     State.save();
+    UI.updateSaveStatus(false);
 
     // Game-ending event (brig / dishonorable discharge)
     if (choice.gameOverState) {
@@ -533,10 +714,11 @@ const UI = {
 
     // Refresh stat bars and finance numbers
     UI._refreshStatBars();
+    UI.renderStatusStrip(null);
     UI.checkAdvanceReady();
   },
 
-  /** Lightweight stat-only refresh — does not touch events or focus choices */
+  /** Lightweight stat-only refresh " does not touch events or focus choices */
   _refreshStatBars() {
     const m = State.game.marine;
     const gradeOrder = ['E-1', 'E-2', 'E-3', 'E-4', 'E-5', 'E-6', 'E-7', 'E-8', 'E-9'];
@@ -597,10 +779,10 @@ const UI = {
         btn.classList.toggle('selected', count > 0);
         btn.classList.toggle('unaffordable', count === 0 && cost > budget - UI._focusBudgetSpent);
         const multiplierHtml = count > 1
-          ? `<span class="choice-multiplier">×${count}</span>`
+          ? `<span class="choice-multiplier">-${count}</span>`
           : '';
         const decrementHtml = count > 0
-          ? `<span class="choice-decrement" title="Remove one">−</span>`
+          ? `<span class="choice-decrement" title="Remove one">&minus;</span>`
           : '';
         const label = choice.dynamicLabel ? choice.dynamicLabel(m) : choice.label;
         const hint  = choice.dynamicHint  ? choice.dynamicHint(m)  : choice.hint;
@@ -683,7 +865,7 @@ const UI = {
   _selectedFocuses: new Map(),
   _focusBudgetSpent: 0,
 
-  // ── Tooltips ──────────────────────────────────
+  // "" Tooltips """"""""""""""""""""""""""""""""""
 
   /**
    * Wire up a single shared floating tooltip for the whole page.
@@ -730,7 +912,7 @@ const UI = {
       _tipEl = null;
     };
 
-    // ── Desktop: follow cursor ──────────────────
+    // "" Desktop: follow cursor """"""""""""""""""
     document.addEventListener('mousemove', (e) => {
       const el = e.target.closest('[data-tip]');
       if (el) {
@@ -745,7 +927,7 @@ const UI = {
     // Hide when cursor leaves the window
     document.addEventListener('mouseleave', hide);
 
-    // ── Mobile: tap to show / tap elsewhere to dismiss ──
+    // "" Mobile: tap to show / tap elsewhere to dismiss ""
     document.addEventListener('touchend', (e) => {
       const el = e.target.closest('[data-tip]');
       if (el) {
@@ -823,10 +1005,10 @@ const UI = {
     document.getElementById('btn-advance').disabled = !ready;
   },
 
-  // ── Decision Modal ────────────────────────────
+  // "" Decision Modal """"""""""""""""""""""""""""
 
   showDecisionModal(config) {
-    document.getElementById('modal-icon').textContent = config.icon || '⚠';
+    document.getElementById('modal-icon').textContent = config.icon || '';
     document.getElementById('modal-title').textContent = config.title;
     document.getElementById('modal-body').innerHTML = config.body;
 
@@ -854,7 +1036,7 @@ const UI = {
     document.getElementById('modal-decision').classList.add('hidden');
   },
 
-  // ── Reenlistment Decision ─────────────────────
+  // "" Reenlistment Decision """""""""""""""""""""
 
   showReenlistmentModal(winInfo, marine, onDecision) {
     const m = marine || State.game.marine;
@@ -871,7 +1053,7 @@ const UI = {
       const srb = Career.calculateSRB(m, yrs);
       const newEAS = Math.floor((m.timeInService + yrs * 12) / 12);
       return {
-        title: `Reenlist — ${yrs}-Year Contract`,
+        title: `Reenlist " ${yrs}-Year Contract`,
         desc: `EAS at ${newEAS} years TIS`,
         effect: srb > 0 ? `SRB Bonus: ${Finance.fmt(srb)}` : 'No SRB for this term',
         onSelect: () => onDecision('reenlist', { years: yrs, srb }),
@@ -879,30 +1061,32 @@ const UI = {
     });
 
     choices.push({
-      title: 'Separate — EAS',
+      title: 'Separate " EAS',
       desc: 'End active duty. Begin transition to civilian life or reserve component.',
       effect: `Education: ${m.educationCredits} credits (${m.degreeProgress})`,
       onSelect: () => onDecision('eas', null),
     });
 
     UI.showDecisionModal({
-      icon: '📋',
+      icon: '"',
       title: winInfo.label,
       body: bodyHtml,
       choices,
     });
   },
 
-  // ── End State ─────────────────────────────────
+  // "" End State """""""""""""""""""""""""""""""""
 
   showEndState(endStateId) {
     const m = State.game.marine;
     const tis = m.timeInService;
     const config = END_STATES[endStateId] || END_STATES['basic_eas'];
+    const endWrap = document.querySelector('#screen-end .end-wrapper');
+    if (endWrap) endWrap.classList.remove('end-ready');
 
     document.getElementById('end-icon').textContent = config.icon;
     document.getElementById('end-title').textContent = config.title;
-    document.getElementById('end-subtitle').textContent = `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${config.subtitle}`;
+    document.getElementById('end-subtitle').textContent = `${m.rankAbbr} ${m.name.split(',')[0].trim()} " ${config.subtitle}`;
     document.getElementById('end-narrative').innerHTML = config.narrative(m, tis);
 
     const statsEl = document.getElementById('end-stats');
@@ -917,6 +1101,11 @@ const UI = {
 
     UI.showScreen('screen-end');
     UI.renderEndOutlook(endStateId, m, tis);
+    UI.renderEndRecord(endStateId, m, tis);
+    UI.initEndTabs();
+    window.setTimeout(() => {
+      if (endWrap) endWrap.classList.add('end-ready');
+    }, 220);
   },
 
   /** Render the civilian/retirement outcome analysis below the end-screen narrative */
@@ -930,7 +1119,7 @@ const UI = {
 
     let html = '';
 
-    // ── EAS — Civilian outlook + road not taken ──────────────────────────
+    // "" EAS " Civilian outlook + road not taken """"""""""""""""""""""""""
     if (isEAS) {
       const outlook = Career.civilianOutlook(marine, tis);
       const retire = Career.retirementProjection(marine, tis);
@@ -943,18 +1132,18 @@ const UI = {
           <div class="eo-tier eo-tier-${outlook.tierColor}">JOB PROSPECTS: ${outlook.tier.toUpperCase()}</div>
           <div class="eo-salary-row">
             <span class="eo-label">First-year salary estimate</span>
-            <span class="eo-salary-val">${fmtSalary(outlook.salaryMin)} – ${fmtSalary(outlook.salaryMax)}</span>
+            <span class="eo-salary-val">${fmtSalary(outlook.salaryMin)} " ${fmtSalary(outlook.salaryMax)}</span>
           </div>
           <div class="eo-salary-row">
             <span class="eo-label">Financial runway</span>
             <span class="eo-salary-val ${outlook.runwayMonths < 2 ? 'eo-val-bad' : ''}">
-              ${outlook.runwayMonths > 0 ? `~${outlook.runwayMonths} months` : 'None — must work immediately'}
+              ${outlook.runwayMonths > 0 ? `~${outlook.runwayMonths} months` : 'None " must work immediately'}
             </span>
           </div>
           <div class="eo-factors">
             ${outlook.factors.map(f => `
               <div class="eo-factor eo-factor-${f.type}">
-                <span class="eo-factor-icon">${f.type === 'good' ? '✓' : '✗'}</span>
+                <span class="eo-factor-icon">${f.type === 'good' ? '"' : '-'}</span>
                 <span>${f.text}</span>
               </div>
             `).join('')}
@@ -965,7 +1154,7 @@ const UI = {
         </div>
       `;
 
-      // ── Reserve component section ────────────────────────────────────────
+      // "" Reserve component section """"""""""""""""""""""""""""""""""""""""
       if (marine.reserveStatus === 'SMCR' || marine.reserveStatus === 'IRR') {
         const reservePath = Career.reserveRetirementPath(marine, tis);
 
@@ -973,10 +1162,10 @@ const UI = {
           const tisYears = Math.floor(tis / 12);
           html += `
             <div class="eo-section">
-              <div class="eo-section-title">SELECTED MARINE CORPS RESERVE — SMCR DRILLING</div>
+              <div class="eo-section-title">SELECTED MARINE CORPS RESERVE " SMCR DRILLING</div>
               <p class="eo-body">
                 You're staying connected. One weekend a month. Two weeks of Annual Training each summer.
-                You keep your rank, your clearance, and your paycheck — even if it's not full-time.
+                You keep your rank, your clearance, and your paycheck " even if it's not full-time.
               </p>
               <div class="eo-comparison">
                 <div class="eo-comp-row">
@@ -1006,21 +1195,21 @@ const UI = {
               <div class="eo-pension-block">
                 <div class="eo-pension-label">Reserve retirement pay at age 60 (est.)</div>
                 <div class="eo-pension-amount">~${Finance.fmt(reservePath.monthlyPension)}/mo</div>
-                <div class="eo-pension-sub">If you complete ${reservePath.reserveYearsNeeded} satisfactory reserve years · projected ${reservePath.projAbbr}</div>
-                <div class="eo-pension-lifetime">+ VA healthcare eligibility at 60 · commissary/PX access</div>
+                <div class="eo-pension-sub">If you complete ${reservePath.reserveYearsNeeded} satisfactory reserve years  |  projected ${reservePath.projAbbr}</div>
+                <div class="eo-pension-lifetime">+ VA healthcare eligibility at 60  |  commissary/PX access</div>
               </div>
               ` : ''}
               <div class="eo-factors">
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Military network stays active — referrals, references, career doors</span></div>
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Leadership credentials remain current on your resume</span></div>
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Security clearance maintained through reserve service</span></div>
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>USERRA protects your civilian job if mobilized</span></div>
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>GWOT mobilization risk is real — reserve units are actively deploying</span></div>
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>Some civilian employers hesitate to hire reservists (illegal to discriminate, but it happens)</span></div>
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>One weekend/month + two weeks/year away from family and civilian career</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Military network stays active " referrals, references, career doors</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Leadership credentials remain current on your resume</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Security clearance maintained through reserve service</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>USERRA protects your civilian job if mobilized</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">-</span><span>GWOT mobilization risk is real " reserve units are actively deploying</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">-</span><span>Some civilian employers hesitate to hire reservists (illegal to discriminate, but it happens)</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">-</span><span>One weekend/month + two weeks/year away from family and civilian career</span></div>
               </div>
               <div class="eo-reserve-hub">
-                <a href="https://reservehub.swf.army.mil/" target="_blank" rel="noopener noreferrer" class="eo-reserve-hub-link"><span>Find Open SMCR Billets Nationwide → Reserve Hub</span></a>
+                <a href="https://reservehub.swf.army.mil/" target="_blank" rel="noopener noreferrer" class="eo-reserve-hub-link"><span>Find Open SMCR Billets Nationwide ' Reserve Hub</span></a>
               </div>
             </div>
           `;
@@ -1029,9 +1218,9 @@ const UI = {
           const remainingYrs = Math.ceil(remainingMSO / 12);
           html += `
             <div class="eo-section">
-              <div class="eo-section-title">INDIVIDUAL READY RESERVE — IRR STATUS</div>
+              <div class="eo-section-title">INDIVIDUAL READY RESERVE " IRR STATUS</div>
               <p class="eo-body">
-                No drills. No pay. No weekend commitments. You're a warm body in a database — until the Corps needs you.
+                No drills. No pay. No weekend commitments. You're a warm body in a database " until the Corps needs you.
               </p>
               <div class="eo-comparison">
                 <div class="eo-comp-row">
@@ -1040,22 +1229,22 @@ const UI = {
                 </div>
                 <div class="eo-comp-row">
                   <span class="eo-comp-label">Drill pay</span>
-                  <span class="eo-comp-val eo-val-bad">$0 — non-drilling</span>
+                  <span class="eo-comp-val eo-val-bad">$0 " non-drilling</span>
                 </div>
                 <div class="eo-comp-row">
                   <span class="eo-comp-label">Reserve retirement path</span>
-                  <span class="eo-comp-val eo-val-bad">None — no good years accruing</span>
+                  <span class="eo-comp-val eo-val-bad">None " no good years accruing</span>
                 </div>
               </div>
               <div class="eo-factors">
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Full civilian focus — no military obligations on your time</span></div>
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Weekends and leave are entirely yours</span></div>
-                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>No employer concerns about mobilization taking you away</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Full civilian focus " no military obligations on your time</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Weekends and leave are entirely yours</span></div>
+                <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>No employer concerns about mobilization taking you away</span></div>
                 ${remainingYrs > 0 ? `
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>Subject to involuntary recall for up to ${remainingYrs} more year${remainingYrs !== 1 ? 's' : ''} — especially dangerous in GWOT era</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">-</span><span>Subject to involuntary recall for up to ${remainingYrs} more year${remainingYrs !== 1 ? 's' : ''} " especially dangerous in GWOT era</span></div>
                 ` : ''}
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>Military network will fade without active contact</span></div>
-                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">✗</span><span>No additional retirement credits — active pension only possible if recalled to active duty long enough</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">-</span><span>Military network will fade without active contact</span></div>
+                <div class="eo-factor eo-factor-bad"><span class="eo-factor-icon">-</span><span>No additional retirement credits " active pension only possible if recalled to active duty long enough</span></div>
               </div>
             </div>
           `;
@@ -1088,32 +1277,32 @@ const UI = {
             <div class="eo-pension-block">
               <div class="eo-pension-label">Monthly retirement pay (tax-free, for life)</div>
               <div class="eo-pension-amount">~${Finance.fmt(retire.monthlyPension)}/mo</div>
-              <div class="eo-pension-sub">+ VA healthcare · commissary/PX · space-A travel</div>
+              <div class="eo-pension-sub">+ VA healthcare  |  commissary/PX  |  space-A travel</div>
               <div class="eo-pension-lifetime">20-year pension value: ~${Finance.fmt(retire.pensionLifetime)}</div>
             </div>
             <p class="eo-body eo-body-muted">
-              The pension floor is real — and so is what those ${retire.yearsLeft} years would have cost.
+              The pension floor is real " and so is what those ${retire.yearsLeft} years would have cost.
               Neither path is wrong. It depends on what you're building toward.
             </p>
           </div>
         `;
       }
 
-      // ── VA Disability estimate ───────────────────────────────────────────
+      // "" VA Disability estimate """""""""""""""""""""""""""""""""""""""""""
       const va = Career.estimateVADisability(marine, tis);
       html += `
         <div class="eo-section">
           <div class="eo-section-title">VA DISABILITY ESTIMATE</div>
-          <p class="eo-va-note">Based on your service record. File your claim before you out-process — VA claims take months to process and the clock starts at separation, not when you file.</p>
+          <p class="eo-va-note">Based on your service record. File your claim before you out-process " VA claims take months to process and the clock starts at separation, not when you file.</p>
           <div class="eo-pension-block">
             <div class="eo-pension-label">Monthly VA compensation (est., tax-free)</div>
-            <div class="eo-pension-amount">$${va.monthlyLow.toLocaleString()} – $${va.monthlyHigh.toLocaleString()}/mo</div>
-            <div class="eo-pension-sub">Based on estimated ${va.ratingLow}%–${va.ratingHigh}% combined disability rating</div>
+            <div class="eo-pension-amount">$${va.monthlyLow.toLocaleString()} " $${va.monthlyHigh.toLocaleString()}/mo</div>
+            <div class="eo-pension-sub">Based on estimated ${va.ratingLow}%"${va.ratingHigh}% combined disability rating</div>
           </div>
           <div class="eo-factors">
             ${va.conditions.map(c => `
               <div class="eo-factor eo-factor-neutral">
-                <span class="eo-factor-icon">·</span>
+                <span class="eo-factor-icon"> | </span>
                 <span>${c}</span>
               </div>
             `).join('')}
@@ -1123,26 +1312,26 @@ const UI = {
             <div class="eo-factors">
               ${va.thresholds.map(t => `
                 <div class="eo-factor eo-factor-good">
-                  <span class="eo-factor-icon">✓</span>
+                  <span class="eo-factor-icon">"</span>
                   <span>${t}</span>
                 </div>
               `).join('')}
             </div>
           ` : ''}
           ${va.tdiuEligible ? `
-            <p class="eo-body eo-body-muted">At 70%+ combined, you may qualify for TDIU — receiving 100%-equivalent monthly pay ($3,831) if the disability prevents substantially gainful employment.</p>
+            <p class="eo-body eo-body-muted">At 70%+ combined, you may qualify for TDIU " receiving 100%-equivalent monthly pay ($3,831) if the disability prevents substantially gainful employment.</p>
           ` : ''}
         </div>
       `;
     }
 
-    // ── Retirement — benefits + civilian comparison ───────────────────────
+    // "" Retirement " benefits + civilian comparison """""""""""""""""""""""
     if (isRetirement) {
       const basePay = Finance.RETIREMENT_BASE_PAY[marine.payGrade] || Finance.BASE_PAY[marine.payGrade] || 2140;
       const monthlyPension = Math.round(basePay * 0.50);
       const pensionLifetime = monthlyPension * 12 * 20;
       const tisYears = Math.floor(tis / 12);
-      const retireAge = 18 + tisYears;   // roughly — enlisted at 18
+      const retireAge = 18 + tisYears;   // roughly " enlisted at 18
 
       html += `
         <div class="eo-section">
@@ -1150,27 +1339,27 @@ const UI = {
           <div class="eo-pension-block">
             <div class="eo-pension-label">Monthly retirement pay (tax-free, for life)</div>
             <div class="eo-pension-amount">${Finance.fmt(monthlyPension)}/mo</div>
-            <div class="eo-pension-sub">50% of ${marine.payGrade} base pay — yours from approximately age ${retireAge}</div>
+            <div class="eo-pension-sub">50% of ${marine.payGrade} base pay " yours from approximately age ${retireAge}</div>
             <div class="eo-pension-lifetime">20-year pension value: ~${Finance.fmt(pensionLifetime)}</div>
           </div>
           <div class="eo-factors">
-            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Full VA healthcare — no premiums, no deductibles</span></div>
-            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Commissary and PX access — significant household savings</span></div>
-            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>Space-A travel on military aircraft</span></div>
-            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>DD-214 and veteran preference in federal hiring</span></div>
-            ${marine.educationCredits >= 20 ? `<div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>${marine.educationCredits} college credits — GI Bill still available for unused months</span></div>` : ''}
-            ${marine.savings >= 10000 ? `<div class="eo-factor eo-factor-good"><span class="eo-factor-icon">✓</span><span>${Finance.fmt(marine.savings)} in savings stacked on top of the pension</span></div>` : ''}
+            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Full VA healthcare " no premiums, no deductibles</span></div>
+            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Commissary and PX access " significant household savings</span></div>
+            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>Space-A travel on military aircraft</span></div>
+            <div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>DD-214 and veteran preference in federal hiring</span></div>
+            ${marine.educationCredits >= 20 ? `<div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>${marine.educationCredits} college credits " GI Bill still available for unused months</span></div>` : ''}
+            ${marine.savings >= 10000 ? `<div class="eo-factor eo-factor-good"><span class="eo-factor-icon">"</span><span>${Finance.fmt(marine.savings)} in savings stacked on top of the pension</span></div>` : ''}
           </div>
         </div>
         <div class="eo-section">
           <div class="eo-section-title">WHAT COMES NEXT</div>
           <p class="eo-body">
-            Marines retire young — around age ${retireAge}. That's decades of working life ahead.
+            Marines retire young " around age ${retireAge}. That's decades of working life ahead.
             With a pension as your floor, you can take risks that civilians with no safety net can't afford to take.
-            Second career. Business. Education. Whatever you choose — you choose it on your terms.
+            Second career. Business. Education. Whatever you choose " you choose it on your terms.
           </p>
           <p class="eo-body eo-body-muted">
-            Marines who got out at 4–8 years and went civilian are in the workforce now with no pension and no guarantee.
+            Marines who got out at 4"8 years and went civilian are in the workforce now with no pension and no guarantee.
             You played the long game. The pension is yours. Semper Fi.
           </p>
         </div>
@@ -1179,20 +1368,20 @@ const UI = {
           return `
             <div class="eo-section">
               <div class="eo-section-title">VA DISABILITY ESTIMATE</div>
-              <p class="eo-va-note">Retirees can receive VA disability pay on top of retirement pay. Don't leave this on the table — document everything at your separation physical.</p>
+              <p class="eo-va-note">Retirees can receive VA disability pay on top of retirement pay. Don't leave this on the table " document everything at your separation physical.</p>
               <div class="eo-pension-block">
                 <div class="eo-pension-label">Monthly VA compensation (est., tax-free)</div>
-                <div class="eo-pension-amount">$${va.monthlyLow.toLocaleString()} – $${va.monthlyHigh.toLocaleString()}/mo</div>
-                <div class="eo-pension-sub">Based on estimated ${va.ratingLow}%–${va.ratingHigh}% combined disability rating</div>
-                ${(va.crdpEligible || va.crdpPossible) ? `<div class="eo-pension-lifetime">CRDP: ${va.crdpEligible ? 'Eligible' : 'Possible'} — full pension + full VA pay simultaneously at 50%+</div>` : ''}
+                <div class="eo-pension-amount">$${va.monthlyLow.toLocaleString()} " $${va.monthlyHigh.toLocaleString()}/mo</div>
+                <div class="eo-pension-sub">Based on estimated ${va.ratingLow}%"${va.ratingHigh}% combined disability rating</div>
+                ${(va.crdpEligible || va.crdpPossible) ? `<div class="eo-pension-lifetime">CRDP: ${va.crdpEligible ? 'Eligible' : 'Possible'} " full pension + full VA pay simultaneously at 50%+</div>` : ''}
               </div>
               ${(va.crdpEligible || va.crdpPossible) ? `
-                <p class="eo-body eo-body-muted">At 50%+ VA rating, CRDP means you receive your full retirement pension AND your full VA disability check simultaneously. DFAS applies this automatically — no application needed.</p>
+                <p class="eo-body eo-body-muted">At 50%+ VA rating, CRDP means you receive your full retirement pension AND your full VA disability check simultaneously. DFAS applies this automatically " no application needed.</p>
               ` : ''}
               <div class="eo-factors">
                 ${va.conditions.map(c => `
                   <div class="eo-factor eo-factor-neutral">
-                    <span class="eo-factor-icon">·</span>
+                    <span class="eo-factor-icon"> | </span>
                     <span>${c}</span>
                   </div>
                 `).join('')}
@@ -1206,8 +1395,123 @@ const UI = {
     el.innerHTML = html;
   },
 
-  // ── Mobile Tabs ───────────────────────────────
+  renderEndRecord(endStateId, marine, tis) {
+    const el = document.getElementById('end-record');
+    if (!el) return;
 
+    const serviceYears = Math.floor(tis / 12);
+    const serviceMonths = tis % 12;
+    const reserve = marine.reserveStatus || 'None';
+    const awards = (marine.awards || []).length;
+    const pme = (marine.pmeCompleted || []).length;
+
+    el.innerHTML = `
+      <div class="eo-section">
+        <div class="eo-section-title">SERVICE RECORD</div>
+        <div class="eo-comparison">
+          <div class="eo-comp-row"><span class="eo-comp-label">Outcome</span><span class="eo-comp-val">${endStateId.replace(/_/g, ' ').toUpperCase()}</span></div>
+          <div class="eo-comp-row"><span class="eo-comp-label">Final Rank</span><span class="eo-comp-val">${marine.rankAbbr}</span></div>
+          <div class="eo-comp-row"><span class="eo-comp-label">Time in Service</span><span class="eo-comp-val">${serviceYears}y ${serviceMonths}m</span></div>
+          <div class="eo-comp-row"><span class="eo-comp-label">Education Credits</span><span class="eo-comp-val">${marine.educationCredits}</span></div>
+          <div class="eo-comp-row"><span class="eo-comp-label">PME Completed</span><span class="eo-comp-val">${pme}</span></div>
+          <div class="eo-comp-row"><span class="eo-comp-label">Awards Logged</span><span class="eo-comp-val">${awards}</span></div>
+          <div class="eo-comp-row"><span class="eo-comp-label">Reserve Path</span><span class="eo-comp-val">${reserve}</span></div>
+        </div>
+      </div>
+    `;
+  },
+
+  _endTabAnimating: false,
+
+  async _switchEndTab(target, animated = true) {
+    if (!target) return;
+
+    const tabs = Array.from(document.querySelectorAll('.end-tab'));
+    const panels = Array.from(document.querySelectorAll('.end-panel'));
+    const nextPanel = document.querySelector(`.end-panel[data-end-tab-panel="${target}"]`);
+    const currentPanel = document.querySelector('.end-panel.active');
+
+    tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.endTab === target));
+    const activeTab = tabs.find(tab => tab.dataset.endTab === target);
+    UI._positionEndTabIndicator(activeTab, !animated);
+
+    if (!nextPanel) return;
+    if (currentPanel === nextPanel) return;
+
+    if (!animated || !window.EndTabAnimator || !currentPanel) {
+      panels.forEach(panel => panel.classList.toggle('active', panel === nextPanel));
+      return;
+    }
+
+    UI._endTabAnimating = true;
+    currentPanel.classList.remove('active');
+    panels.forEach(panel => {
+      if (panel !== nextPanel) panel.classList.remove('active');
+    });
+
+    try {
+      await window.EndTabAnimator.switchPanels(currentPanel, nextPanel);
+    } finally {
+      panels.forEach(panel => panel.classList.toggle('active', panel === nextPanel));
+      UI._endTabAnimating = false;
+    }
+  },
+
+  _positionEndTabIndicator(targetTab, immediate = false) {
+    const tabsRoot = document.getElementById('end-tabs');
+    const indicator = document.getElementById('end-tab-indicator');
+    if (!tabsRoot || !indicator || !targetTab) return;
+
+    const rootRect = tabsRoot.getBoundingClientRect();
+    const tabRect = targetTab.getBoundingClientRect();
+    const baseTab = tabsRoot.querySelector('.end-tab');
+    const baseRect = baseTab ? baseTab.getBoundingClientRect() : tabRect;
+    const left = tabRect.left - rootRect.left;
+    const top = tabRect.top - rootRect.top;
+
+    if (immediate) indicator.classList.add('no-anim');
+    indicator.style.width = `${baseRect.width}px`;
+    indicator.style.height = `${baseRect.height}px`;
+    indicator.style.transform = `translate(${left}px, ${top}px)`;
+    if (immediate) {
+      window.requestAnimationFrame(() => indicator.classList.remove('no-anim'));
+    }
+  },
+  initEndTabs() {
+    const tabsRoot = document.getElementById('end-tabs');
+    if (!tabsRoot) return;
+
+    let indicator = document.getElementById('end-tab-indicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'end-tab-indicator';
+      indicator.className = 'end-tab-indicator';
+      tabsRoot.prepend(indicator);
+    }
+    tabsRoot.classList.add('has-indicator');
+
+    if (tabsRoot.dataset.wired !== '1') {
+      tabsRoot.dataset.wired = '1';
+      tabsRoot.addEventListener('click', async e => {
+        if (UI._endTabAnimating) return;
+        const btn = e.target.closest('.end-tab');
+        if (!btn) return;
+        await UI._switchEndTab(btn.dataset.endTab, true);
+      });
+    }
+
+    if (tabsRoot.dataset.resizeWired !== '1') {
+      tabsRoot.dataset.resizeWired = '1';
+      window.addEventListener('resize', () => {
+        const active = document.querySelector('.end-tab.active');
+        UI._positionEndTabIndicator(active, true);
+      });
+    }
+
+    void UI._switchEndTab('summary', false);
+  },
+
+  // Mobile Tabs
   _activeTab: 'events',
 
   _switchTab(target) {
@@ -1256,12 +1560,12 @@ const UI = {
       const dy = e.changedTouches[0].clientY - startY;
       // Only register as a horizontal swipe if horizontal motion dominates
       if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
-      if (dx < 0 && UI._activeTab === 'events') UI._switchTab('stats');   // swipe left → stats
-      if (dx > 0 && UI._activeTab === 'stats')  UI._switchTab('events');  // swipe right → events
+      if (dx < 0 && UI._activeTab === 'events') UI._switchTab('stats');   // swipe left ' stats
+      if (dx > 0 && UI._activeTab === 'stats')  UI._switchTab('events');  // swipe right ' events
     }, { passive: true });
   },
 
-  // ── Savings Planner ───────────────────────────
+  // "" Savings Planner """""""""""""""""""""""""""
 
   renderSavingsPlanner(m, gross, bills) {
     const el = document.getElementById('savings-planner');
@@ -1293,17 +1597,19 @@ const UI = {
     document.getElementById('sp-minus').addEventListener('click', () => {
       m.savingsGoal = Math.max(0, (m.savingsGoal || 0) - 50);
       State.save();
+      UI.updateSaveStatus(false);
       UI.renderSavingsPlanner(m, gross, bills);
     });
     document.getElementById('sp-plus').addEventListener('click', () => {
       const maxGoal = Math.max(0, disposable);
       m.savingsGoal = Math.min(maxGoal, (m.savingsGoal || 0) + 50);
       State.save();
+      UI.updateSaveStatus(false);
       UI.renderSavingsPlanner(m, gross, bills);
     });
   },
 
-  // ── Helpers ───────────────────────────────────
+  // "" Helpers """""""""""""""""""""""""""""""""""
 
   _statLabel(key) {
     const labels = {
@@ -1320,60 +1626,66 @@ const UI = {
   },
 };
 
-// ── End State Definitions ──────────────────────
+// "" End State Definitions """"""""""""""""""""""
 const END_STATES = {
   retirement: {
-    icon: '🎖',
-    title: 'RETIREMENT — 20 YEARS OF SERVICE',
+    icon: '[RET]',
+    title: 'RETIREMENT - 20 YEARS OF SERVICE',
     subtitle: 'Honor. Commitment. Semper Fidelis.',
     narrative: (m, tis) => `After ${Math.floor(tis / 12)} years of service, ${m.rankAbbr} ${m.name.split(',')[0].trim()} hangs up the uniform. The retirement ceremony is attended by Marines who served alongside you across multiple deployments, duty stations, and challenges that civilians will never understand. Your monthly retirement check is a small measure of what you earned. The brotherhood is forever.`,
   },
   high_achiever_retirement: {
-    icon: '⭐',
+    icon: '[STAR]',
     title: 'MASTER GUNNERY SERGEANT / SERGEANT MAJOR',
     subtitle: 'You reached the pinnacle of enlisted service.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — after ${Math.floor(tis / 12)} years of service, you have shaped the careers of hundreds of Marines. Your last formation is a sea of dress blues. Young Lance Corporals watch you with the same awe you once had for your first GySgt. The Marine Corps is better because you stayed.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} - after ${Math.floor(tis / 12)} years of service, you have shaped the careers of hundreds of Marines. Your last formation is a sea of dress blues. Young Lance Corporals watch you with the same awe you once had for your first GySgt. The Marine Corps is better because you stayed.`,
   },
   smooth_civilian: {
-    icon: '🎓',
+    icon: '[EDU]',
     title: 'SMOOTH TRANSITION',
     subtitle: 'Education, savings, and a clear path forward.',
     narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} separates after ${Math.floor(tis / 12)} years with ${m.educationCredits} college credits, ${Finance.fmt(m.savings)} in savings, and skills that translate directly to the civilian sector. The GI Bill funds the degree. The MOS experience lands the interviews. This is what a successful EAS looks like.`,
   },
   family_first: {
-    icon: '🏠',
+    icon: '[FAMILY]',
     title: 'FAMILY FIRST',
     subtitle: 'You chose what mattered most.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} gets out after ${Math.floor(tis / 12)} years. The decision wasn't easy — the Corps was family too. But the real family at home needed more. The VA provides healthcare. The civilian career isn't glamorous yet, but the work-life balance lets you be present. Some Marines find their purpose after the Corps. You're one of them.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} gets out after ${Math.floor(tis / 12)} years. The decision was not easy - the Corps was family too. But the real family at home needed more. The VA provides healthcare. The civilian career is not glamorous yet, but the work-life balance lets you be present. Some Marines find their purpose after the Corps. You are one of them.`,
   },
   high_achiever_eas: {
-    icon: '💼',
+    icon: '[CAREER]',
     title: 'HIGH-VALUE TRANSITION',
     subtitle: 'Your career record opens every door.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${Math.floor(tis / 12)} years, multiple deployments, ${m.pmeCompleted.length} PME courses, billets that most Marines never see. Defense contractors, federal agencies, and private sector employers are competing for your resume. You leave the Corps on your terms.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} - ${Math.floor(tis / 12)} years, multiple deployments, ${m.pmeCompleted.length} PME courses, billets that most Marines never see. Defense contractors, federal agencies, and private sector employers are competing for your resume. You leave the Corps on your terms.`,
   },
   bad_discharge: {
-    icon: '⚠',
+    icon: '[WARN]',
     title: 'INVOLUNTARY SEPARATION',
     subtitle: 'The Corps ended it before you did.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()}'s time in the Marine Corps ends not by choice. After ${Math.floor(tis / 12)} years, the combination of disciplinary issues and eroded trust with leadership resulted in separation proceedings. It doesn't have to define you — but it will take time and deliberate effort to move forward. Many Marines have rebuilt. You can too.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()}'s time in the Marine Corps ends not by choice. After ${Math.floor(tis / 12)} years, the combination of disciplinary issues and eroded trust with leadership resulted in separation proceedings. It does not have to define you - but it will take time and deliberate effort to move forward. Many Marines have rebuilt. You can too.`,
   },
   medical_discharge: {
-    icon: '🏥',
+    icon: '[MED]',
     title: 'MEDICAL SEPARATION',
     subtitle: 'The body gave everything it had.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} is medically separated after ${Math.floor(tis / 12)} years. The injuries and stress accumulated over a career of service finally made continuation impossible. The VA disability rating provides some financial support. The transition is difficult — but your service was real, and the Marine Corps is grateful.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} is medically separated after ${Math.floor(tis / 12)} years. The injuries and stress accumulated over a career of service finally made continuation impossible. The VA disability rating provides some financial support. The transition is difficult - but your service was real, and the Marine Corps is grateful.`,
   },
   basic_eas: {
-    icon: '🪖',
+    icon: '[MARINE]',
     title: 'END OF ACTIVE SERVICE',
     subtitle: 'You served. That matters.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} completes their service commitment and separates from active duty after ${Math.floor(tis / 12)} years. The DD-214 is signed. The uniform goes in the closet. Whatever comes next — college, work, family — you carry the title of Marine with you. Once a Marine, always a Marine.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} completes their service commitment and separates from active duty after ${Math.floor(tis / 12)} years. The DD-214 is signed. The uniform goes in the closet. Whatever comes next - college, work, family - you carry the title of Marine with you. Once a Marine, always a Marine.`,
   },
   brig_discharge: {
-    icon: '⛓',
-    title: 'COURT-MARTIAL — DISHONORABLE DISCHARGE',
+    icon: '[BRIG]',
+    title: 'COURT-MARTIAL - DISHONORABLE DISCHARGE',
     subtitle: 'Career over. This one was preventable.',
-    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${Math.floor(tis / 12)} years of service ends in a courtroom. The urinalysis came back positive. The legal process moves fast when the evidence is clear. Court-martial proceedings, forfeiture of pay, confinement, and a dishonorable discharge. That characterization follows every background check, security clearance inquiry, and VA claim for decades to come. The Corps gave you everything it had. This is the hardest kind of ending — because it didn't have to go this way.`,
+    narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} - ${Math.floor(tis / 12)} years of service ends in a courtroom. The urinalysis came back positive. The legal process moves fast when the evidence is clear. Court-martial proceedings, forfeiture of pay, confinement, and a dishonorable discharge. That characterization follows every background check, security clearance inquiry, and VA claim for decades to come. The Corps gave you everything it had. This is the hardest kind of ending - because it did not have to go this way.`,
   },
 };
+
+
+
+
+
+

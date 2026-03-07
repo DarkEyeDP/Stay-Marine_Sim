@@ -165,6 +165,19 @@ const Engine = {
   runMonth() {
     const g = State.game;
     const m = g.marine;
+    const startSnapshot = {
+      physicalFitness: m.physicalFitness,
+      profConduct: m.profConduct,
+      mosProficiency: m.mosProficiency,
+      morale: m.morale,
+      stress: m.stress,
+      familyStability: m.familyStability,
+      disciplineRisk: m.disciplineRisk,
+      civilianEmployability: m.civilianEmployability,
+      savings: m.savings,
+      debt: m.debt,
+    };
+
     const result = {
       promotions:      [],
       alerts:          [],
@@ -173,6 +186,7 @@ const Engine = {
       deploymentEnded: false,
       gameOver:        false,
       endState:        null,
+      statDelta:       null,
     };
 
     // ── Step 1: Advance time (3 months) ─────────
@@ -250,6 +264,19 @@ const Engine = {
       result.gameOver = true;
       result.endState = Career.determineEndState(m, m.timeInService);
     }
+
+    result.statDelta = {
+      physicalFitness: m.physicalFitness - startSnapshot.physicalFitness,
+      profConduct: m.profConduct - startSnapshot.profConduct,
+      mosProficiency: m.mosProficiency - startSnapshot.mosProficiency,
+      morale: m.morale - startSnapshot.morale,
+      stress: m.stress - startSnapshot.stress,
+      familyStability: m.familyStability - startSnapshot.familyStability,
+      disciplineRisk: m.disciplineRisk - startSnapshot.disciplineRisk,
+      civilianEmployability: m.civilianEmployability - startSnapshot.civilianEmployability,
+      savings: m.savings - startSnapshot.savings,
+      debt: m.debt - startSnapshot.debt,
+    };
 
     // ── Step 10: Save ────────────────────────────
     State.save();

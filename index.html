@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <!-- Google tag (gtag.js) -->
+  
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MNP623H66J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -13,29 +13,29 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Stay Marine — A Marine Corps Career Sim</title>
+  <title>Stay Marine - A Marine Corps Career Sim</title>
   <meta name="description" content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
 
-  <!-- Open Graph / Social Preview -->
+  
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://stay-marine.com/" />
   <meta property="og:site_name" content="Stay Marine" />
   <meta property="og:title" content="A Marine Corps Career Simulation" />
   <meta property="og:description" content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
 
-  <!-- Twitter/X Card -->
+  
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://stay-marine.com/" />
-  <meta name="twitter:title" content="Stay Marine — A Marine Corps Career Sim" />
+  <meta name="twitter:title" content="Stay Marine - A Marine Corps Career Sim" />
   <meta name="twitter:description" content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪖</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>-x-</text></svg>" />
   <script type="module" src="/src/main.tsx"></script>
 </head>
 
 <body>
 
-  <!-- ═══════════════════════════ TITLE SCREEN ═══════════════════════════ -->
+  
   <div id="screen-title" class="screen active">
     <div class="title-bg"></div>
     <div class="title-content">
@@ -52,7 +52,7 @@
     </div>
   </div>
 
-  <!-- ════════════════════════ CHARACTER CREATION ════════════════════════ -->
+  
   <div id="screen-create" class="screen">
     <div class="create-wrapper">
       <h2 class="screen-title">YOUR MARINE</h2>
@@ -75,12 +75,17 @@
 
       <div class="form-group">
         <label class="form-label">Background</label>
+        <div id="create-presets" class="create-presets"></div>
         <div id="background-list" class="card-select"></div>
       </div>
 
       <div class="form-group">
         <label class="form-label">Enlisted MOS Options (Military Occupational Specialty)</label>
         <div id="mos-filter" class="filter-row"></div>
+        <div class="mos-search-row">
+          <input id="mos-search" class="form-input form-input-compact" type="text" maxlength="40" placeholder="Search MOS by code, title, or keyword" />
+          <span id="mos-result-count" class="mos-result-count"></span>
+        </div>
         <div id="mos-list" class="card-select mos-grid"></div>
       </div>
 
@@ -91,7 +96,7 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════ BOOT CAMP SCREEN ═══════════════════════ -->
+  
   <div id="screen-bootcamp" class="screen">
     <div class="bootcamp-wrapper">
       <div class="bootcamp-header">
@@ -104,21 +109,21 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════ RIFLE QUALIFICATION ══════════════════════ -->
+  
   <div id="screen-rifle-qual" class="screen">
 
-    <!-- Pre-range narrative + weapons safety quiz -->
+    
     <div id="rq-prerange" class="rq-overlay">
       <div class="rqp-content">
 
-        <!-- Phase: brief narrative -->
+        
         <div id="rqp-brief">
           <div class="rqp-section-label">RANGE DAY</div>
           <p class="rqp-narrative" id="rqp-narrative"></p>
           <button id="rqp-btn-ack" class="btn btn-primary">UNDERSTOOD</button>
         </div>
 
-        <!-- Phase: quiz (reused for safety rules + weapon conditions) -->
+        
         <div id="rqp-quiz" class="hidden">
           <div class="rqp-quiz-title" id="rqp-quiz-title"></div>
           <div class="rqp-quiz-sub" id="rqp-quiz-sub"></div>
@@ -128,27 +133,27 @@
           <button id="rqp-btn-submit" class="btn btn-primary" disabled>SUBMIT</button>
         </div>
 
-        <!-- Phase: fail -->
+        
         <div id="rqp-fail" class="hidden">
-          <div class="rqp-fail-icon">✗</div>
+          <div class="rqp-fail-icon">-S</div>
           <div class="rqp-fail-title">RANGE UNSAFE</div>
           <p class="rqp-fail-text" id="rqp-fail-text"></p>
-          <div class="rqp-fail-effects">−8 ProCon  |  −10 Morale  |  −12 Reputation  |  +15 DisciplineRisk</div>
+          <div class="rqp-fail-effects">--8 ProCon  |  --10 Morale  |  --12 Reputation  |  +15 DisciplineRisk</div>
           <button id="rqp-btn-fail-done" class="btn btn-primary">RETURN TO UNIT</button>
         </div>
 
-        <!-- Phase: pass — both quizzes cleared -->
+        
         <div id="rqp-pass" class="hidden">
-          <div class="rqp-pass-icon">✓</div>
-          <div class="rqp-pass-title">100% — CLEARED TO FIRE</div>
-          <p class="rqp-pass-text">The RSO looks up from the clipboard. "Good." He steps up to the formation. "Now get on the line. But before you do — out there, you listen to your coaches and your block NCOs. You do exactly what the Tower tells you, when they tell you. You do not rush. You do not be clever. You do not act stupid." A pause. "I pull anyone off my range for unsafe handling, they get dropped from the detail and I'm calling your CO personally. Clear?" A beat of silence across the line. "Step to the line."</p>
+          <div class="rqp-pass-icon">-S</div>
+          <div class="rqp-pass-title">100% - CLEARED TO FIRE</div>
+          <p class="rqp-pass-text">The RSO looks up from the clipboard. "Good." He steps up to the formation. "Now get on the line. But before you do - out there, you listen to your coaches and your block NCOs. You do exactly what the Tower tells you, when they tell you. You do not rush. You do not be clever. You do not act stupid." A pause. "I pull anyone off my range for unsafe handling, they get dropped from the detail and I'm calling your CO personally. Clear?" A beat of silence across the line. "Step to the line."</p>
           <button id="rqp-btn-pass" class="btn btn-primary">STEP TO THE LINE</button>
         </div>
 
       </div>
     </div>
 
-    <!-- Position intro / transition overlay -->
+    
     <div id="rq-overlay" class="rq-overlay hidden">
       <div class="rq-overlay-content">
         <div class="rq-overlay-phase" id="rq-overlay-phase">POSITION 1 OF 3</div>
@@ -158,7 +163,7 @@
       </div>
     </div>
 
-    <!-- Results overlay -->
+    
     <div id="rq-results" class="rq-overlay hidden">
       <div class="rq-results-content">
         <div class="rq-results-label">ANNUAL RIFLE QUALIFICATION</div>
@@ -170,13 +175,13 @@
       </div>
     </div>
 
-    <!-- Range header strip -->
+    
     <div class="rq-header-strip">
       <span class="rq-header-title">ANNUAL RIFLE QUALIFICATION</span>
       <span class="rq-header-dist"><span id="rq-dist-chip" class="rq-dist-chip">500 YD</span></span>
     </div>
 
-    <!-- Main game UI -->
+    
     <div id="rq-ui" class="rq-ui">
       <div class="rq-topbar">
         <div class="rq-pos-info">
@@ -195,7 +200,7 @@
         <div id="rq-flash" class="rq-flash hidden"></div>
       </div>
 
-      <div class="rq-instruction" id="rq-instruction">HOLD BUTTON TO AIM — RELEASE TO FIRE</div>
+      <div class="rq-instruction" id="rq-instruction">HOLD BUTTON TO AIM - RELEASE TO FIRE</div>
 
       <div class="rq-controls">
         <button id="rq-btn-fire" class="rq-fire-btn" touch-action="none">HOLD TO FIRE</button>
@@ -207,17 +212,17 @@
         </div>
         <div class="rq-sc-body" id="rq-sc-body"></div>
         <div class="rq-sc-totals" id="rq-sc-totals">
-          <span id="rq-total-0">—</span><span id="rq-total-1">—</span><span id="rq-total-2">—</span>
+          <span id="rq-total-0">-</span><span id="rq-total-1">-</span><span id="rq-total-2">-</span>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- ════════════════════════════ MAIN GAME ════════════════════════════ -->
+  
   <div id="screen-game" class="screen">
 
-    <!-- Mobile tab strip -->
+    
     <nav class="mobile-tabs" id="mobile-tabs">
       <button class="tab active" data-tab="events">EVENTS</button>
       <button class="tab" data-tab="stats">STATS<span class="tab-indicator" id="tab-ind-readiness"></span><span
@@ -226,7 +231,7 @@
 
     <div class="game-layout">
 
-      <!-- ── Stats Sidebar ── -->
+      
       <aside id="panel-stats" class="game-panel tab-panel active" data-tab-target="stats">
         <div class="marine-header">
           <div class="mh-rank-row">
@@ -234,8 +239,8 @@
             <span class="rank-title-display" id="rank-title-display">Private</span>
             <span class="qual-badge hidden" id="marine-qual-badge"></span>
           </div>
-          <div class="marine-name" id="marine-name">—</div>
-          <div class="marine-sub" id="marine-sub">—</div>
+          <div class="marine-name" id="marine-name">-</div>
+          <div class="marine-sub" id="marine-sub">-</div>
         </div>
 
         <div class="stat-section">
@@ -244,7 +249,7 @@
             data-tip="Physical Fitness Test (PFT). Below 30 risks remedial PT and promotion flags. Keep it above 70 for competitive boards.">
           </div>
           <div class="stat-row" id="stat-profConduct"
-            data-tip="Proficiency &amp; Conduct marks (E-1 to E-4) or RS/RO Fitness Report (E-5+). Primary promotion driver — stay squared away and out of trouble.">
+            data-tip="Proficiency &amp; Conduct marks (E-1 to E-4) or RS/RO Fitness Report (E-5+). Primary promotion driver - stay squared away and out of trouble.">
           </div>
           <div class="stat-row" id="stat-mosProficiency"
             data-tip="Your MOS skill level. Affects billet eligibility and promotion boards. Drops after a PCS move and rebuilds over time.">
@@ -263,7 +268,7 @@
             data-tip="⚠ DANGER: Chronic high stress degrades all other stats. Unchecked stress above 70 can spiral into behavioral issues or a medical discharge.">
           </div>
           <div class="stat-row" id="stat-familyStability"
-            data-tip="Affects the Family First career track and long-term morale. Low stability risks a failed marriage — and divorce is expensive.">
+            data-tip="Affects the Family First career track and long-term morale. Low stability risks a failed marriage - and divorce is expensive.">
           </div>
           <div class="stat-row" id="stat-injury"
             data-tip="Current injury status. Minor injuries increase monthly expenses. A major injury can trigger limited duty and may end your career.">
@@ -276,41 +281,41 @@
             <span class="fin-label"
               data-tip="Total monthly gross pay: Base Pay + BAH + BAS + special pays. Increases with each promotion.">Monthly
               Pay</span>
-            <span class="fin-val" id="fin-pay">—</span>
+            <span class="fin-val" id="fin-pay">-</span>
           </div>
           <div class="finance-row">
             <span class="fin-label"
               data-tip="Monthly expenses: lifestyle, dependents ($300/child), debt minimums, car loan, and injury costs.">Monthly
               Bills</span>
-            <span class="fin-val" id="fin-bills">—</span>
+            <span class="fin-val" id="fin-bills">-</span>
           </div>
           <div class="finance-row fin-net-row">
             <span class="fin-label"
               data-tip="Net income after all bills. Positive builds your checking account; negative drains it toward debt.">Net
               / Month</span>
-            <span class="fin-val" id="fin-net">—</span>
+            <span class="fin-val" id="fin-net">-</span>
           </div>
           <hr class="fin-divider" />
           <div class="finance-row">
             <span class="fin-label"
               data-tip="Liquid checking account. Pay flows in, bills come out each month. A deficit drains savings; below zero creates debt.">Checking</span>
-            <span class="fin-val" id="fin-checking">—</span>
+            <span class="fin-val" id="fin-checking">-</span>
           </div>
           <div class="finance-row">
             <span class="fin-label"
               data-tip="Your savings balance. Your monthly savings goal transfers from checking each month if funds allow.">Savings</span>
-            <span class="fin-val" id="fin-savings">—</span>
+            <span class="fin-val" id="fin-savings">-</span>
           </div>
           <div class="finance-row">
             <span class="fin-label"
               data-tip="⚠ Outstanding debt compounds at 12% APR monthly. Above $10k triggers mandatory financial counseling from command.">Debt</span>
-            <span class="fin-val danger" id="fin-debt">—</span>
+            <span class="fin-val danger" id="fin-debt">-</span>
           </div>
           <div id="fin-carloan-row" class="finance-row hidden">
             <span class="fin-label"
-              data-tip="Military car lot special — $25,000 at 20% APR. $661/mo for 60 months. Paying it off early saves thousands in interest.">Car
+              data-tip="Military car lot special - $25,000 at 20% APR. $661/mo for 60 months. Paying it off early saves thousands in interest.">Car
               Loan</span>
-            <span class="fin-val danger" id="fin-carloan">—</span>
+            <span class="fin-val danger" id="fin-carloan">-</span>
           </div>
         </div>
 
@@ -328,57 +333,57 @@
             <span class="fin-label"
               data-tip="College credits earned via CLEP exams, TAP programs, or GI Bill courses. 120 credits = bachelor's degree. Boosts civilian employability.">Education
               Credits</span>
-            <span class="fin-val" id="fin-edu">—</span>
+            <span class="fin-val" id="fin-edu">-</span>
           </div>
           <div class="finance-row">
             <span class="fin-label"
               data-tip="GI Bill months remaining. Use after EAS to cover tuition and a monthly housing allowance while in school.">GI
               Bill Remaining</span>
-            <span class="fin-val" id="fin-gibill">—</span>
+            <span class="fin-val" id="fin-gibill">-</span>
           </div>
         </div>
 
         <div class="stat-section">
           <div class="stat-section-title">CAREER TRACKS</div>
           <div class="track-row" id="track-retirement"
-            data-tip="Progress toward 20-year retirement — pension at 50% base pay for life. Requires sustained service, strong fitness reports, and staying in.">
+            data-tip="Progress toward 20-year retirement - pension at 50% base pay for life. Requires sustained service, strong fitness reports, and staying in.">
           </div>
           <div class="track-row" id="track-achiever"
-            data-tip="High Achiever track — accelerated promotions, PME completion, competitive billets, and consistently exceptional fitness reports.">
+            data-tip="High Achiever track - accelerated promotions, PME completion, competitive billets, and consistently exceptional fitness reports.">
           </div>
           <div class="track-row" id="track-civilian"
-            data-tip="Smooth EAS — building civilian employability, education credits, financial runway, and a professional network before separation.">
+            data-tip="Smooth EAS - building civilian employability, education credits, financial runway, and a professional network before separation.">
           </div>
           <div class="track-row" id="track-family"
-            data-tip="Family First — prioritizing family stability, quality of life, and morale over the most demanding career moves.">
+            data-tip="Family First - prioritizing family stability, quality of life, and morale over the most demanding career moves.">
           </div>
         </div>
       </aside>
 
-      <!-- ── Drag resize handle (desktop only) ── -->
+      
       <div id="resize-handle"></div>
 
-      <!-- ── Main Events Panel ── -->
+      
       <main id="panel-events" class="game-panel tab-panel active" data-tab-target="events">
         <div class="turn-header">
           <div class="th-block th-date">
             <span class="th-label">DATE</span>
-            <span class="th-val" id="turn-date">—</span>
+            <span class="th-val" id="turn-date">-</span>
           </div>
           <div class="th-block th-service">
             <span class="th-label">TIS / RANK</span>
-            <span class="th-val" id="turn-tis">—</span>
+            <span class="th-val" id="turn-tis">-</span>
           </div>
           <div class="th-block th-billet">
             <span class="th-label">BILLET</span>
-            <span class="th-val" id="billet-label">—</span>
-            <span class="th-sub" id="billet-location">—</span>
+            <span class="th-val" id="billet-label">-</span>
+            <span class="th-sub" id="billet-location">-</span>
           </div>
         </div>
 
         <div class="events-body">
 
-          <!-- ── First-Turn Orientation Panel ── -->
+          
           <div id="orientation-panel" class="orientation-panel hidden">
 
             <div class="orient-title">REPORTING TO THE FLEET</div>
@@ -393,17 +398,17 @@
 
               <div class="orient-block">
                 <div class="orient-block-title"><span class="desktop-only">LEFT PANEL</span><span
-                    class="mobile-only">STATS TAB</span> — YOUR STATS</div>
+                    class="mobile-only">STATS TAB</span> - YOUR STATS</div>
                 <ul class="orient-list">
                   <li><span class="orient-label">READINESS</span> Physical Fitness, Proficiency/Conduct, MOS Skills, and
                     Discipline Risk. These drive promotions and your reputation with leadership. Red bars are danger
                     zones.</li>
-                  <li><span class="orient-label">WELL-BEING</span> Stress and Morale are linked — chronic high stress
+                  <li><span class="orient-label">WELL-BEING</span> Stress and Morale are linked - chronic high stress
                     will
                     erode everything else. Family Stability matters more once you're married.</li>
-                  <li><span class="orient-label">FINANCE</span> Track the gap between Monthly Pay and Monthly Bills —
+                  <li><span class="orient-label">FINANCE</span> Track the gap between Monthly Pay and Monthly Bills -
                     that's your savings margin. Debt compounds at 12% APR monthly. Don't let it spiral.</li>
-                  <li><span class="orient-label">CAREER TRACKS</span> Four paths — Retirement, High Achiever, Smooth
+                  <li><span class="orient-label">CAREER TRACKS</span> Four paths - Retirement, High Achiever, Smooth
                     EAS,
                     and Family First. They evolve with your decisions; you're not locked in to one.</li>
                 </ul>
@@ -411,14 +416,14 @@
 
               <div class="orient-block">
                 <div class="orient-block-title"><span class="desktop-only">RIGHT PANEL</span><span
-                    class="mobile-only">EVENTS TAB (this screen)</span> — EACH QUARTER</div>
+                    class="mobile-only">EVENTS TAB (this screen)</span> - EACH QUARTER</div>
                 <ul class="orient-list">
-                  <li><span class="orient-label">EVENTS</span> Random situations will appear each quarter — deployments,
+                  <li><span class="orient-label">EVENTS</span> Random situations will appear each quarter - deployments,
                     career opportunities, personal crises. Each one requires a choice. Resolve all events before you can
-                    advance. Some events are marked <strong>CHANCE</strong> — these resolve immediately with a single
+                    advance. Some events are marked <strong>CHANCE</strong> - these resolve immediately with a single
                     acknowledge button. No choice, just consequences.</li>
                   <li><span class="orient-label">BANDWIDTH</span> You have a limited pool of <strong>Bandwidth</strong>
-                    points each quarter — your capacity for effort beyond normal duties. Spend them on focus choices
+                    points each quarter - your capacity for effort beyond normal duties. Spend them on focus choices
                     (cost
                     shown in the corner of each card). You can split across multiple choices or go all-in on one. Unused
                     points vanish. Senior NCOs get more; burned-out Marines get less.</li>
@@ -431,15 +436,15 @@
               <div class="orient-block orient-block-wide">
                 <div class="orient-block-title">THINGS THAT WILL BITE YOU</div>
                 <ul class="orient-list orient-list-inline">
-                  <li><span class="orient-label">DEBT</span> Grows every month — $10k triggers command involvement.</li>
+                  <li><span class="orient-label">DEBT</span> Grows every month - $10k triggers command involvement.</li>
                   <li><span class="orient-label">PME</span> Required for promotion past Corporal. Look for the PME focus
                     option.</li>
-                  <li><span class="orient-label">PCS MOVES</span> First move arrives after roughly 2–3 years; then
-                    every 3–4 years after that. They cost money and temporarily shake morale.</li>
+                  <li><span class="orient-label">PCS MOVES</span> First move arrives after roughly 2-3 years; then
+                    every 3-4 years after that. They cost money and temporarily shake morale.</li>
                   <li><span class="orient-label">REENLISTMENT</span> Windows have Sign-On Bonuses (SRB). Timing and your
                     ProCon score affect the offer.</li>
                   <li><span class="orient-label">RIFLE QUAL</span> Each contract you'll be sent to the range. A
-                    pre-range safety quiz comes first — know your Four Safety Rules and weapon conditions or the RSO
+                    pre-range safety quiz comes first - know your Four Safety Rules and weapon conditions or the RSO
                     will send you home. Qual scores affect your record.</li>
                 </ul>
               </div>
@@ -450,23 +455,31 @@
           </div>
 
           <div id="alerts-container" class="alerts-container"></div>
+          <div id="status-strip" class="status-strip">
+            <div id="critical-warnings" class="critical-warnings"></div>
+            <div id="quarter-summary" class="quarter-summary hidden"></div>
+          </div>
           <div id="events-container" class="events-container"></div>
 
           <div id="monthly-choices" class="choices-section">
             <div class="choices-header">
-              <h3 class="choices-title">THIS QUARTER — WHAT'S YOUR FOCUS?</h3>
+              <h3 class="choices-title">THIS QUARTER - WHAT'S YOUR FOCUS?</h3>
               <div id="bandwidth-display" class="bandwidth-display"
-                data-tip="Bandwidth — your effort capacity beyond normal duties this quarter. Spend on focus choices below. Unused points vanish. Senior NCOs earn more; high stress reduces it.">
+                data-tip="Bandwidth - your effort capacity beyond normal duties this quarter. Spend on focus choices below. Unused points vanish. Senior NCOs earn more; high stress reduces it.">
               </div>
             </div>
             <div id="choices-list" class="choices-list"></div>
           </div>
 
-        </div><!-- /.events-body -->
+        </div>
 
         <div class="events-action-bar">
           <div id="advance-section">
             <button id="btn-advance" class="btn btn-primary btn-full" disabled>ADVANCE QUARTER</button>
+          </div>
+          <div class="save-strip">
+            <span id="save-status" class="save-status">Autosave active</span>
+            <button id="btn-save-now" class="save-now-btn" type="button">SAVE NOW</button>
           </div>
           <footer class="game-footer">
             <button id="btn-start-over" class="footer-start-over">↩ Start Over</button>
@@ -480,7 +493,7 @@
     </div>
   </div>
 
-  <!-- ════════════════════════ DECISION MODAL ════════════════════════════ -->
+  
   <div id="modal-decision" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
@@ -493,20 +506,32 @@
     </div>
   </div>
 
-  <!-- ════════════════════════ END STATE SCREEN ══════════════════════════ -->
+  
   <div id="screen-end" class="screen">
     <div class="end-wrapper">
       <div class="end-icon" id="end-icon"></div>
-      <h2 class="end-title" id="end-title">—</h2>
-      <p class="end-subtitle" id="end-subtitle">—</p>
-      <div class="end-stats" id="end-stats"></div>
-      <div class="end-narrative" id="end-narrative"></div>
-      <div id="end-outlook"></div>
+      <h2 class="end-title" id="end-title">-</h2>
+      <p class="end-subtitle" id="end-subtitle">-</p>
+      <div class="end-tabs" id="end-tabs">
+        <button class="end-tab active" data-end-tab="summary" type="button">SUMMARY</button>
+        <button class="end-tab" data-end-tab="outlook" type="button">OUTLOOK</button>
+        <button class="end-tab" data-end-tab="record" type="button">SERVICE RECORD</button>
+      </div>
+      <section class="end-panel active" id="end-panel-summary" data-end-tab-panel="summary">
+        <div class="end-stats" id="end-stats"></div>
+        <div class="end-narrative" id="end-narrative"></div>
+      </section>
+      <section class="end-panel" id="end-panel-outlook" data-end-tab-panel="outlook">
+        <div id="end-outlook"></div>
+      </section>
+      <section class="end-panel" id="end-panel-record" data-end-tab-panel="record">
+        <div id="end-record"></div>
+      </section>
       <button id="btn-play-again" class="btn btn-primary">PLAY AGAIN</button>
     </div>
   </div>
 
-  <!-- ═══════════════════════════ SCRIPTS ═══════════════════════════════ -->
+  
   <div id="game-tooltip" class="game-tooltip hidden"></div>
   <div id="react-bootstrap" class="hidden" aria-hidden="true"></div>
 

@@ -351,3 +351,68 @@
   align-items: center;
   gap: 0.75rem;
 }
+
+/* Create screen UX upgrades */
+.create-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+}
+
+.create-preset-btn {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.create-preset-btn:hover,
+.create-preset-btn.active {
+  border-color: var(--green);
+  color: var(--white);
+  background: rgba(76, 175, 80, 0.16);
+}
+
+.mos-search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
+}
+
+.form-input-compact {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.mos-result-count {
+  font-size: 0.68rem;
+  color: var(--muted);
+  min-width: 120px;
+  text-align: right;
+}
+
+.mos-empty {
+  border-style: dashed;
+  cursor: default;
+}
+
+@media (max-width: 620px) {
+  .mos-search-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .mos-result-count {
+    text-align: left;
+    min-width: 0;
+  }
+}

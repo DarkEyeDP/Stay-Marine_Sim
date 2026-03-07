@@ -1,10 +1,11 @@
-/* ═══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    STATE MANAGER
    Single source of truth for the entire game.
    Auto-saves to localStorage after each month.
-   ═══════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 const SAVE_KEY = 'reenlistment_save_v1';
+const SAVE_META_KEY = 'reenlistment_save_meta_v1';
 
 const State = {
   game: null,
@@ -13,7 +14,7 @@ const State = {
   init(marine) {
     State.game = {
       marine,
-      // Calendar — game starts in Jan 2026
+      // Calendar â€” game starts in Jan 2026
       year: 2026,
       month: 1,
       // Pending decisions that must be resolved before advancing
@@ -25,15 +26,15 @@ const State = {
       // Flags
       gameOver: false,
       endState: null,
-      // Reenlistment — offered once per contract, reset after signing
+      // Reenlistment â€” offered once per contract, reset after signing
       reenlistWindowOffered: false,
       // Recently fired event IDs (prevents same event repeating immediately)
       recentEventIds: [],
-      // Orientation panel — shown once at game start
+      // Orientation panel â€” shown once at game start
       orientationDismissed: false,
-      // Rifle qualification — fires once per enlistment contract; reset on reenlist
+      // Rifle qualification â€” fires once per enlistment contract; reset on reenlist
       rifleQualCompleted: false,
-      // EAS wind-down — true after player chooses EAS in the reenlistment window;
+      // EAS wind-down â€” true after player chooses EAS in the reenlistment window;
       // enables out-processing events and suppresses PCS/deployments until contract expires
       easDecided: false,
     };
@@ -44,6 +45,7 @@ const State = {
     if (!State.game) return;
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(State.game));
+      localStorage.setItem(SAVE_META_KEY, JSON.stringify({ savedAt: Date.now() }));
     } catch (e) {
       console.warn('Save failed:', e);
     }
@@ -65,8 +67,20 @@ const State = {
     return !!localStorage.getItem(SAVE_KEY);
   },
 
+  getLastSavedAt() {
+    try {
+      const raw = localStorage.getItem(SAVE_META_KEY);
+      if (!raw) return null;
+      const meta = JSON.parse(raw);
+      return Number.isFinite(meta?.savedAt) ? meta.savedAt : null;
+    } catch (_e) {
+      return null;
+    }
+  },
+
   clearSave() {
     localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(SAVE_META_KEY);
     State.game = null;
   },
 

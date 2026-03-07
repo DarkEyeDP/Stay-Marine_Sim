@@ -526,3 +526,141 @@
     padding: 0.55rem 0.7rem;
   }
 }
+
+/* Modal readability tune-up */
+.modal-content {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+}
+
+.modal-body {
+  max-width: 66ch;
+}
+
+.modal-choice-btn .mc-desc {
+  line-height: 1.55;
+}
+
+/* End screen tabs */
+.end-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.end-tab {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  padding: 0.38rem 0.45rem;
+  cursor: pointer;
+}
+
+.end-tab.active,
+.end-tab:hover {
+  border-color: var(--tan);
+  color: var(--tan);
+  background: rgba(200, 169, 110, 0.08);
+}
+
+.end-panel {
+  display: none;
+}
+
+.end-panel.active {
+  display: block;
+}
+
+#end-record {
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .end-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fade in play-again after end screen content renders */
+#screen-end .end-wrapper #btn-play-again {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+#screen-end .end-wrapper.end-ready #btn-play-again {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Shared sliding highlight for end tabs */
+.end-tabs {
+  position: relative;
+  isolation: isolate;
+}
+
+.end-tab {
+  position: relative;
+  z-index: 2;
+  border-color: transparent;
+  background: transparent;
+}
+
+.end-tab.active,
+.end-tab:hover {
+  color: var(--tan);
+  border-color: transparent;
+  background: transparent;
+}
+
+.end-tab-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border: 1px solid var(--tan);
+  border-radius: var(--radius);
+  background: rgba(200, 169, 110, 0.1);
+  box-shadow: 0 0 0 1px rgba(200, 169, 110, 0.12) inset;
+  pointer-events: none;
+  transition: transform 0.28s ease, width 0.28s ease, height 0.28s ease;
+}
+
+.end-tab-indicator.no-anim {
+  transition: none;
+}
+
+/* End tab baseline visibility fix + moving indicator fallback */
+.end-tabs .end-tab {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+}
+
+.end-tabs .end-tab.active,
+.end-tabs .end-tab:hover {
+  color: var(--tan);
+}
+
+.end-tabs.has-indicator .end-tab.active {
+  border-color: transparent;
+  background: transparent;
+}
+
+.end-tabs:not(.has-indicator) .end-tab.active {
+  border-color: var(--tan);
+  background: rgba(200, 169, 110, 0.08);
+}
+
+/* Keep end-tab geometry stable so indicator only moves */
+.end-tabs .end-tab {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}

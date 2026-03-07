@@ -889,3 +889,237 @@
   85%       { color: var(--yellow); }
   90%, 100% { color: var(--muted); }
 }
+
+/* Status strip and quarter summaries */
+.status-strip {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: var(--gap);
+}
+
+.critical-warnings {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.critical-warning {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.critical-warning.good {
+  border-color: rgba(76, 175, 80, 0.35);
+  color: var(--green);
+  background: rgba(76, 175, 80, 0.08);
+}
+
+.critical-warning.warn {
+  border-color: rgba(240, 180, 41, 0.35);
+  color: var(--yellow);
+  background: rgba(240, 180, 41, 0.08);
+}
+
+.critical-warning.bad {
+  border-color: rgba(229, 57, 53, 0.45);
+  color: var(--red);
+  background: rgba(229, 57, 53, 0.1);
+}
+
+.quarter-summary {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.quarter-summary-title {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.quarter-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.quarter-summary-label {
+  color: var(--muted);
+}
+
+.quarter-summary-value {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.quarter-summary-value.pos {
+  color: var(--green);
+}
+
+.quarter-summary-value.neg {
+  color: var(--red);
+}
+
+.delta-row {
+  margin-top: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+}
+
+.delta-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.64rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.12rem 0.45rem;
+  color: var(--muted);
+}
+
+.delta-chip.pos {
+  color: var(--green);
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+.delta-chip.neg {
+  color: var(--red);
+  border-color: rgba(229, 57, 53, 0.4);
+}
+
+.delta-chip.neutral {
+  color: var(--muted);
+}
+
+.career-progress {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.progress-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.6rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.progress-label {
+  display: inline-block;
+  font-size: 0.64rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.28rem;
+}
+
+.progress-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #7bcf5a);
+}
+
+.progress-value {
+  margin-top: 0.25rem;
+  display: inline-block;
+  font-size: 0.68rem;
+  color: var(--white);
+}
+
+.impact-tags {
+  margin-top: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.impact-tag {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.08rem 0.36rem;
+  font-size: 0.62rem;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+.impact-tag.pos {
+  color: var(--green);
+  border-color: rgba(76, 175, 80, 0.35);
+}
+
+.impact-tag.neg {
+  color: var(--red);
+  border-color: rgba(229, 57, 53, 0.35);
+}
+
+.impact-tag.mix {
+  color: var(--yellow);
+  border-color: rgba(240, 180, 41, 0.35);
+}
+
+.save-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 0.6rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border);
+}
+
+.save-status {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.save-now-btn {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 0.67rem;
+  letter-spacing: 0.07em;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.save-now-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.event-choice-btn,
+.event-card-header,
+.deploy-loc-context,
+.chance-impact,
+.footer-coffee {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .save-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .save-now-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
