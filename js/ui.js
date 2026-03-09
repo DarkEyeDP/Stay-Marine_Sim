@@ -66,21 +66,38 @@ const UI = {
       if (!btn) return;
       filterRow.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      UI.renderMOSList(btn.dataset.field);
+      document.getElementById('mos-search').value = '';
+      UI.renderMOSList(btn.dataset.field, '');
     });
 
-    UI.renderMOSList('all');
+    document.getElementById('mos-search').addEventListener('input', e => {
+      const q = e.target.value.trim();
+      // Clear active field filter when searching
+      if (q) {
+        filterRow.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      } else {
+        const activeField = filterRow.querySelector('.filter-btn.active')?.dataset.field || 'all';
+        UI.renderMOSList(activeField, '');
+        return;
+      }
+      UI.renderMOSList('all', q);
+    });
+
+    UI.renderMOSList('all', '');
   },
 
-  renderMOSList(filterField) {
+  renderMOSList(filterField, searchTerm) {
     const mosList = document.getElementById('mos-list');
     const prev = mosList.querySelector('.card-select-item.selected');
     const prevId = prev ? prev.dataset.id : null;
     mosList.innerHTML = '';
 
-    const filtered = filterField === 'all'
-      ? MOS_DATA
-      : MOS_DATA.filter(m => m.field === filterField);
+    const q = (searchTerm || '').toLowerCase();
+    const filtered = MOS_DATA.filter(m => {
+      const fieldMatch = filterField === 'all' || m.field === filterField;
+      const searchMatch = !q || m.code.toLowerCase().includes(q) || m.title.toLowerCase().includes(q);
+      return fieldMatch && searchMatch;
+    });
 
     filtered.forEach(mos => {
       const el = document.createElement('div');

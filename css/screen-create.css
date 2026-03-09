@@ -350,6 +350,24 @@
   }
 }
 
+/* MOS search input */
+.mos-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 0.45rem 0.75rem;
+  margin-bottom: 0.6rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.mos-search-input::placeholder { color: var(--muted); }
+.mos-search-input:focus { border-color: var(--green); }
+
 /* MOS filter row */
 .filter-row {
   display: flex;
