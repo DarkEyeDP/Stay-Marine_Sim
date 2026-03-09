@@ -6,30 +6,34 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MNP623H66J"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-MNP623H66J');
   </script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Stay Marine — A Marine Corps Career Sim</title>
-  <meta name="description" content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
+  <title>Marine Corps Career Sim</title>
+  <meta name="description"
+    content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
 
   <!-- Open Graph / Social Preview -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://stay-marine.com/" />
   <meta property="og:site_name" content="Stay Marine" />
   <meta property="og:title" content="A Marine Corps Career Simulation" />
-  <meta property="og:description" content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
+  <meta property="og:description"
+    content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
 
   <!-- Twitter/X Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://stay-marine.com/" />
   <meta name="twitter:title" content="Stay Marine — A Marine Corps Career Sim" />
-  <meta name="twitter:description" content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
+  <meta name="twitter:description"
+    content="What kind of Marine will you be? What will you have left when the Corps is done with you? Every decision shapes your career, your family, and the life waiting on the other side of service." />
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪖</text></svg>" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪖</text></svg>" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
@@ -69,7 +73,8 @@
         <label class="form-label">Name</label>
         <div class="name-row">
           <input id="input-name" class="form-input" type="text" maxlength="30" placeholder="Last Name, First Name" />
-          <button id="btn-gen-name" class="btn-gen-name" type="button"><span class="gen-label"><span class="gen-dot"></span>GENERATE</span></button>
+          <button id="btn-gen-name" class="btn-gen-name" type="button"><span class="gen-label"><span
+                class="gen-dot"></span>GENERATE</span></button>
         </div>
       </div>
 
@@ -81,7 +86,8 @@
       <div class="form-group">
         <label class="form-label">Enlisted MOS Options (Military Occupational Specialty)</label>
         <div id="mos-filter" class="filter-row"></div>
-        <input id="mos-search" class="mos-search-input" type="text" placeholder="Search by MOS code or title…" autocomplete="off" spellcheck="false">
+        <input id="mos-search" class="mos-search-input" type="text" placeholder="Search by MOS code or title…"
+          autocomplete="off" spellcheck="false">
         <div id="mos-list" class="card-select mos-grid"></div>
       </div>
 
@@ -134,7 +140,7 @@
           <div class="rqp-fail-icon">✗</div>
           <div class="rqp-fail-title">RANGE UNSAFE</div>
           <p class="rqp-fail-text" id="rqp-fail-text"></p>
-          <div class="rqp-fail-effects">−8 ProCon  |  −10 Morale  |  −12 Reputation  |  +15 DisciplineRisk</div>
+          <div class="rqp-fail-effects">−8 ProCon | −10 Morale | −12 Reputation | +15 DisciplineRisk</div>
           <button id="rqp-btn-fail-done" class="btn btn-primary">RETURN TO UNIT</button>
         </div>
 
@@ -142,7 +148,11 @@
         <div id="rqp-pass" class="hidden">
           <div class="rqp-pass-icon">✓</div>
           <div class="rqp-pass-title">100% — CLEARED TO FIRE</div>
-          <p class="rqp-pass-text">The RSO looks up from the clipboard. "Good." He steps up to the formation. "Now get on the line. But before you do — out there, you listen to your coaches and your block NCOs. You do exactly what the Tower tells you, when they tell you. You do not rush. You do not be clever. You do not act stupid." A pause. "I pull anyone off my range for unsafe handling, they get dropped from the detail and I'm calling your CO personally. Clear?" A beat of silence across the line. "Step to the line."</p>
+          <p class="rqp-pass-text">The RSO looks up from the clipboard. "Good." He steps up to the formation. "Now get
+            on the line. But before you do — out there, you listen to your coaches and your block NCOs. You do exactly
+            what the Tower tells you, when they tell you. You do not rush. You do not be clever. You do not act stupid."
+            A pause. "I pull anyone off my range for unsafe handling, they get dropped from the detail and I'm calling
+            your CO personally. Clear?" A beat of silence across the line. "Step to the line."</p>
           <button id="rqp-btn-pass" class="btn btn-primary">STEP TO THE LINE</button>
         </div>
 
@@ -471,7 +481,8 @@
           </div>
           <footer class="game-footer">
             <button id="btn-start-over" class="footer-start-over">↩ MAIN MENU</button>
-            <a class="footer-coffee" href="https://buymeacoffee.com/staymarinesim" target="_blank" rel="noopener noreferrer">🖍️ Buy Me Some Crayons</a>
+            <a class="footer-coffee" href="https://buymeacoffee.com/staymarinesim" target="_blank"
+              rel="noopener noreferrer">🖍️ Buy Me Some Crayons</a>
             <a class="footer-feedback" href="mailto:darkeyegraphics@gmail.com">✉ Send Feedback</a>
           </footer>
         </div>
@@ -534,4 +545,3 @@
 </body>
 
 </html>
-
