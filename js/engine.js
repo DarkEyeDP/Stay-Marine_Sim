@@ -12,8 +12,8 @@ const Engine = {
     {
       id: 'focus_education',
       label: 'Take college courses (TA)',
-      hint: '+Edu Credits, +Civilian Employ., ++Stress, -Family, -MOS Focus',
-      effects: { educationCredits: 6, civilianEmployability: 4, stress: 10, familyStability: -6, mosProficiency: -4 },
+      hint: '+Edu Credits, +Civilian Employ., +Stress, -Family, -MOS Focus',
+      effects: { educationCredits: 6, civilianEmployability: 4, stress: 4, familyStability: -6, mosProficiency: -4 },
       cost: 3,
       unavailableWhenDeployed: true,
     },
