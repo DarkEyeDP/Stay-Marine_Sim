@@ -302,6 +302,23 @@ const EVENTS_CHANCE = [
   },
 
   {
+    id: 'evt_chance_dysentery',
+    category: 'personal',
+    title: 'You Have Dysentery',
+    weight: 5,
+    trigger: {},
+    isChance: true,
+    narrative: 'It started after morning chow. By noon you were sprinting to the head every twenty minutes. By evening your SSgt was calling you "Oregon Trail" in front of the entire platoon. No one knows if it was the field mess, the lounge fridge someone left unlocked over the long weekend, or just an act of God — but the outcome is the same. You have dysentery. Three days of pure misery, one IV bag at medical, and an entry you\'ll be explaining at every PHA for the rest of your career.',
+    chanceImpact: '-Fitness, +Stress, -Morale',
+    chanceType: 'negative',
+    choices: [{
+      text: 'SURVIVED — barely.',
+      effects: { physicalFitness: -8, stress: 10, morale: -7 },
+      logEntry: 'Sick call x3. Dysentery. IV fluids. The platoon will never let you live it down.',
+    }],
+  },
+
+  {
     id: 'evt_chance_family_expense',
     category: 'personal',
     title: 'Emergency Wire Home',
