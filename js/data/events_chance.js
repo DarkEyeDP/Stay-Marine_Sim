@@ -211,7 +211,7 @@ const EVENTS_CHANCE = [
     weight: 7,
     trigger: {},
     isChance: true,
-    narrative: 'Your annual physical came back clean. The doc gave you the strongest possible readiness endorsement — no waivers, no profiles, no restrictions. You\'re at full capacity and it shows.',
+    narrative: 'Your annual physical came back clean. The doc gave you the strongest possible readiness endorsement — no waivers, no light duty, no restrictions. You\'re at full capacity and it shows.',
     chanceImpact: '+Fitness, +Morale',
     chanceType: 'positive',
     choices: [{
@@ -403,11 +403,11 @@ const EVENTS_CHANCE = [
   {
     id: 'evt_chance_profile',
     category: 'personal',
-    title: 'Placed on Limited Duty Profile',
+    title: 'Placed on Limited Duty',
     weight: 7,
     trigger: {},
     isChance: true,
-    narrative: 'The battalion surgeon reviewed your last physical and flagged an issue you\'d been managing quietly. You\'re on a limited duty profile — no running, no load-bearing, modified PT. It\'s temporary, but you\'re off the full-duty roster until it resolves.',
+    narrative: 'The medical officer reviewed your last physical and flagged an issue you\'d been managing quietly. You\'re now on limited duty — no running, no load-bearing, modified PT. It\'s temporary, but you\'re off the full-duty roster until it resolves.',
     chanceImpact: '-Fitness, +Stress, Minor Injury Status',
     chanceType: 'negative',
     choices: [{
