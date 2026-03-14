@@ -264,6 +264,10 @@ const UI = {
     document.getElementById('rank-title-display').textContent = m.rankTitle;
     document.getElementById('marine-name').textContent = m.name;
     document.getElementById('marine-sub').textContent = `${m.mosCode} · ${m.mosTitle}`;
+    const awardsHeaderEl = document.getElementById('marine-awards');
+    if (awardsHeaderEl) {
+      awardsHeaderEl.innerHTML = (m.awards || []).map(a => `<span class="mh-award-item">${a}</span>`).join('');
+    }
     UI.updateRifleQualBadge(m.rifleQualLevel);
 
     // Date / TIS
@@ -954,6 +958,18 @@ const UI = {
       <div class="end-stat-chip"><span class="esc-label">Awards</span><span class="esc-val">${m.awards.length || 0}</span></div>
       <div class="end-stat-chip"><span class="esc-label">Family</span><span class="esc-val">${m.isMarried ? (m.childCount > 0 ? `Married, ${m.childCount} kid(s)` : 'Married') : 'Single'}</span></div>
     `;
+
+    const awardsEl = document.getElementById('end-awards');
+    if (awardsEl) {
+      if (m.awards.length > 0) {
+        awardsEl.innerHTML = `
+          <div class="end-awards-label">Awards &amp; Decorations</div>
+          <div class="end-awards-list">${m.awards.map(a => `<span class="end-award-item">${a}</span>`).join('')}</div>
+        `;
+      } else {
+        awardsEl.innerHTML = '';
+      }
+    }
 
     UI.showScreen('screen-end');
     UI.renderEndOutlook(endStateId, m, tis);

@@ -66,6 +66,24 @@
   color: var(--muted);
 }
 
+.mh-awards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.mh-award-item {
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  color: var(--tan);
+  background: rgba(200, 169, 110, 0.08);
+  border: 1px solid rgba(200, 169, 110, 0.25);
+  border-radius: var(--radius);
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+}
+
 .stat-section {
   margin-bottom: var(--gap);
 }

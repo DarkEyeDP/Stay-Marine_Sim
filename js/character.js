@@ -44,7 +44,7 @@ const Character = {
       billetTier:       1,
       pmeCompleted:     [],
       certs:            [],
-      awards:           [],
+      awards:           ['National Defense Service Medal'],
 
       // ── Well-being ────────────────────────
       stress:           clamp(20 + (bg.stats.stress          || 0) + (mos.startingStats.stress          || 0),  0, 100),
@@ -100,6 +100,12 @@ const Character = {
       // ── Rifle Qualification ────────────────
       rifleQualLevel: null,   // null | 'UNQ' | 'Marksman' | 'Sharpshooter' | 'Expert'
       rifleQualScore: 0,
+
+      // ── Award/NJP tracking ────────────────
+      njpCount:          0,   // total NJPs received (lifetime)
+      njpSinceLastGCM:   0,   // NJPs since last Good Conduct Medal (resets on GCM award)
+      volunteerCount:    0,   // total volunteer focus choices (3 = MSM)
+      deploymentCount:   0,   // completed deployments
 
       // ── Savings Goal ─────────────────────
       savingsGoal: 200,   // player-set monthly savings target ($)

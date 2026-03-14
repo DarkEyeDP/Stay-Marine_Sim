@@ -104,6 +104,34 @@ const Events = {
     if (choice.njpRisk && Math.random() < choice.njpRisk) {
       marine.profConduct  = clamp(marine.profConduct  - 12, 0, 100);
       marine.reputationWithLeadership = clamp(marine.reputationWithLeadership - 10, 0, 100);
+      marine.njpCount         = (marine.njpCount        || 0) + 1;
+      marine.njpSinceLastGCM  = (marine.njpSinceLastGCM || 0) + 1;
+    }
+
+    // Direct NJP event (player accepted NJP punishment)
+    if (choice.isNJP) {
+      marine.njpCount         = (marine.njpCount        || 0) + 1;
+      marine.njpSinceLastGCM  = (marine.njpSinceLastGCM || 0) + 1;
+    }
+
+    // Court-martial gamble — high ProCon wins; low ProCon makes it worse
+    if (choice.courtMartialGamble) {
+      if (marine.profConduct > 60) {
+        marine.morale = clamp(marine.morale + 5, 0, 100);
+        marine.reputationWithLeadership = clamp(marine.reputationWithLeadership - 5, 0, 100);
+      } else {
+        marine.profConduct = clamp(marine.profConduct - 20, 0, 100);
+        marine.reputationWithLeadership = clamp(marine.reputationWithLeadership - 15, 0, 100);
+        marine.njpCount         = (marine.njpCount        || 0) + 1;
+        marine.njpSinceLastGCM  = (marine.njpSinceLastGCM || 0) + 1;
+      }
+    }
+
+    // Award: chance-based (awardChance) or guaranteed (grantAward alone)
+    if (choice.grantAward) {
+      if (choice.awardChance === undefined || Math.random() < choice.awardChance) {
+        marine.awards.push(choice.grantAward);
+      }
     }
     if (choice.injuryEscalateChance && Math.random() < choice.injuryEscalateChance) {
       marine.injury = 'major';
@@ -163,6 +191,16 @@ const Events = {
     if (evt.setDeployed) {
       marine.isDeployed = true;
       marine.deploymentMonthsLeft = evt.duration || 7;
+
+      // Deployment medals — granted when orders are accepted
+      if (evt.id === 'evt_meu_deployment') {
+        marine.awards.push('Marine Corps Expeditionary Medal');
+      }
+      if (evt.id === 'evt_oif_deployment') {
+        const locName = (evt.chosenLocation && evt.chosenLocation.name) || '';
+        const medal = locName.includes('Afghanistan') ? 'Afghanistan Campaign Medal' : 'Iraq Campaign Medal';
+        marine.awards.push(medal);
+      }
     }
 
     Character.clampAll(marine);
@@ -187,6 +225,7 @@ const Events = {
     if (marine.deploymentMonthsLeft <= 0) {
       marine.isDeployed = false;
       marine.deploymentMonthsLeft = 0;
+      marine.deploymentCount = (marine.deploymentCount || 0) + 1;
       // Return home: family boost, stress reduction
       marine.familyStability = clamp(marine.familyStability + 5, 0, 100);
       marine.morale          = clamp(marine.morale + 8, 0, 100);

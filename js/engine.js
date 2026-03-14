@@ -244,9 +244,12 @@ const Engine = {
       g.log.unshift({ date: Engine._dateStr(), text: `Promoted to ${compProm.abbr}.`, major: true });
     }
 
-    // ── Step 8: Progress tracks updated by UI ───
+    // ── Step 8: Periodic awards (once per quarter) ──
+    Career.checkPeriodicAwards(m, g, Engine._dateStr());
 
-    // ── Step 9: End-state checks ─────────────────
+    // ── Step 9: Progress tracks updated by UI ───
+
+    // ── Step 10: End-state checks ─────────────────
     if (m.profConduct < 15) {
       result.gameOver = true;
       result.endState = 'bad_discharge';
@@ -283,6 +286,15 @@ const Engine = {
     }
 
     Character.applyEffects(m, choice.effects || {});
+
+    // Volunteer focus: track count and award MOVSM every 3 times
+    if (choiceId === 'focus_volunteer') {
+      m.volunteerCount = (m.volunteerCount || 0) + 1;
+      if (m.volunteerCount % 3 === 0) {
+        m.awards.push('Military Outstanding Volunteer Service Medal');
+        State.game.log.unshift({ date: Engine._dateStr(), text: 'Awarded: Military Outstanding Volunteer Service Medal', major: true });
+      }
+    }
 
     // PME focus: grant the next distance-learning course
     if (choiceId === 'focus_pme') {

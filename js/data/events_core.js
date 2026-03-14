@@ -171,10 +171,27 @@ const EVENTS_CORE = [
         hint: '+Morale, +NetworkStrength, award may still go through',
         effects: { morale: 5, networkStrength: 5, profConduct: 2 },
         awardChance: 0.75,
+        grantAward: 'Navy Achievement Medal',
       },
     ],
     autoResolve: true,
-    awardChance: 0.7,
+  },
+
+  {
+    id: 'evt_navy_commendation',
+    category: 'career',
+    title: 'Navy Commendation Medal Nomination',
+    weight: 3,
+    trigger: { minProfConduct: 78, maxDiscipline: 20, minTIS: 24 },
+    autoResolve: true,
+    narrative: 'Your sustained performance has been recognized above the battalion level. The regimental CO is submitting a Navy Commendation Medal package — one step above the NAM, and a meaningful entry on your service record.',
+    choices: [{
+      text: 'ACKNOWLEDGED',
+      hint: 'Strong career recognition',
+      effects: { morale: 12, profConduct: 4, reputationWithLeadership: 6 },
+      awardChance: 0.60,
+      grantAward: 'Navy Commendation Medal',
+    }],
   },
 
   // ══════════════════ PERSONAL ══════════════════
@@ -379,6 +396,7 @@ const EVENTS_CORE = [
         text: 'Accept NJP. Take your punishment, move on, prove yourself.',
         hint: '-ProCon heavily, -Reputation, but shows accountability',
         effects: { profConduct: -15, reputationWithLeadership: -8, disciplineRisk: -10, stress: 10, morale: -10 },
+        isNJP: true,
       },
       {
         text: 'Request trial by court-martial (risky — may be worse).',

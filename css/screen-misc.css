@@ -179,6 +179,36 @@
   font-weight: bold;
 }
 
+.end-awards {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.end-awards-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.end-awards-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.end-award-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  color: var(--tan);
+  letter-spacing: 0.03em;
+}
+
 .end-narrative {
   background: var(--bg-card);
   border: 1px solid var(--border);

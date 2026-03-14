@@ -473,6 +473,45 @@ const Career = {
   },
 
   /**
+   * Check and grant periodic awards (called once per quarter after time advance).
+   * Good Conduct Medal: every 36 months of clean service (no NJP since last GCM).
+   */
+  checkPeriodicAwards(marine, gameState, dateStr) {
+    const gradeOrder = ['E-1','E-2','E-3','E-4','E-5','E-6','E-7','E-8','E-9'];
+
+    // Good Conduct Medal: every 36 months of clean service (no NJP since last GCM)
+    const gcmCount = marine.awards.filter(a => a === 'Good Conduct Medal').length;
+    const gcmMilestone = Math.floor(marine.timeInService / 36);
+    if (gcmMilestone > gcmCount && (marine.njpSinceLastGCM || 0) === 0) {
+      marine.awards.push('Good Conduct Medal');
+      marine.njpSinceLastGCM = 0;
+      marine.morale = clamp(marine.morale + 3, 0, 100);
+      if (gameState && gameState.log) {
+        gameState.log.unshift({ date: dateStr, text: 'Awarded: Good Conduct Medal', major: true });
+      }
+    }
+
+    // Meritorious Service Medal: rare easter egg — senior NCO with an exceptional record
+    // Requires: E-7+, ProCon 88+, Reputation 85+, 2+ deployments, 3+ PMEs, no NJP ever, TIS 84+ months
+    if (
+      !marine.awards.includes('Meritorious Service Medal') &&
+      gradeOrder.indexOf(marine.payGrade) >= gradeOrder.indexOf('E-7') &&
+      marine.profConduct >= 88 &&
+      marine.reputationWithLeadership >= 85 &&
+      (marine.deploymentCount || 0) >= 2 &&
+      marine.pmeCompleted.length >= 3 &&
+      (marine.njpCount || 0) === 0 &&
+      marine.timeInService >= 84
+    ) {
+      marine.awards.push('Meritorious Service Medal');
+      marine.morale = clamp(marine.morale + 8, 0, 100);
+      if (gameState && gameState.log) {
+        gameState.log.unshift({ date: dateStr, text: 'Awarded: Meritorious Service Medal', major: true });
+      }
+    }
+  },
+
+  /**
    * Estimate VA disability rating range and monthly compensation based on the
    * marine's service record. Returns a low/high range — actual rating depends
    * on C&P exam and documentation.

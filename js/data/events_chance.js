@@ -249,6 +249,7 @@ const EVENTS_CHANCE = [
     choices: [{
       text: 'ACKNOWLEDGED',
       effects: { profConduct: 5, reputationWithLeadership: 5, morale: 6 },
+      grantAward: 'Navy Achievement Medal',
     }],
   },
 
