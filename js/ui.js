@@ -147,25 +147,25 @@ const UI = {
     {
       phase: 'YELLOW FOOTPRINTS',
       title: 'Receiving — Day 1',
-      text: 'You step off the bus at MCRD San Diego. A Drill Instructor materializes from the darkness, screaming at you before your feet hit the yellow footprints. Your civilian life is officially over. Welcome to the United States Marine Corps.',
+      text: 'You\'re stepping off the bus at MCRD San Diego. A Drill Instructor materializes from the darkness, screaming at you before your feet can even hit the ground. "LET\'S GO!!! GET OFF OF MY BUS AND ONTO MY YELLOW FOOTPRINTS RIGHT NOW! YOUR NASTY CIVILIAN LIFE IS OFFICIALLY OVER!" ...Welcome to the United States Marine Corps.',
       stats: null,
     },
     {
-      phase: 'PHASE 1',
+      phase: 'PHASE 3',
       title: 'The Crucible',
-      text: 'Six weeks of physical conditioning, drill, and Marine Corps history. Your body aches, your mind pushes past limits you didn\'t know existed. The DIs never let up. You learn to be part of something larger than yourself.',
+      text: 'Everything has led to this. The Crucible is the ultimate test of a recruit\'s strength, discipline, and resolve. Those who complete it earn the title <strong>Marine</strong>, with only two weeks left before graduation.',
       stats: { physicalFitness: 8, morale: 5, disciplineRisk: -5 },
     },
     {
-      phase: 'SOI/MCT',
+      phase: 'A TASTE OF COMBAT',
       title: 'School of Infantry / MCT',
-      text: 'You\'ve earned your Eagle, Globe, and Anchor, and today you report to SOI-West for your Infantry/Combat training. Here you learn the tactics, techniques, and procedures of combat. You get your first look at the kind of Marine you might become.',
+      text: 'You\'ve earned your <strong>Eagle, Globe, and Anchor</strong>, and today you report to SOI-West for your Infantry/Combat training. Here you learn the tactics, techniques, and procedures of combat. You get your first look at the kind of <strong>Marine</strong> you might become.',
       stats: { mosProficiency: 10, physicalFitness: 5, stress: 5 },
     },
     {
-      phase: 'FIRST DUTY STATION',
+      phase: 'TIME TO HIT THE FLEET',
       title: 'Reporting to Your Unit',
-      text: 'You check in to your first unit. The SNCOs size you up immediately. You have everything to prove and nothing to fall back on. Your career begins now.',
+      text: 'You check in to your first unit. The SNCOs size you up immediately. You have everything to prove and nothing to fall back on. Your career begins now, make the best of it <strong>Marine</strong>.',
       stats: null,
     },
   ],
@@ -179,6 +179,7 @@ const UI = {
 
   renderBootCampStep() {
     const step = UI._bcSteps[UI._bcStep];
+    document.getElementById('bc-footprints').classList.toggle('hidden', UI._bcStep !== 0);
     document.getElementById('bc-phase-label').textContent = step.phase;
     document.getElementById('bc-title').textContent = step.title;
     UI._glowText(document.getElementById('bc-narrative'), step.text);
@@ -189,10 +190,13 @@ const UI = {
     const statsEl = document.getElementById('bc-stat-preview');
     statsEl.innerHTML = '';
     if (step.stats) {
-      Object.entries(step.stats).forEach(([key, val]) => {
+      const plainLen = step.text.replace(/<[^>]+>/g, '').length;
+      const textFinish = ((plainLen - 1) * 0.040 + 0.5).toFixed(2);
+      Object.entries(step.stats).forEach(([key, val], chipIdx) => {
         const chip = document.createElement('div');
         chip.className = 'bc-stat-chip';
         chip.textContent = `${UI._statLabel(key)} ${val > 0 ? '+' : ''}${val}`;
+        chip.style.animationDelay = `${(parseFloat(textFinish) + chipIdx * 0.2).toFixed(2)}s`;
         statsEl.appendChild(chip);
       });
     }
@@ -201,12 +205,17 @@ const UI = {
     btn.textContent = UI._bcStep < UI._bcSteps.length - 1 ? 'CONTINUE' : 'BEGIN YOUR CAREER';
   },
 
-  /** Wrap each character in a span with staggered animation-delay for transmission glow effect */
+  /** Wrap each character in a span with staggered animation-delay for transmission glow effect.
+   *  Simple inline HTML tags (e.g. <strong>, </strong>) are passed through unchanged. */
   _glowText(el, text) {
-    el.innerHTML = [...text].map((ch, i) => {
-      const delay = (i * 0.040).toFixed(3);
-      const safe = ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch;
-      return `<span style="animation-delay:${delay}s">${safe}</span>`;
+    let i = 0;
+    el.innerHTML = text.split(/(<[^>]+>)/).map(part => {
+      if (part.startsWith('<')) return part;
+      return [...part].map(ch => {
+        const delay = (i++ * 0.040).toFixed(3);
+        const safe = ch === '&' ? '&amp;' : ch;
+        return `<span style="animation-delay:${delay}s">${safe}</span>`;
+      }).join('');
     }).join('');
   },
 
