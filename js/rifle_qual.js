@@ -997,8 +997,9 @@ const RifleQual = {
     document.getElementById('rqp-pass').classList.add('hidden');
 
     const m = State.game.marine;
-    document.getElementById('rqp-narrative').textContent =
-      `The S-3 has posted your name on this week's range schedule. You sign out your ${m.mosId === 'mos_0311' || m.mosId === 'mos_0321' ? 'M16A4' : 'M16A4 service rifle'} from the armory and draw your gear at the 200-yard line. Before the first detail steps to the firing line, the Range Safety Officer halts the formation. "Before any Marine on my range touches a trigger, you're going to show me you know your weapons handling." He holds up a clipboard. "Weapons safety rules and conditions — put them in the correct order. You miss one, you don't shoot, and your platoon sergeant will hear why."`;
+    UI._glowText(document.getElementById('rqp-narrative'),
+      `You were told at the last minute that you are shooting on this weeks rifle range. You get to the armory at 0430 to sign out your M16A4 from the armory and draw your gear. After some classes from the CMT, the coaches ask a series of questions to confirm we all know our safety procedures. "Look shooters, we need you all to pass this without question, so I hope you all paid attention during the classes this morning." He\'s holding a clipboard with our names on it. "Weapons safety rules and conditions — each of you must tell me them in the correct order. If you can\'t pass either of these tests, you will be dropped from this range, and your 1stSgt will deal with you."`
+    );
 
     const old = document.getElementById('rqp-btn-ack');
     const btn = old.cloneNode(true);
@@ -1336,6 +1337,10 @@ const RifleQual = {
   _showPassScreen() {
     document.getElementById('rqp-quiz').classList.add('hidden');
     document.getElementById('rqp-pass').classList.remove('hidden');
+    UI._glowText(
+      document.getElementById('rqp-pass-text'),
+      'The coach looks up from the clipboard. "Good job, you actually listened and weren\'t sleeping. Go grab your ammo and head over to the 500 yard line." You walk in the cold morning air over to a coach handing out bundles of ammo, exacty the number of rounds you will be shooting today, which is placed into your cover that everyone is using as a handy dump pouch. You sit on the bench and drop all your gear before heading to the firing line for the tower to give you their brief over the loud speakers. "Man that tower can talk fast, they sound like an auctioneer. I sure do hope I shoot expert today..."'
+    );
     const old = document.getElementById('rqp-btn-pass');
     const btn = old.cloneNode(true);
     old.parentNode.replaceChild(btn, old);

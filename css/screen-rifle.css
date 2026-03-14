@@ -405,16 +405,18 @@
 }
 
 .rqp-section-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
   color: var(--tan);
-  margin-bottom: 0.5rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
 }
 
 .rqp-narrative {
-  font-size: 0.84rem;
+  font-size: 0.875rem;
   color: var(--white);
-  line-height: 1.6;
+  line-height: 1.7;
   margin-bottom: 1.25rem;
 }
 
@@ -577,21 +579,27 @@
 }
 
 .rqp-pass-title {
-  font-size: 1.05rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  color: var(--green);
-  letter-spacing: 0.08em;
+  color: var(--tan);
+  letter-spacing: 0.1em;
   text-align: center;
   text-transform: uppercase;
   margin-bottom: 0.85rem;
 }
 
 .rqp-pass-text {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  line-height: 1.6;
+  font-size: 0.875rem;
+  color: var(--white);
+  line-height: 1.7;
   margin-bottom: 1.25rem;
-  font-style: italic;
+}
+
+/* Center the action buttons in the pre-range brief and pass panels */
+#rqp-btn-ack,
+#rqp-btn-pass {
+  display: block;
+  margin: 0 auto;
 }
 
 /* Drag ghost — floats under cursor / finger during drag */
