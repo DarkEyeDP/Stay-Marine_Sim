@@ -407,7 +407,10 @@
   padding: 0.5rem 1rem;
   border-radius: var(--radius);
   text-decoration: none;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+  text-align: center;
   cursor: pointer;
   color: var(--green);
   transition: color 0.15s;

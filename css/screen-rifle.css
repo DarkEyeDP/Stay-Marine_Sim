@@ -550,17 +550,18 @@
 }
 
 .rqp-fail-title {
-  font-size: 1rem;
-  letter-spacing: 0.12em;
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
   color: var(--red);
   text-align: center;
   margin-bottom: 0.75rem;
 }
 
 .rqp-fail-text {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--white);
-  line-height: 1.55;
+  line-height: 1.7;
   margin-bottom: 0.75rem;
 }
 
@@ -595,9 +596,10 @@
   margin-bottom: 1.25rem;
 }
 
-/* Center the action buttons in the pre-range brief and pass panels */
+/* Center the action buttons in the pre-range brief, pass, and fail panels */
 #rqp-btn-ack,
-#rqp-btn-pass {
+#rqp-btn-pass,
+#rqp-btn-fail-done {
   display: block;
   margin: 0 auto;
 }

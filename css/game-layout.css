@@ -90,7 +90,8 @@
 
 .narrative-box span,
 .rqp-narrative span,
-.rqp-pass-text span {
+.rqp-pass-text span,
+.rqp-fail-text span {
   animation: letter-glow 0.5s ease both;
 }
 

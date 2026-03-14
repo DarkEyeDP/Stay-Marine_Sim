@@ -1357,7 +1357,7 @@ const RifleQual = {
     document.getElementById('rqp-brief').classList.add('hidden');
     const failEl = document.getElementById('rqp-fail');
     failEl.classList.remove('hidden');
-    document.getElementById('rqp-fail-text').textContent = msg;
+    UI._glowText(document.getElementById('rqp-fail-text'), msg);
 
     const old = document.getElementById('rqp-btn-fail-done');
     const btn = old.cloneNode(true);
