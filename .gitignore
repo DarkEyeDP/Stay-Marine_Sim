@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# npm logs
+npm-debug.log*
+package-lock.json
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

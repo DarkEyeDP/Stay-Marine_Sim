@@ -308,7 +308,7 @@ const RifleQual = {
     if (RifleQual._isHolding) return;
 
     // Capture so drag/release keep firing even outside canvas
-    try { RifleQual._canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    try { RifleQual._canvas.setPointerCapture(e.pointerId); } catch { /* intentional — may fail on some browsers */ }
 
     if (e.pointerType === 'touch') {
       // Relative mode: record tap origin and current aim; crosshair stays in place
@@ -533,7 +533,7 @@ const RifleQual = {
 
   // ── Drawing ───────────────────────────────────
   _drawTargetRings(ctx) {
-    const { _cx: cx, _cy: cy, _targetR: targetR, _bullR: bullR, _ringStep: ringStep } = RifleQual;
+    const { _cx: cx, _cy: cy, _bullR: bullR, _ringStep: ringStep } = RifleQual;
     const pos = RifleQual.POSITIONS[RifleQual._posIdx] || {};
     const dist = pos.distanceYds || 100;
     const blurPx = dist >= 500 ? 0.6 : dist >= 300 ? 0.3 : 0;
@@ -731,7 +731,7 @@ const RifleQual = {
 
   _drawRcoReticle(ctx, chX, chY, scopeR) {
     const pos        = RifleQual.POSITIONS[RifleQual._posIdx];
-    const activeTick = pos && pos.holdTick != null ? pos.holdTick : 5;
+    const activeTick = pos && pos.holdTick !== null ? pos.holdTick : 5;
 
     // Chevron = red illuminated. Everything else = light etched (readable on dark bg).
     const chevRed    = 'rgba(220, 30, 30, 0.98)';
@@ -1018,9 +1018,8 @@ const RifleQual = {
     document.getElementById('rqp-fail').classList.add('hidden');
     document.getElementById('rqp-pass').classList.add('hidden');
 
-    const m = State.game.marine;
     UI._glowText(document.getElementById('rqp-narrative'),
-      `You were told at the last minute that you are shooting on this weeks rifle range. You get to the armory at 0430 to sign out your M16A4 from the armory and draw your gear. After some classes from the CMT, the coaches ask a series of questions to confirm we all know our safety procedures. "Look shooters, we need you all to pass this without question, so I hope you all paid attention during the classes this morning." He\'s holding a clipboard with our names on it. "Weapons safety rules and conditions — each of you must tell me them in the correct order. If you can\'t pass either of these tests, you will be dropped from this range, and your 1stSgt will deal with you."`
+      `You were told at the last minute that you are shooting on this weeks rifle range. You get to the armory at 0430 to sign out your M16A4 from the armory and draw your gear. After some classes from the CMT, the coaches ask a series of questions to confirm we all know our safety procedures. "Look shooters, we need you all to pass this without question, so I hope you all paid attention during the classes this morning." He's holding a clipboard with our names on it. "Weapons safety rules and conditions — each of you must tell me them in the correct order. If you can't pass either of these tests, you will be dropped from this range, and your 1stSgt will deal with you."`
     );
 
     const old = document.getElementById('rqp-btn-ack');
@@ -1361,7 +1360,7 @@ const RifleQual = {
     document.getElementById('rqp-pass').classList.remove('hidden');
     UI._glowText(
       document.getElementById('rqp-pass-text'),
-      'The coach looks up from the clipboard. "Good job, you actually listened and weren\'t sleeping. Go grab your ammo and head over to the 500 yard line." You walk in the cold morning air over to a coach handing out bundles of ammo, exacty the number of rounds you will be shooting today, which is placed into your cover that everyone is using as a handy dump pouch. You sit on the bench and drop all your gear before heading to the firing line for the tower to give you their brief over the loud speakers. "Man that tower can talk fast, they sound like an auctioneer. I sure do hope I shoot expert today..."'
+      'The coach looks up from the clipboard. "Good job, you actually listened and weren\'t sleeping. Go grab your ammo and head over to the 500 yard line." You walk in the cold morning air over to a coach handing out bundles of ammo, exactly the number of rounds you will be shooting today, which is placed into your cover that everyone is using as a handy dump pouch. You sit on the bench and drop all your gear before heading to the firing line for the tower to give you their brief over the loud speakers. "Man that tower can talk fast, they sound like an auctioneer. I sure do hope I shoot expert today..."'
     );
     const old = document.getElementById('rqp-btn-pass');
     const btn = old.cloneNode(true);

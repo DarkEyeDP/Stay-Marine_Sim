@@ -696,7 +696,7 @@ const Main = {
       choices: [
         {
           title: 'Selected Marine Corps Reserve (SMCR)',
-          desc: `One weekend/month + two weeks annual training. Keep your clearance, your network, and your rank. Stay connected to the Corps while you build your civilian career.${reserveRetire ? ` With ${tisYears} active years, you\'re on track for reserve retirement at 60.` : ''}`,
+          desc: `One weekend/month + two weeks annual training. Keep your clearance, your network, and your rank. Stay connected to the Corps while you build your civilian career.${reserveRetire ? ` With ${tisYears} active years, you're on track for reserve retirement at 60.` : ''}`,
           effect: `~${Finance.fmt(totalMonthly)}/mo drill pay | Network maintained | Mobilization risk`,
           onSelect: () => {
             m.reserveStatus = 'SMCR';

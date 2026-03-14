@@ -202,7 +202,6 @@ const Finance = {
     // Tax-free savings: in a combat zone, base pay + special pay = tax-free
     // Estimate using 22% effective federal rate (rough E3–E6 bracket)
     const TAX_RATE = 0.22;
-    const taxableDeploy   = isCombat ? 0 : effectiveBase;   // combat = fully tax-free base pay
     const taxFreeAmt      = isCombat ? effectiveBase + specialPay : specialPay;
     const monthlyTaxSaved = Math.round(taxFreeAmt * TAX_RATE);
     const totalTaxSaved   = monthlyTaxSaved * months;

@@ -275,6 +275,7 @@
 
 .track-bar-bg {
   height: 4px;
+  margin-bottom: 0.6rem;
   background: #222;
   border-radius: 99px;
   overflow: hidden;

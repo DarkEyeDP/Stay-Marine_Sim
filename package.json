@@ -1,0 +1,13 @@
+{
+  "name": "stay-marine-sim",
+  "version": "1.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint js/"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "globals": "^17.4.0"
+  }
+}
