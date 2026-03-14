@@ -49,6 +49,39 @@
   min-height: 120px;
 }
 
+/* Boot camp step progress pips */
+.bc-progress {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+
+.bc-pip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.bc-pip.active {
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.7);
+}
+
+/* Transmission glow — letter-by-letter reveal on boot camp narrative */
+@keyframes letter-glow {
+  0%   { opacity: 0; text-shadow: 0 0 2px rgba(76, 175, 80, 0.05); }
+  55%  { opacity: 1; text-shadow: 0 0 14px rgba(76, 175, 80, 0.95), 0 0 28px rgba(76, 175, 80, 0.3); }
+  80%  { opacity: 1; }
+  100% { opacity: 1; text-shadow: 0 0 3px rgba(76, 175, 80, 0.1); }
+}
+
+.narrative-box span {
+  animation: letter-glow 0.5s ease both;
+}
+
 .bc-stats {
   display: flex;
   flex-wrap: wrap;

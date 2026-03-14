@@ -52,7 +52,7 @@
         <button id="btn-rifle-practice" class="btn btn-tertiary">RIFLE RANGE</button>
       </div>
       <p class="title-hint" id="save-hint"></p>
-      <p class="title-copyright">&copy; 2026 Stay Marine Simulator. All rights reserved.</p>
+      <p class="title-copyright">&copy; 2026 Stay Marine Simulator. All rights reserved. &nbsp;<span id="app-version"></span></p>
     </div>
   </div>
 
@@ -104,6 +104,12 @@
       <div class="bootcamp-header">
         <span class="bc-phase-label" id="bc-phase-label">WEEK 1</span>
         <h2 id="bc-title">Receiving</h2>
+        <div class="bc-progress" id="bc-progress">
+          <span class="bc-pip"></span>
+          <span class="bc-pip"></span>
+          <span class="bc-pip"></span>
+          <span class="bc-pip"></span>
+        </div>
       </div>
       <div id="bc-narrative" class="narrative-box"></div>
       <div id="bc-stat-preview" class="bc-stats"></div>
@@ -521,6 +527,7 @@
   <!-- ═══════════════════════════ SCRIPTS ═══════════════════════════════ -->
   <div id="game-tooltip" class="game-tooltip hidden"></div>
 
+  <script src="js/version.js"></script>
   <script src="js/data/mos.js"></script>
   <script src="js/data/assignments.js"></script>
   <script src="js/data/promotions.js"></script>

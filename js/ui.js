@@ -181,7 +181,10 @@ const UI = {
     const step = UI._bcSteps[UI._bcStep];
     document.getElementById('bc-phase-label').textContent = step.phase;
     document.getElementById('bc-title').textContent = step.title;
-    document.getElementById('bc-narrative').textContent = step.text;
+    UI._glowText(document.getElementById('bc-narrative'), step.text);
+    document.querySelectorAll('#bc-progress .bc-pip').forEach((pip, i) => {
+      pip.classList.toggle('active', i <= UI._bcStep);
+    });
 
     const statsEl = document.getElementById('bc-stat-preview');
     statsEl.innerHTML = '';
@@ -196,6 +199,15 @@ const UI = {
 
     const btn = document.getElementById('btn-bc-next');
     btn.textContent = UI._bcStep < UI._bcSteps.length - 1 ? 'CONTINUE' : 'BEGIN YOUR CAREER';
+  },
+
+  /** Wrap each character in a span with staggered animation-delay for transmission glow effect */
+  _glowText(el, text) {
+    el.innerHTML = [...text].map((ch, i) => {
+      const delay = (i * 0.040).toFixed(3);
+      const safe = ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch;
+      return `<span style="animation-delay:${delay}s">${safe}</span>`;
+    }).join('');
   },
 
   advanceBootCamp() {

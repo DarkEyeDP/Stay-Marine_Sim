@@ -4,6 +4,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  // ── Version ────────────────────────────────────
+  document.getElementById('app-version').textContent = `v${APP_VERSION}`;
+
   // ── Title Screen ──────────────────────────────
   const hasSave = State.hasSave();
   const continueBtn = document.getElementById('btn-continue');
