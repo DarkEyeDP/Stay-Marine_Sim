@@ -256,14 +256,6 @@ const RifleQual = {
     canvas.addEventListener('pointerup',    RifleQual._onPointerUp);
     canvas.addEventListener('pointerleave', RifleQual._onPointerLeave);
 
-    // Fire button — hold only, no aim update (secondary / accessibility)
-    const fireBtn = document.getElementById('rq-btn-fire');
-    if (fireBtn) {
-      fireBtn.addEventListener('pointerdown',  RifleQual._onFireBtnDown, { passive: false });
-      fireBtn.addEventListener('pointerup',    RifleQual._onPointerUp);
-      fireBtn.addEventListener('pointerleave', RifleQual._onPointerUp);
-    }
-
     RifleQual._drawFrame(0);
   },
 
@@ -349,20 +341,11 @@ const RifleQual = {
     // Let the pointerup handler fire naturally via capture
   },
 
-  _onFireBtnDown(e) {
-    e.preventDefault();
-    if (RifleQual._phase !== 'idle' && RifleQual._phase !== 'aiming') return;
-    if (RifleQual._isHolding) return;
-    RifleQual._startHold();
-  },
-
   _startHold() {
     RifleQual._isHolding = true;
     RifleQual._holdStart = performance.now();
     RifleQual._phase     = 'aiming';
-    RifleQual._setInstruction('HOLD — RELEASE TO FIRE');
-    const btn = document.getElementById('rq-btn-fire');
-    if (btn) { btn.textContent = 'RELEASE TO FIRE'; btn.classList.add('holding'); }
+    RifleQual._setInstruction('HOLDING — RELEASE TO FIRE');
   },
 
   // ── Intro overlays ────────────────────────────
@@ -534,8 +517,8 @@ const RifleQual = {
 
   _getBdcTickOffsets(useR) {
     const r = useR || RifleQual._scopeR;
-    const arrowH = r * 0.06;
-    const gapHeadTo4 = r * 0.026; // move 4 tick higher (closer to reticle tip)
+    const arrowH = r * 0.095;      // must match chevH in _drawRcoReticle
+    const gapHeadTo4 = r * 0.026; // gap below crosshair to first stadia
     const gap45 = r * 0.056;
     const gap56 = r * 0.076;
     const gap67 = r * 0.098;
@@ -720,19 +703,6 @@ const RifleQual = {
     ctx.fillStyle = vig;
     ctx.fill();
 
-    // Black horizontal reference line across the tube, with a center gap so it never intersects reticle.
-    const tubeLineY = chY;
-    const tubeLineGap = 24;
-    const tubeLineSeg = (tubeR * 2) / 3; // each side = 1/3 of tube diameter
-    ctx.strokeStyle = 'rgba(0,0,0,0.95)';
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.moveTo(chX - tubeLineGap - tubeLineSeg, tubeLineY);
-    ctx.lineTo(chX - tubeLineGap, tubeLineY);
-    ctx.moveTo(chX + tubeLineGap, tubeLineY);
-    ctx.lineTo(chX + tubeLineGap + tubeLineSeg, tubeLineY);
-    ctx.stroke();
-
     RifleQual._drawRcoReticle(ctx, chX, chY, tubeR);
 
     ctx.restore();
@@ -760,49 +730,101 @@ const RifleQual = {
   },
 
   _drawRcoReticle(ctx, chX, chY, scopeR) {
-    const pos = RifleQual.POSITIONS[RifleQual._posIdx];
+    const pos        = RifleQual.POSITIONS[RifleQual._posIdx];
     const activeTick = pos && pos.holdTick != null ? pos.holdTick : 5;
-    const on  = 'rgba(232, 44, 44, 0.98)';
-    const off = 'rgba(216, 38, 38, 0.80)';
-    const arrowHalfW = scopeR * 0.055;
-    const arrowH = scopeR * 0.06;
-    const offsets = RifleQual._getBdcTickOffsets(scopeR);
-    const lw = 1.0;
-    const vLw = lw * 2;
 
-    // Top marker: upside-down V (no triangle base).
-    ctx.strokeStyle = on;
-    ctx.lineWidth = vLw;
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
+    // Chevron = red illuminated. Everything else = light etched (readable on dark bg).
+    const chevRed    = 'rgba(220, 30, 30, 0.98)';
+    const etch       = 'rgba(190, 180, 160, 0.82)';
+    const lw = 1.5;
+
+    const offsets   = RifleQual._getBdcTickOffsets(scopeR);
+    const chevHalfW = scopeR * 0.042;   // narrow for sharp angle
+    const chevH     = scopeR * 0.095;   // tall for sharp angle
+    const xhY       = chY + chevH;   // horizontal crosshair sits at chevron base
+
+    // ── Chevron (red illuminated — primary aiming point) ──
+    ctx.strokeStyle = chevRed;
+    ctx.lineWidth   = lw * 1.6;
+    ctx.lineJoin    = 'round';
+    ctx.lineCap     = 'round';
     ctx.beginPath();
-    ctx.moveTo(chX - arrowHalfW, chY + arrowH);
+    ctx.moveTo(chX - chevHalfW, xhY);
     ctx.lineTo(chX, chY);
-    ctx.lineTo(chX + arrowHalfW, chY + arrowH);
+    ctx.lineTo(chX + chevHalfW, xhY);
     ctx.stroke();
 
-    // Main vertical line down to the 8 mark.
-    const y8 = chY + offsets[8];
-    ctx.strokeStyle = off;
-    ctx.lineWidth = lw;
+    // ── Long horizontal crosshair with internal tick marks ──
+    // Gap in center leaves room for the chevron — arms start well outside chevron legs.
+    // Each arm has 3 evenly-spaced internal ticks (4 equal segments) + taller end caps.
+    const armInner = scopeR * 0.12;    // wider gap so chevron sits clearly in open space
+    const armOuter = scopeR * 0.88;
+    const armLen   = armOuter - armInner;
+    const t1x      = armInner + armLen * 0.25;
+    const t2x      = armInner + armLen * 0.50;
+    const t3x      = armInner + armLen * 0.75;
+    const tickH    = scopeR * 0.020;
+    const capH     = scopeR * 0.030;
+
+    ctx.strokeStyle = etch;
+    ctx.lineWidth   = lw;
+    ctx.lineCap     = 'butt';
+
     ctx.beginPath();
-    ctx.moveTo(chX, chY + arrowH - 4);
-    ctx.lineTo(chX, y8);
+    ctx.moveTo(chX - armInner, xhY);  ctx.lineTo(chX - armOuter, xhY);   // left arm
+    ctx.moveTo(chX + armInner, xhY);  ctx.lineTo(chX + armOuter, xhY);   // right arm
     ctx.stroke();
 
-    const tickW = scopeR * 0.055;
-    const ticks = [{ mark: 4 }, { mark: 5 }, { mark: 6 }, { mark: 7 }, { mark: 8 }];
-
-    ticks.forEach((t) => {
-      const y = chY + offsets[t.mark];
-      const active = activeTick === t.mark;
-      ctx.strokeStyle = active ? on : off;
-      ctx.lineWidth = lw;
+    [t1x, t2x, t3x].forEach(tx => {
       ctx.beginPath();
-      // Straight horizontal hashes that meet in the middle.
-      ctx.moveTo(chX - tickW / 2, y);
-      ctx.lineTo(chX + tickW / 2, y);
+      ctx.moveTo(chX - tx, xhY - tickH);  ctx.lineTo(chX - tx, xhY + tickH);   // left tick
+      ctx.moveTo(chX + tx, xhY - tickH);  ctx.lineTo(chX + tx, xhY + tickH);   // right tick
       ctx.stroke();
+    });
+
+    ctx.beginPath();
+    ctx.moveTo(chX - armOuter, xhY - capH);  ctx.lineTo(chX - armOuter, xhY + capH);  // left cap
+    ctx.moveTo(chX + armOuter, xhY - capH);  ctx.lineTo(chX + armOuter, xhY + capH);  // right cap
+    ctx.stroke();
+
+    // ── Vertical stadia line from crosshair down through all BDC marks ──
+    const y8 = chY + offsets[8];
+    ctx.strokeStyle = etch;
+    ctx.lineWidth   = lw * 0.85;
+    ctx.lineCap     = 'butt';
+    ctx.beginPath();
+    ctx.moveTo(chX, xhY - scopeR * 0.020);
+    ctx.lineTo(chX, y8 + scopeR * 0.018);
+    ctx.stroke();
+
+    // ── BDC stadia marks — widest at top (4), narrowest at bottom (8); "4" and "6" labeled ──
+    const bdcMarks = [
+      { mark: 4, hw: scopeR * 0.075, label: '4', red: true },
+      { mark: 5, hw: scopeR * 0.065, label: null, red: false },
+      { mark: 6, hw: scopeR * 0.055, label: '6', red: false },
+      { mark: 7, hw: scopeR * 0.045, label: null, red: false },
+      { mark: 8, hw: scopeR * 0.040, label: null, red: false },
+    ];
+
+    const fontSize = Math.max(7, Math.round(scopeR * 0.085));
+    ctx.font         = `bold ${fontSize}px monospace`;
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.lineCap      = 'round';
+
+    bdcMarks.forEach(({ mark, hw, label, red }) => {
+      const y      = chY + offsets[mark];
+      const active = activeTick === mark;
+      ctx.strokeStyle = (red || active) ? chevRed : etch;
+      ctx.lineWidth   = lw;
+      ctx.beginPath();
+      ctx.moveTo(chX - hw, y);
+      ctx.lineTo(chX + hw, y);
+      ctx.stroke();
+      if (label) {
+        ctx.fillStyle = chevRed;
+        ctx.fillText(label, chX + hw + scopeR * 0.020, y);
+      }
     });
   },
 
