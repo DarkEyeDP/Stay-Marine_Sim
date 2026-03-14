@@ -45,8 +45,8 @@ const Engine = {
     {
       id: 'focus_mos',
       label: 'Sharpen MOS skills',
-      hint: '+MOS Proficiency, +Promotion score',
-      effects: { mosProficiency: 6 },
+      hint: '+MOS Proficiency, +Promotion score, -Stress',
+      effects: { mosProficiency: 6, stress: -2 },
       cost: 2,
     },
     {

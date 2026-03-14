@@ -323,7 +323,7 @@ const EVENTS_CHANCE = [
     category: 'personal',
     title: 'Emergency Wire Home',
     weight: 8,
-    trigger: {},
+    trigger: { maxSavings: 12000 },  // not a crisis if finances are solid
     isChance: true,
     narrative: 'A family situation back home required you to wire money immediately — car broke down, medical bill, just needing help. You didn\'t hesitate. Marines take care of their people, and that includes the family they came from.',
     chanceImpact: '-$1,000 Savings',
@@ -339,7 +339,7 @@ const EVENTS_CHANCE = [
     category: 'finance',
     title: 'Payroll Overpayment — You Must Repay',
     weight: 7,
-    trigger: {},
+    trigger: { maxSavings: 14000 },  // painful only when savings are thin
     isChance: true,
     narrative: 'Disbursing discovered they\'ve been overpaying you for the past two months — a clerical error on their end. That doesn\'t matter. The money is owed back. They set up automatic deductions from your next three paychecks. This is a known Marine Corps experience.',
     chanceImpact: '-$700 Savings',
@@ -420,7 +420,7 @@ const EVENTS_CHANCE = [
     category: 'finance',
     title: 'BAH Rate Recalculated — Rate Drops',
     weight: 6,
-    trigger: {},
+    trigger: { maxSavings: 16000 },  // a rate dip only stings when margins are tight
     isChance: true,
     narrative: 'The DoD BAH rate update this year moved in the wrong direction for your zip code. The civilian rental market around base apparently cooled. Your monthly housing allowance drops slightly. You\'ll feel it at the end of the month.',
     chanceImpact: '-$240 (BAH decrease, 3 months)',
@@ -436,7 +436,7 @@ const EVENTS_CHANCE = [
     category: 'finance',
     title: 'Unexpected Medical Bill',
     weight: 8,
-    trigger: {},
+    trigger: { maxSavings: 10000 },  // Tricare gap only hurts when cash is tight
     isChance: true,
     narrative: 'A Tricare claim from your last ER visit was partially denied. You had to cover a cost-share you weren\'t expecting. Military healthcare is good — but billing gaps and coverage errors show up at the worst times.',
     chanceImpact: '-$550 Savings',
