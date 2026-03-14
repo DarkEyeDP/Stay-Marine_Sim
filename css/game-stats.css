@@ -5,13 +5,22 @@
 /* ── Stats Panel ─────────────────────────────── */
 #panel-stats {
   padding: var(--gap);
+  padding-bottom: 0;
   background: var(--bg-panel);
+}
+
+#panel-stats > .stat-section:last-child {
+  margin-bottom: 0;
+}
+
+#panel-stats > .stat-section:last-child .track-row:last-child {
+  margin-bottom: 0;
 }
 
 .marine-header {
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--green);
+  /* border-left: 3px solid var(--green); */
   border-radius: var(--radius);
   padding: 0.75rem;
   margin-bottom: var(--gap);

@@ -171,6 +171,22 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.showScreen('screen-title');
   });
 
+  // Main Menu (shared mobile footer)
+  document.getElementById('btn-start-over-mobile').addEventListener('click', () => {
+    State.save();
+    continueBtn.disabled = false;
+    document.getElementById('save-hint').textContent = 'Career saved. Continue Career to resume where you left off.';
+    UI.showScreen('screen-title');
+  });
+
+  // Main Menu (rifle range)
+  document.getElementById('rq-btn-main-menu').addEventListener('click', () => {
+    State.save();
+    continueBtn.disabled = false;
+    document.getElementById('save-hint').textContent = 'Career saved. Continue Career to resume where you left off.';
+    UI.showScreen('screen-title');
+  });
+
   // ── Init title screen ─────────────────────────
   UI.showScreen('screen-title');
 

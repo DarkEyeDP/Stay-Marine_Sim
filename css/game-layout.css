@@ -229,6 +229,22 @@
   display: none;
 }
 
+
+/* Shared footer — replaces per-panel footer on all screen sizes */
+.events-action-bar .game-footer {
+  display: none;
+}
+
+footer.mobile-game-footer {
+  flex-shrink: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: var(--gap);
+  padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom, 0px));
+  margin-top: 0;
+  padding-top: var(--gap);
+}
+
 /* Desktop: all panels visible side-by-side */
 @media (min-width: 900px) {
   .mobile-tabs {

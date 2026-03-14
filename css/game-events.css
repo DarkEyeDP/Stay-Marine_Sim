@@ -21,7 +21,7 @@
   align-items: stretch;
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--tan);
+  /* border-left: 3px solid var(--tan); */
   border-radius: var(--radius);
   margin: var(--gap);
   overflow: hidden;
