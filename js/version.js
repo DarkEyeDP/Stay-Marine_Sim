@@ -4,4 +4,4 @@
    Bump MINOR for new features or content.
    ═══════════════════════════════════════════════ */
 
-const APP_VERSION = '1.9.0';
+const APP_VERSION = '1.9.1';

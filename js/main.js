@@ -156,6 +156,40 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('orientation-panel').classList.add('hidden');
   });
 
+  // ── Share Career ──────────────────────────────
+  document.getElementById('btn-share-career').addEventListener('click', () => {
+    const m = State.game.marine;
+    const tis = m.timeInService;
+    const years = Math.floor(tis / 12);
+    const topAward = (() => {
+      const priority = [
+        'Meritorious Service Medal', 'Navy Commendation Medal', 'Navy Achievement Medal',
+        'Combat Action Ribbon', 'Afghanistan Campaign Medal', 'Iraq Campaign Medal',
+        'Marine Corps Expeditionary Medal', 'Military Outstanding Volunteer Service Medal',
+        'Good Conduct Medal', 'National Defense Service Medal',
+      ];
+      for (const a of priority) {
+        if (m.awards.includes(a)) return a;
+      }
+      return null;
+    })();
+    const awardLine = topAward ? ` Highest award: ${topAward}.` : '';
+    const familyLine = m.isMarried
+      ? (m.childCount > 0 ? ` ${m.childCount > 1 ? m.childCount + ' kids' : '1 kid'}.` : ' Married.')
+      : '';
+    const njpLine = (m.njpCount || 0) > 0 ? ' (Collected an NJP along the way 😬)' : ' Stayed out of trouble.';
+    const msg =
+      `I just wrapped a ${years}-year Marine Corps career in Stay Marine Sim! ` +
+      `Final rank: ${m.rankAbbr} ${m.rankTitle}. ${m.awards.length} award${m.awards.length !== 1 ? 's' : ''} on the DD-214.` +
+      awardLine + familyLine + njpLine +
+      ` Think you can do better? Play free 👇\nhttps://stay-marine.com/`;
+
+    const encoded = encodeURIComponent(msg);
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const smsUrl = isIOS ? `sms:&body=${encoded}` : `sms:?body=${encoded}`;
+    window.location.href = smsUrl;
+  });
+
   // ── Play Again ────────────────────────────────
   document.getElementById('btn-play-again').addEventListener('click', () => {
     State.clearSave();
