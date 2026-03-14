@@ -409,12 +409,17 @@ const Career = {
       marine.stress = clamp(marine.stress - 1, 0, 100);
     }
 
+    // Baseline grind — the daily reality of military life wears on everyone
+    marine.morale = clamp(marine.morale - 1, 0, 100);
+
     if (marine.stress > 70) {
-      marine.morale = clamp(marine.morale - 3, 0, 100);   // high stress — morale craters fast
-    } else if (marine.stress > 45) {
-      marine.morale = clamp(marine.morale - 1, 0, 100);   // moderate stress bleeds morale slowly
-    } else if (marine.stress < 25) {
-      marine.morale = clamp(marine.morale + 1, 0, 100);   // genuinely low stress — morale recovers
+      marine.morale = clamp(marine.morale - 4, 0, 100);   // high stress — morale craters fast
+    } else if (marine.stress > 50) {
+      marine.morale = clamp(marine.morale - 2, 0, 100);   // moderate-high stress bleeds morale
+    } else if (marine.stress > 30) {
+      marine.morale = clamp(marine.morale - 1, 0, 100);   // low-moderate stress still drains
+    } else if (marine.stress < 15) {
+      marine.morale = clamp(marine.morale + 1, 0, 100);   // genuinely low stress — slight recovery
     }
 
     // Deployment wears on the spirit regardless of stress level
@@ -425,6 +430,11 @@ const Career = {
     // A Marine who isn't good at their job loses pride in it
     if (marine.mosProficiency < 35) {
       marine.morale = clamp(marine.morale - 1, 0, 100);
+    }
+
+    // A stable home life is a buffer against the grind
+    if (marine.isMarried && marine.familyStability > 70) {
+      marine.morale = clamp(marine.morale + 1, 0, 100);
     }
 
     // Sustained low morale erodes conduct — a demoralized Marine starts cutting corners

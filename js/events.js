@@ -58,6 +58,19 @@ const Events = {
     if (t.mosField            !== undefined && marine.mosField !== t.mosField)              return false;
     if (t.mosFields           !== undefined && !t.mosFields.includes(marine.mosField))      return false;
     if (t.retirementSubmitted !== undefined && !!marine.retirementSubmitted !== t.retirementSubmitted) return false;
+
+    // Month-specific annual events (e.g. Marine Corps Ball in November)
+    if (t.triggerMonth !== undefined && State.game.month !== t.triggerMonth) return false;
+
+    // Grade ceiling (e.g. counseling only for E-4 and below)
+    if (t.maxGrade !== undefined) {
+      const gradeOrder = ['E-1','E-2','E-3','E-4','E-5','E-6','E-7','E-8','E-9'];
+      if (gradeOrder.indexOf(marine.payGrade) > gradeOrder.indexOf(t.maxGrade)) return false;
+    }
+
+    // Fire at most once per calendar year
+    if (evt.oncePerYear && marine.lastEventYear && marine.lastEventYear[evt.id] === State.game.year) return false;
+
     return true;
   },
 
@@ -65,6 +78,12 @@ const Events = {
   resolveChoice(marine, evt, choiceIndex) {
     const choice = evt.choices[choiceIndex];
     if (!choice) return;
+
+    // Track once-per-year events
+    if (evt.oncePerYear) {
+      if (!marine.lastEventYear) marine.lastEventYear = {};
+      marine.lastEventYear[evt.id] = State.game.year;
+    }
 
     // Apply stat effects
     Character.applyEffects(marine, choice.effects || {});

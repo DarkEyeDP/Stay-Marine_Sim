@@ -111,6 +111,14 @@
 }
 
 /* Results overlay */
+.rq-results-badge {
+  width: clamp(100px, 30vw, 160px);
+  height: auto;
+  margin-bottom: 0.75rem;
+}
+
+.rq-results-badge.hidden { display: none; }
+
 .rq-results-label {
   font-size: 0.65rem;
   letter-spacing: 0.2em;
@@ -338,21 +346,19 @@
 
 /* Qual badge (marine header) */
 .qual-badge {
-  font-size: 0.58rem;
-  letter-spacing: 0.06em;
-  padding: 2px 5px;
-  border-radius: 2px;
-  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
   align-self: center;
-  white-space: nowrap;
 }
 
 .qual-badge.hidden { display: none; }
 
-.qual-badge-expert       { background: rgba(240,180,41,0.15); border: 1px solid var(--yellow); color: var(--yellow); }
-.qual-badge-sharpshooter { background: rgba(66,165,245,0.15); border: 1px solid var(--blue);   color: var(--blue); }
-.qual-badge-marksman     { background: rgba(232,232,224,0.08); border: 1px solid var(--muted);  color: var(--muted); }
-.qual-badge-unq          { background: rgba(229,57,53,0.15);   border: 1px solid var(--red);    color: var(--red); }
+.qual-badge-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(76, 175, 80, 0.3)) drop-shadow(0 0 1px rgba(76, 175, 80, 0.2));
+}
 
 /* ══════════════════════════════════════════════
    PRE-RANGE BRIEF + WEAPONS SAFETY QUIZ

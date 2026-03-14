@@ -12,6 +12,55 @@ const EVENTS_CHANCE = [
   // ── POSITIVE ──────────────────────────────────────
 
   {
+    id: 'evt_marine_corps_ball',
+    category: 'morale',
+    title: 'Marine Corps Birthday Ball',
+    weight: 100,
+    oncePerYear: true,
+    trigger: { triggerMonth: 11 },
+    isChance: true,
+    narrative: `November 10th. The Corps turns another year older. You and your unit are dressed in your Blues, the ballroom smells like floor wax and tradition, and somewhere a decorated Marine is reading a letter from the Commandant. The color guard, the cutting of the cake, the youngest and oldest Marines sharing the first slice — it hits different every time. Whatever your feelings about the Corps, tonight you remember why you joined the Corps.`,
+    chanceImpact: '+Morale, +Unit Cohesion',
+    chanceType: 'positive',
+    choices: [{
+      text: 'SEMPER FIDELIS',
+      effects: { morale: 10, stress: -3, profConduct: 1 },
+    }],
+  },
+
+  {
+    id: 'evt_family_day',
+    category: 'morale',
+    title: 'Unit Family Day',
+    weight: 10,
+    trigger: { notDeployed: true },
+    isChance: true,
+    narrative: `Command organized a Family Day on base — BBQ, field games, and a chance to actually see your Marines as human beings outside of PT and formations. The spouses and kids running around the parade deck, someone's toddler wearing a cover three sizes too big. For one afternoon the Corps lets everyone exhale. You leave feeling like the unit is more than just a job.`,
+    chanceImpact: '+Morale, +Family Stability',
+    chanceType: 'positive',
+    choices: [{
+      text: 'ACKNOWLEDGED',
+      effects: { morale: 6, familyStability: 5, stress: -2 },
+    }],
+  },
+
+  {
+    id: 'evt_good_counseling',
+    category: 'career',
+    title: 'Positive Counseling Session',
+    weight: 9,
+    trigger: { maxGrade: 'E-4', notDeployed: true },
+    isChance: true,
+    narrative: `Your NCO sat you down for your quarterly counseling. You expected the usual clipboard-and-checklist routine, but he actually talked to you — where you're headed, what you need to work on, and what he sees in you. "You've got the right attitude. Keep your head down, stay out of the barracks drama, and you'll make rank ahead of your peers." Walking out of that office, you feel like someone in your chain actually gives a damn.`,
+    chanceImpact: '+Morale, +ProCon',
+    chanceType: 'positive',
+    choices: [{
+      text: 'ACKNOWLEDGED',
+      effects: { morale: 7, profConduct: 3, stress: -3 },
+    }],
+  },
+
+  {
     id: 'evt_chance_tax_refund',
     category: 'finance',
     title: 'Tax Season Windfall',

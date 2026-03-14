@@ -734,11 +734,13 @@ const UI = {
   updateRifleQualBadge(level) {
     const badge = document.getElementById('marine-qual-badge');
     if (!badge) return;
-    if (!level) {
+    const badgeMap = { Expert: 'expert-badge.svg', Sharpshooter: 'sharpshooter-badge.svg', Marksman: 'marksmanship-badge.svg' };
+    if (!level || !badgeMap[level]) {
       badge.className = 'qual-badge hidden';
+      badge.innerHTML = '';
       return;
     }
-    badge.textContent = level.toUpperCase();
+    badge.innerHTML   = `<img src="img/${badgeMap[level]}" alt="${level}" class="qual-badge-img">`;
     badge.className   = 'qual-badge qual-badge-' + level.toLowerCase();
   },
 

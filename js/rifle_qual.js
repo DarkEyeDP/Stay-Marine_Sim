@@ -1428,6 +1428,16 @@ const RifleQual = {
     qualEl.className   = 'rq-results-qual rq-qual-' + level.toLowerCase();
     document.getElementById('rq-results-score').textContent = `${total} / 75`;
 
+    const badgeMap = { Expert: 'expert-badge.svg', Sharpshooter: 'sharpshooter-badge.svg', Marksman: 'marksmanship-badge.svg' };
+    const badgeEl  = document.getElementById('rq-results-badge');
+    if (badgeMap[level]) {
+      badgeEl.src = `img/${badgeMap[level]}`;
+      badgeEl.alt = level;
+      badgeEl.classList.remove('hidden');
+    } else {
+      badgeEl.classList.add('hidden');
+    }
+
     document.getElementById('rq-results-breakdown').innerHTML =
       RifleQual.POSITIONS.map((pos, i) => {
         const slice = RifleQual._scores.slice(i * RifleQual.SHOTS_PER_POS, (i + 1) * RifleQual.SHOTS_PER_POS);

@@ -121,6 +121,14 @@ const Engine = {
     },
     // ── Cost 1 ────────────────────────────────────────────────────────
     {
+      id: 'focus_leave',
+      label: 'Take leave — get away from the grind',
+      hint: '++Morale, -Stress — earned time off makes a real difference',
+      effects: { morale: 10, stress: -5 },
+      cost: 1,
+      unavailableWhenDeployed: true,
+    },
+    {
       id: 'focus_recovery',
       label: 'Rest and recover (lay low)',
       hint: '-Stress significantly, slight reputation cost, minor morale lift',
