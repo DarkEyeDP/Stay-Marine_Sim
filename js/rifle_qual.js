@@ -1404,6 +1404,7 @@ const RifleQual = {
       text:  'Failed weapons safety quiz — assigned UNQUALIFIED without firing a shot.',
       major: true,
     });
+    Achievements.recordRifleQualification('UNQ', 0, m);
     State.save();
     UI.updateRifleQualBadge('UNQ');
     UI.showScreen('screen-game');
@@ -1497,6 +1498,7 @@ const RifleQual = {
       text:  `Annual rifle qualification: ${level} (${total}/75)`,
       major: true,
     });
+    Achievements.recordRifleQualification(level, total, m);
     State.save();
 
     UI.updateRifleQualBadge(level);
@@ -1504,3 +1506,4 @@ const RifleQual = {
     RifleQual._onComplete();
   },
 };
+

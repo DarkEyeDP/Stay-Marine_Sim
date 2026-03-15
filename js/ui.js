@@ -250,6 +250,7 @@ const UI = {
       m.timeInService = BOOTCAMP_MONTHS;
       m.timeInGrade   = BOOTCAMP_MONTHS;
       for (let i = 0; i < BOOTCAMP_MONTHS; i++) State.advanceMonth();
+      Achievements.recordMarineTitle(m);
       State.save();
       UI.showGameScreen();
     } else {
@@ -971,6 +972,7 @@ const UI = {
   showEndState(endStateId) {
     const m = State.game.marine;
     const tis = m.timeInService;
+    Achievements.recordCareerCompletion(State.game, endStateId, m);
     const config = END_STATES[endStateId] || END_STATES['basic_eas'];
 
     document.getElementById('end-icon').textContent = config.icon;
@@ -1465,4 +1467,153 @@ const END_STATES = {
     subtitle: 'Career over. This one was preventable.',
     narrative: (m, tis) => `${m.rankAbbr} ${m.name.split(',')[0].trim()} — ${Math.floor(tis / 12)} years of service ends in a courtroom. The urinalysis came back positive. The legal process moves fast when the evidence is clear. Court-martial proceedings, forfeiture of pay, confinement, and a dishonorable discharge. That characterization follows every background check, security clearance inquiry, and VA claim for decades to come. The Corps gave you everything it had. This is the hardest kind of ending — because it didn't have to go this way.`,
   },
+};
+
+UI._achievementToastTimer = 0;
+UI._achievementsBackTarget = 'screen-title';
+
+UI.showAchievementsScreen = function(backTarget = 'screen-title') {
+  UI._achievementsBackTarget = backTarget;
+  const backBtn = document.getElementById('btn-achievements-back');
+  if (backBtn) backBtn.dataset.target = backTarget;
+  UI.renderAchievementsScreen();
+  UI.showScreen('screen-achievements');
+};
+
+UI.renderAchievementsScreen = function() {
+  const summary = Achievements.getSummary();
+  const groups = Achievements.getAchievementGroups();
+  const ranks = Achievements.getRankCards();
+
+  const summaryEl = document.getElementById('ach-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML = [
+      '<div class="ach-summary-card"><span class="ach-summary-label">Unlocked</span><span class="ach-summary-value">' + summary.unlocked + ' / ' + summary.total + '</span></div>',
+      '<div class="ach-summary-card"><span class="ach-summary-label">Completion</span><span class="ach-summary-value">' + summary.completionPct + '%</span></div>',
+      '<div class="ach-summary-card"><span class="ach-summary-label">Best Savings</span><span class="ach-summary-value">' + Finance.fmt(summary.stats.bestSavings || 0) + '</span></div>',
+      '<div class="ach-summary-card"><span class="ach-summary-label">Best Rifle Score</span><span class="ach-summary-value">' + (summary.stats.bestRifleScore || 0) + ' / 75</span></div>',
+      '<div class="ach-summary-card"><span class="ach-summary-label">Highest Rank</span><span class="ach-summary-value">' + (summary.stats.highestRank || 'E-1') + '</span></div>',
+      '<div class="ach-summary-card"><span class="ach-summary-label">Careers Completed</span><span class="ach-summary-value">' + (summary.stats.careersCompleted || 0) + '</span></div>'
+    ].join('');
+  }
+
+  const recordsEl = document.getElementById('ach-records');
+  if (recordsEl) {
+    recordsEl.innerHTML = [
+      '<div class="ach-record-item"><span class="ach-record-label">Careers Started</span><span class="ach-record-value">' + (summary.stats.careersStarted || 0) + '</span></div>',
+      '<div class="ach-record-item"><span class="ach-record-label">Promotions Earned</span><span class="ach-record-value">' + (summary.stats.promotions || 0) + '</span></div>',
+      '<div class="ach-record-item"><span class="ach-record-label">Reenlistments</span><span class="ach-record-value">' + (summary.stats.reenlistments || 0) + '</span></div>',
+      '<div class="ach-record-item"><span class="ach-record-label">Deployments</span><span class="ach-record-value">' + (summary.stats.deployments || 0) + '</span></div>',
+      '<div class="ach-record-item"><span class="ach-record-label">Retirements</span><span class="ach-record-value">' + (summary.stats.retirements || 0) + '</span></div>'
+    ].join('');
+  }
+
+  const rankEl = document.getElementById('ach-ranks');
+  if (rankEl) {
+    rankEl.innerHTML = ranks.map(rank => {
+      const descHtml = rank.unlocked
+        ? `<div class="rank-ach-desc">${rank.desc}</div>`
+        : '';
+      const popoverHtml = rank.unlocked
+        ? `<div class="ach-popover" role="tooltip"><div class="ach-popover-label">Unlocked By</div><div class="ach-popover-text">${rank.unlockHint}</div></div>`
+        : '';
+      const interactiveAttrs = rank.unlocked
+        ? `tabindex="0" role="button" aria-label="${rank.title}. Unlocked by ${rank.unlockHint}"`
+        : '';
+      return `
+        <div class="rank-ach-card ${rank.unlocked ? 'unlocked ach-popover-host' : 'locked'}" ${interactiveAttrs}>
+          <div class="rank-ach-art">
+            <img src="img/${rank.asset}" alt="${rank.title}" class="rank-ach-img">
+          </div>
+          <div class="rank-ach-meta">
+            <div class="rank-ach-title-row">
+              <span class="rank-ach-title">${rank.title}</span>
+              <span class="rank-ach-count">Reached ${rank.timesReached}x</span>
+            </div>${descHtml}
+            <div class="rank-ach-status">${rank.unlocked ? 'Unlocked' : 'Locked'}</div>
+          </div>
+          ${popoverHtml}
+        </div>
+      `;
+    }).join('');
+  }
+
+  const groupsEl = document.getElementById('ach-groups');
+  if (groupsEl) {
+    groupsEl.innerHTML = groups.map(group => {
+      const cards = group.items.map(item => {
+        const iconColor = item.unlocked ? 'c8a96e' : '6f766d';
+        const iconHtml = item.iconifyIcon
+          ? `<img src="${Achievements.buildIconUrl(item.iconifyIcon, iconColor)}" alt="${item.title}" class="ach-card-icon-img">`
+          : '<span class="ach-card-icon-fallback">ACH</span>';
+        const descHtml = item.unlocked
+          ? `<div class="ach-card-desc">${item.desc}</div>`
+          : '';
+        const popoverHtml = item.unlocked
+          ? `<div class="ach-popover" role="tooltip"><div class="ach-popover-label">Unlocked By</div><div class="ach-popover-text">${item.unlockHint}</div></div>`
+          : '';
+        const interactiveAttrs = item.unlocked
+          ? `tabindex="0" role="button" aria-label="${item.title}. Unlocked by ${item.unlockHint}"`
+          : '';
+        return `
+          <article class="ach-card ${item.unlocked ? 'unlocked ach-popover-host' : 'locked'}" ${interactiveAttrs}>
+            <div class="ach-card-icon">${iconHtml}</div>
+            <div class="ach-card-body">
+              <div class="ach-card-title">${item.title}</div>${descHtml}
+              <div class="ach-card-status">${item.unlocked ? 'Unlocked' : 'Locked'}</div>
+            </div>
+            ${popoverHtml}
+          </article>
+        `;
+      }).join('');
+      return `<section class="ach-group"><h3 class="ach-group-title">${group.label}</h3><div class="ach-grid">${cards}</div></section>`;
+    }).join('');
+  }
+
+  UI.bindAchievementPopovers();
+};
+UI.showAchievementToast = function(achievement) {
+  const toast = document.getElementById('achievement-toast');
+  if (!toast || !achievement) return;
+  toast.innerHTML = '<div class="achievement-toast-label">Achievement Unlocked</div>' +
+    '<div class="achievement-toast-title">' + achievement.title + '</div>' +
+    '<div class="achievement-toast-desc">' + achievement.desc + '</div>';
+  toast.classList.add('visible');
+  clearTimeout(UI._achievementToastTimer);
+  UI._achievementToastTimer = setTimeout(() => {
+    toast.classList.remove('visible');
+  }, 3200);
+};
+
+
+UI.bindAchievementPopovers = function() {
+  const cards = document.querySelectorAll('#screen-achievements .ach-popover-host');
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      const wasRevealed = card.classList.contains('is-revealed');
+      cards.forEach(other => other.classList.remove('is-revealed'));
+      if (!wasRevealed) card.classList.add('is-revealed');
+      e.stopPropagation();
+    });
+    card.addEventListener('blur', () => {
+      card.classList.remove('is-revealed');
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+      if (e.key === 'Escape') {
+        card.classList.remove('is-revealed');
+      }
+    });
+  });
+
+  const screen = document.getElementById('screen-achievements');
+  if (!screen || screen.dataset.popoverBind === 'true') return;
+  screen.dataset.popoverBind = 'true';
+  screen.addEventListener('click', (e) => {
+    if (e.target.closest('.ach-popover-host')) return;
+    document.querySelectorAll('#screen-achievements .is-revealed').forEach(card => card.classList.remove('is-revealed'));
+  });
 };

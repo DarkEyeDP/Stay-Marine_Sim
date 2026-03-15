@@ -135,6 +135,7 @@ const PCS = {
     marine.familyStability = clamp(marine.familyStability + Math.round(station.familyEffect / 2), 0, 100);
 
     Character.clampAll(marine);
+    Achievements.recordAssignment(State.game, stationId, true);
   },
 
   /** Human-readable optempo label */

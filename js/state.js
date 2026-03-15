@@ -37,6 +37,7 @@ const State = {
       // enables out-processing events and suppresses PCS/deployments until contract expires
       easDecided: false,
     };
+    Achievements.recordCareerStart(State.game);
     State.save();
   },
 
@@ -54,6 +55,7 @@ const State = {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return false;
       State.game = JSON.parse(raw);
+      Achievements.ensureRunState(State.game);
       return true;
     } catch (e) {
       console.warn('Load failed:', e);
@@ -90,3 +92,4 @@ const State = {
     }
   },
 };
+

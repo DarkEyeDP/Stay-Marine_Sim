@@ -206,6 +206,7 @@ const Events = {
     if (evt.setDeployed) {
       marine.isDeployed = true;
       marine.deploymentMonthsLeft = evt.duration || 7;
+      Achievements.recordDeployment(State.game, marine);
 
       // Deployment medals — granted when orders are accepted
       if (evt.id === 'evt_meu_deployment') {
@@ -250,3 +251,4 @@ const Events = {
     return false;
   },
 };
+

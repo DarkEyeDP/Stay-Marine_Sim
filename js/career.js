@@ -77,6 +77,7 @@ const Career = {
     if (tierMap[newGrade] && tierMap[newGrade] > marine.billetTier) {
       marine.billetTier = tierMap[newGrade];
     }
+    Achievements.recordPromotion(State.game, marine, newGrade);
     return { grade: newGrade, abbr: rank.abbr, title: rank.title };
   },
 
@@ -147,6 +148,7 @@ const Career = {
     marine.savings += srbAmount;
     marine.morale = clamp(marine.morale + 5, 0, 100);
     State.game.reenlistWindowOffered = false;  // reset for the new contract
+    Achievements.recordReenlistment(marine);
     return srbAmount;
   },
 
@@ -611,3 +613,4 @@ const Career = {
     };
   },
 };
+

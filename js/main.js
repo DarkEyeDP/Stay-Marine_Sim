@@ -4,6 +4,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  Achievements.init();
+
   // ── Version ────────────────────────────────────
   document.getElementById('app-version').textContent = `v${APP_VERSION}`;
 
@@ -31,6 +33,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-rifle-practice').addEventListener('click', () => {
     RifleQual.startPractice();
+  });
+
+  document.getElementById('btn-achievements').addEventListener('click', () => {
+    UI.showAchievementsScreen('screen-title');
+  });
+
+  document.getElementById('btn-end-achievements').addEventListener('click', () => {
+    UI.showAchievementsScreen('screen-end');
+  });
+
+  document.getElementById('btn-achievements-back').addEventListener('click', (e) => {
+    const target = e.currentTarget.dataset.target || 'screen-title';
+    UI.showScreen(target);
+  });
+
+  window.addEventListener('achievement-unlocked', (event) => {
+    UI.showAchievementToast(event.detail.achievement);
   });
 
   document.getElementById('btn-create-back').addEventListener('click', () => {

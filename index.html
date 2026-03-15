@@ -50,6 +50,7 @@
         <button id="btn-new-game" class="btn btn-primary">NEW GAME</button>
         <button id="btn-continue" class="btn btn-secondary" disabled>CONTINUE CAREER</button>
         <button id="btn-rifle-practice" class="btn btn-tertiary">RIFLE RANGE</button>
+        <button id="btn-achievements" class="btn btn-secondary">ACHIEVEMENTS</button>
       </div>
       <p class="title-hint" id="save-hint"></p>
       <p class="title-copyright">&copy; 2026 Stay Marine Simulator. All rights reserved. &nbsp;<span id="app-version"></span></p>
@@ -534,6 +535,7 @@
       <div id="end-outlook"></div>
       <div class="end-action-row">
         <button id="btn-share-career" class="btn btn-share">Share Your Career</button>
+        <button id="btn-end-achievements" class="btn btn-secondary">VIEW ACHIEVEMENTS</button>
         <button id="btn-play-again" class="btn btn-primary">PLAY AGAIN</button>
       </div>
       <a class="footer-coffee end-coffee-link" href="https://buymeacoffee.com/staymarinesim" target="_blank" rel="noopener noreferrer">🖍️ Buy Me Some Crayons</a>
@@ -541,7 +543,35 @@
   </div>
 
   <!-- ═══════════════════════════ SCRIPTS ═══════════════════════════════ -->
+  <div id="screen-achievements" class="screen">
+    <div class="achievements-wrapper">
+      <div class="achievements-header">
+        <div>
+          <div class="achievements-kicker">Persistent Profile</div>
+          <h2 class="screen-title">Achievements</h2>
+          <p class="achievements-subtitle">Unlocked across all playthroughs on this device.</p>
+        </div>
+        <button id="btn-achievements-back" class="btn btn-tertiary" data-target="screen-title">BACK</button>
+      </div>
+
+      <div id="ach-summary" class="ach-summary"></div>
+
+      <section class="achievements-section">
+        <h3 class="ach-section-title">Service Record</h3>
+        <div id="ach-records" class="ach-records"></div>
+      </section>
+
+      <section class="achievements-section">
+        <h3 class="ach-section-title">Rank Milestones</h3>
+        <div id="ach-ranks" class="rank-achievements-grid"></div>
+      </section>
+
+      <div id="ach-groups" class="ach-groups"></div>
+    </div>
+  </div>
+
   <div id="game-tooltip" class="game-tooltip hidden"></div>
+  <div id="achievement-toast" class="achievement-toast"></div>
 
   <script src="js/version.js"></script>
   <script src="js/data/mos.js"></script>
@@ -555,6 +585,7 @@
   <script src="js/data/events_eas.js"></script>
   <script src="js/data/events_deployed.js"></script>
   <script src="js/data/events_data.js"></script>
+  <script src="js/achievements.js"></script>
   <script src="js/state.js"></script>
   <script src="js/character.js"></script>
   <script src="js/finance.js"></script>
