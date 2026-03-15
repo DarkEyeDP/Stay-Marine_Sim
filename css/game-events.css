@@ -376,6 +376,36 @@
   color: var(--muted);
 }
 
+.cat-morale {
+  background: rgba(129, 199, 132, 0.15);
+  color: #81c784;
+}
+
+.cat-education {
+  background: rgba(100, 181, 246, 0.18);
+  color: #64b5f6;
+}
+
+.cat-pme {
+  background: rgba(100, 181, 246, 0.18);
+  color: #64b5f6;
+}
+
+.cat-eas {
+  background: rgba(240, 180, 41, 0.2);
+  color: var(--tan);
+}
+
+.cat-specialty {
+  background: rgba(171, 71, 188, 0.18);
+  color: #ce93d8;
+}
+
+.cat-officer_program {
+  background: rgba(255, 183, 77, 0.18);
+  color: #ffb74d;
+}
+
 .cat-eas {
   background: rgba(176, 160, 96, 0.2);
   color: #c8b870;

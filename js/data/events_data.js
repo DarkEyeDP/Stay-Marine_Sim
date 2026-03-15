@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════
    EVENTS DATA — Assembler
    Combines all event sections into EVENTS_DATA.
-   Load order: events_core → events_mos → events_chance → events_retirement → this file
+   Load order: events_core → events_mos → events_chance → events_retirement → events_deployed → this file
    ═══════════════════════════════════════════════ */
 
 const EVENTS_DATA = [
@@ -9,4 +9,5 @@ const EVENTS_DATA = [
   ...EVENTS_MOS,
   ...EVENTS_CHANCE,
   ...EVENTS_RETIREMENT,
+  ...EVENTS_DEPLOYED,
 ];

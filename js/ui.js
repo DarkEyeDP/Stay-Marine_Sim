@@ -3,6 +3,13 @@
    All DOM rendering, screen transitions, stat bars
    ═══════════════════════════════════════════════ */
 
+/** Collapse a raw awards array into display strings, appending ×N for duplicates */
+function formatAwardsDisplay(awards) {
+  const counts = {};
+  (awards || []).forEach(a => { counts[a] = (counts[a] || 0) + 1; });
+  return Object.entries(counts).map(([name, n]) => n > 1 ? `${name} ×${n}` : name);
+}
+
 const UI = {
 
   // ── Screen Management ────────────────────────
@@ -10,12 +17,22 @@ const UI = {
   showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
-    if (el) el.classList.add('active');
+    if (el) {
+      el.classList.add('active');
+      el.scrollTop = 0;
+    }
   },
 
   // ── Character Creation ───────────────────────
 
   renderCreateScreen() {
+    // Restore last-used name
+    const savedName = localStorage.getItem('sms_last_name');
+    if (savedName) {
+      const nameInput = document.getElementById('input-name');
+      if (nameInput) nameInput.value = savedName;
+    }
+
     // Wire gender buttons
     const genderSelect = document.getElementById('gender-select');
     genderSelect.querySelectorAll('.gender-btn').forEach(btn => {
@@ -259,14 +276,26 @@ const UI = {
     const m = State.game.marine;
     const g = State.game;
 
-    // Rank badge & marine info
-    document.getElementById('rank-badge').textContent = m.payGrade;
+    // Rank badge & marine info — use SVG image when available, else text
+    const RANK_IMAGES = {
+      'E-2': 'img/pfc-rank.svg',
+      'E-3': 'img/lcpl-rank.svg',
+      'E-4': 'img/cpl-rank.svg',
+      'E-5': 'img/sgt-rank.svg',
+    };
+    const rankBadgeEl = document.getElementById('rank-badge');
+    const rankImg = RANK_IMAGES[m.payGrade];
+    if (rankImg) {
+      rankBadgeEl.innerHTML = `<img src="${rankImg}" class="rank-badge-img" alt="${m.payGrade}">`;
+    } else {
+      rankBadgeEl.textContent = m.payGrade;
+    }
     document.getElementById('rank-title-display').textContent = m.rankTitle;
     document.getElementById('marine-name').textContent = m.name;
     document.getElementById('marine-sub').textContent = `${m.mosCode} · ${m.mosTitle}`;
     const awardsHeaderEl = document.getElementById('marine-awards');
     if (awardsHeaderEl) {
-      awardsHeaderEl.innerHTML = (m.awards || []).map(a => `<span class="mh-award-item">${a}</span>`).join('');
+      awardsHeaderEl.innerHTML = formatAwardsDisplay(m.awards).map(a => `<span class="mh-award-item">${a}</span>`).join('');
     }
     UI.updateRifleQualBadge(m.rifleQualLevel);
 
@@ -964,7 +993,7 @@ const UI = {
       if (m.awards.length > 0) {
         awardsEl.innerHTML = `
           <div class="end-awards-label">Awards &amp; Decorations</div>
-          <div class="end-awards-list">${m.awards.map(a => `<span class="end-award-item">${a}</span>`).join('')}</div>
+          <div class="end-awards-list">${formatAwardsDisplay(m.awards).map(a => `<span class="end-award-item">${a}</span>`).join('')}</div>
         `;
       } else {
         awardsEl.innerHTML = '';

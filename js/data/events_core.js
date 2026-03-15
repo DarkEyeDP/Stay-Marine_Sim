@@ -73,20 +73,16 @@ const EVENTS_CORE = [
     title: 'Meritorious Promotion Recommended',
     weight: 6,
     trigger: { minProfConduct: 75, minPhysical: 75, minTIS: 12 },
-    narrative: 'Your CO calls you in. Your performance has been exceptional. A meritorious promotion package is being submitted ahead of the normal timeline. This is a rare opportunity.',
-    choices: [
-      {
-        text: 'Accept the meritorious promotion package.',
-        hint: 'Early promotion — accelerates career track',
-        effects: { profConduct: 3, morale: 10, reputationWithLeadership: 10 },
-        meritoriousPromo: true,
-      },
-      {
-        text: 'Decline — I\'ll earn it through normal channels.',
-        hint: 'No early promotion but shows humility (unusual choice)',
-        effects: { profConduct: 2, morale: 3 },
-      },
-    ],
+    isChance: true,
+    narrative: 'Your CO calls you in and closes the door. Your performance has been exceptional — technically, physically, and as a leader. You have been selected for meritorious promotion ahead of your peers. The paperwork has already been signed. You are being promoted to the next grade.',
+    chanceImpact: 'PROMOTED — Meritorious advancement to next grade',
+    chanceType: 'positive',
+    choices: [{
+      text: 'ACKNOWLEDGED — SEMPER FIDELIS',
+      effects: { profConduct: 3, morale: 12, reputationWithLeadership: 10 },
+      guaranteedPromotion: true,
+      logEntry: 'Meritoriously promoted ahead of peers.',
+    }],
   },
 
   {
@@ -94,7 +90,7 @@ const EVENTS_CORE = [
     category: 'career',
     title: 'School Orders Available',
     weight: 10,
-    trigger: { minTIS: 18 },
+    trigger: { minTIS: 18, notDeployed: true },
     narrative: 'The training and education office posts available school seats. There\'s a slot open for a course that could boost your career. Slots go fast.',
     choices: [
       {
@@ -164,17 +160,17 @@ const EVENTS_CORE = [
     title: 'Nominated for Meritorious Award',
     weight: 7,
     trigger: { minProfConduct: 65, minTIS: 12 },
-    narrative: 'Your section chief is putting you in for a NAM (Navy and Marine Corps Achievement Medal) for outstanding performance during the last exercise. It\'s being reviewed at the battalion level.',
-    choices: [
-      {
-        text: 'This is team recognition — make sure the citation reflects your section.',
-        hint: '+Morale, +NetworkStrength, award may still go through',
-        effects: { morale: 5, networkStrength: 5, profConduct: 2 },
-        awardChance: 0.75,
-        grantAward: 'Navy Achievement Medal',
-      },
-    ],
-    autoResolve: true,
+    isChance: true,
+    narrative: 'Your section chief is putting you in for a NAM (Navy and Marine Corps Achievement Medal) for outstanding performance during the last exercise. The package has been submitted to battalion for review.',
+    chanceImpact: '+Morale, +Network — award pending battalion approval',
+    chanceType: 'positive',
+    choices: [{
+      text: 'ACKNOWLEDGED',
+      effects: { morale: 5, networkStrength: 5, profConduct: 2 },
+      awardChance: 0.75,
+      grantAward: 'Navy Achievement Medal',
+      logEntry: 'Nominated for Navy Achievement Medal.',
+    }],
   },
 
   {
@@ -275,7 +271,7 @@ const EVENTS_CORE = [
     category: 'finance',
     title: 'Vehicle Breakdown',
     weight: 12,
-    trigger: {},
+    trigger: { notDeployed: true },
     narrative: 'Your car just threw a check engine light. The mechanic says it\'s $800 minimum, probably $1,400 once they get into it. You need a vehicle to get to base.',
     choices: [
       {
@@ -362,7 +358,7 @@ const EVENTS_CORE = [
     category: 'discipline',
     title: 'Liberty Incident Risk',
     weight: 10,
-    trigger: { maxDiscipline: 70 },
+    trigger: { maxDiscipline: 70, notDeployed: true },
     narrative: 'Your section goes on liberty Friday night. Someone suggests a bar in town. The night is going well until a situation escalates — harsh words with some locals, your buddy throws a punch. You\'re standing right there.',
     choices: [
       {
@@ -500,7 +496,7 @@ const EVENTS_CORE = [
     category: 'career',
     title: 'Recon Selection Opportunity',
     weight: 4,
-    trigger: { minPhysical: 80, minTIS: 6, maxTIS: 48 },
+    trigger: { minPhysical: 80, minTIS: 6, maxTIS: 48, notDeployed: true },
     narrative: 'You\'ve been put on a list of candidates for Recon indoc. The physical requirement is brutal, the attrition rate is near 70%. But those who earn the title join an elite brotherhood.',
     choices: [
       {
@@ -549,7 +545,7 @@ const EVENTS_CORE = [
     category: 'finance',
     title: 'Predatory Lender Near Base',
     weight: 9,
-    trigger: { maxTIS: 30, maxSavings: 2500 },
+    trigger: { maxTIS: 30, maxSavings: 2500, notDeployed: true },
     narrative: 'You\'re a few hundred short this month. There\'s a payday loan place right outside the gate — "1st Choice Military Loans." The sign says 30% APR but the Marines in line don\'t seem to care. Your buddy already owes them $2,000.',
     choices: [
       {
@@ -575,7 +571,7 @@ const EVENTS_CORE = [
     category: 'discipline',
     title: 'Barracks Inspection — Failed',
     weight: 8,
-    trigger: { maxTIS: 24 },
+    trigger: { maxTIS: 24, notDeployed: true },
     narrative: 'Your room failed barracks inspection. The GySgt is furious. You now have mandatory field day every night this week, and your name is on the 1stSgt\'s board. It\'s embarrassing but fixable.',
     choices: [
       {
@@ -596,7 +592,7 @@ const EVENTS_CORE = [
     category: 'discipline',
     title: 'Barracks Party Gets Out of Hand',
     weight: 9,
-    trigger: { maxTIS: 30, maxDiscipline: 75 },
+    trigger: { maxTIS: 30, maxDiscipline: 75, notDeployed: true },
     narrative: 'Someone in the barracks is throwing a room party. The beer is flowing, the music is loud, and PMO is going to get called eventually. You\'re 20, a few guys are 18, and your NCO\'s room is at the end of the hall.',
     choices: [
       {
@@ -649,7 +645,7 @@ const EVENTS_CORE = [
     category: 'personal',
     title: 'Ink or No Ink?',
     weight: 6,
-    trigger: { maxTIS: 36 },
+    trigger: { maxTIS: 36, notDeployed: true },
     narrative: 'Half the Marines in your section have tattoos. There\'s a shop in town running a deal. You\'ve been thinking about it for months. Marine Corps tattoo policy has gotten stricter — hands, neck, and face are off-limits. Visible tattoos above the collar can affect recruiting duty eligibility and some schools.',
     choices: [
       {
@@ -954,7 +950,7 @@ const EVENTS_CORE = [
     category: 'unit',
     title: 'Hazing in the Barracks',
     weight: 6,
-    trigger: { minTIS: 12 },
+    trigger: { minTIS: 12, notDeployed: true },
     narrative: 'You learn that a new Private in your platoon is being hazed — made to do degrading things, personal items stolen, locked out of his room at night. The guys doing it see it as "tradition." The Private hasn\'t reported it. But he\'s shutting down.',
     choices: [
       {
@@ -1007,7 +1003,7 @@ const EVENTS_CORE = [
     category: 'career',
     title: 'You Disagree With Your SSgt\'s Approach',
     weight: 9,
-    trigger: { minTIS: 24 },
+    trigger: { minTIS: 24, maxGrade: 'E-5' },
     narrative: 'Your SSgt has a training plan for next week that you believe is tactically unsound and will cost you valuable range time. You\'ve done this before. He hasn\'t. But he outranks you and isn\'t asking for your opinion.',
     choices: [
       {
@@ -1024,6 +1020,32 @@ const EVENTS_CORE = [
         text: 'Voice your concerns at the section leaders\' meeting.',
         hint: '+MOS credibility, SSgt may see as insubordinate',
         effects: { mosProficiency: 4, reputationWithLeadership: -4, stress: 5, disciplineRisk: 4 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_junior_nco_challenges_approach',
+    category: 'career',
+    title: 'Junior NCO Pushes Back on Your Call',
+    weight: 8,
+    trigger: { minTIS: 24, minGrade: 'E-6' },
+    narrative: 'One of your Corporals — sharp, opinionated, and probably right at least half the time — challenges your training plan publicly in front of the section. It\'s not insubordination exactly, but it\'s not a private conversation either. Other NCOs are watching to see how you handle it.',
+    choices: [
+      {
+        text: 'Hear him out privately after formation. If he\'s right, adjust the plan.',
+        hint: '+NetworkStrength, +Reputation — good SNCOs listen and adapt',
+        effects: { reputationWithLeadership: 6, networkStrength: 6, mosProficiency: 3, morale: 5 },
+      },
+      {
+        text: 'Acknowledge it in front of the section and drive on. Your call, your responsibility.',
+        hint: '+ProCon for composure — authority maintained professionally',
+        effects: { profConduct: 4, reputationWithLeadership: 3, morale: 2, stress: 3 },
+      },
+      {
+        text: 'Shut it down hard. You don\'t run a democracy.',
+        hint: '-NetworkStrength, -Morale in section — you won the moment, lost the room',
+        effects: { reputationWithLeadership: -5, networkStrength: -5, morale: -6, profConduct: -2, stress: 3 },
       },
     ],
   },
@@ -1134,31 +1156,6 @@ const EVENTS_CORE = [
     ],
   },
 
-  {
-    id: 'evt_parents_dont_get_it',
-    category: 'personal',
-    title: 'Family Back Home Doesn\'t Understand',
-    weight: 7,
-    trigger: { minTIS: 6 },
-    narrative: 'Your parents call and ask when you\'re "getting a real job." They don\'t understand the career, the culture, or why you signed up for another term. It\'s a small thing, but it stings — and you\'re already stressed from work.',
-    choices: [
-      {
-        text: 'Patiently explain your career path and what the Corps means to you.',
-        hint: '+FamilyStability long-term, +Morale',
-        effects: { familyStability: 5, morale: 4, stress: 2 },
-      },
-      {
-        text: 'Shrug it off. They\'ll come around when they see your progression.',
-        hint: 'No change — compartmentalize',
-        effects: { stress: 2, morale: -2 },
-      },
-      {
-        text: 'Vent frustration to your closest buddy in the unit.',
-        hint: '+NetworkStrength, releases stress',
-        effects: { networkStrength: 4, stress: -4, morale: 2 },
-      },
-    ],
-  },
 
   // ══════════════════ MENTAL HEALTH & WELLBEING ══════════════════
   {

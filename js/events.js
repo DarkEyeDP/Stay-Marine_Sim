@@ -62,10 +62,14 @@ const Events = {
     // Month-specific annual events (e.g. Marine Corps Ball in November)
     if (t.triggerMonth !== undefined && State.game.month !== t.triggerMonth) return false;
 
-    // Grade ceiling (e.g. counseling only for E-4 and below)
-    if (t.maxGrade !== undefined) {
+    // Grade ceiling / floor
+    if (t.maxGrade !== undefined || t.minGrade !== undefined || t.bahEligible) {
       const gradeOrder = ['E-1','E-2','E-3','E-4','E-5','E-6','E-7','E-8','E-9'];
-      if (gradeOrder.indexOf(marine.payGrade) > gradeOrder.indexOf(t.maxGrade)) return false;
+      const gradeIdx = gradeOrder.indexOf(marine.payGrade);
+      if (t.maxGrade !== undefined && gradeIdx > gradeOrder.indexOf(t.maxGrade)) return false;
+      if (t.minGrade !== undefined && gradeIdx < gradeOrder.indexOf(t.minGrade)) return false;
+      // BAH-eligible: must be married OR E-6+ (single E-5 and below live in barracks, no BAH)
+      if (t.bahEligible && !marine.isMarried && gradeIdx < gradeOrder.indexOf('E-6')) return false;
     }
 
     // Fire at most once per calendar year
@@ -96,6 +100,17 @@ const Events = {
     if (choice.meritoriousPromo) {
       // Trigger early promotion check
       Career.checkCompetitivePromotion(marine);
+    }
+    // Guaranteed meritorious promotion — directly advances to next grade
+    if (choice.guaranteedPromotion) {
+      const _go = ['E-1','E-2','E-3','E-4','E-5','E-6','E-7','E-8','E-9'];
+      const nextGrade = _go[_go.indexOf(marine.payGrade) + 1];
+      if (nextGrade) {
+        const promo = Career._promote(marine, nextGrade);
+        if (promo && State.game) {
+          State.game.log.unshift({ date: Engine._dateStr(), text: `Meritoriously promoted to ${promo.abbr} — ${promo.title}.`, major: true });
+        }
+      }
     }
     if (choice.combatAwardChance && Math.random() < choice.combatAwardChance) {
       marine.awards.push('Combat Action Ribbon');

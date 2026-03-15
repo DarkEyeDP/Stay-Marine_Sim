@@ -1073,6 +1073,10 @@ const RifleQual = {
     document.getElementById('rqp-quiz-title').textContent = title;
     document.getElementById('rqp-quiz-sub').textContent   = sub;
 
+    // Clear any leftover error message from a previous quiz session
+    const errEl = document.getElementById('rqp-quiz-error');
+    if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+
     // Build slot rows
     const slotsEl = document.getElementById('rqp-slots');
     slotsEl.removeAttribute('data-drag-active');
@@ -1333,8 +1337,8 @@ const RifleQual = {
       // Three strikes — removed from range as a safety violator
       RifleQual._quizShowWrong = false;
       const msg = RifleQual._quizPhase === 'safety'
-        ? 'After three failed attempts to recite the Four Weapons Safety Rules in order, the RSO steps in front of you. "You are a safety violator. Get off my range." Your platoon sergeant is notified before you reach the parking lot. Assigned UNQUALIFIED.'
-        : 'After three failed attempts to identify the Weapon Conditions for the M16/M4, the RSO steps in front of you. "You are a safety risk. Get off my range." Your platoon sergeant is notified. Assigned UNQUALIFIED.';
+        ? 'After three failed attempts to recite the Four Weapons Safety Rules in order, the RSO steps in front of you. "You clearly were not paying attention during the classes. You are being dropped from this range." Your 1stSgt is notified before you reach the parking lot. Assigned UNQUALIFIED.'
+        : 'After three failed attempts to identify the Weapon Conditions, the RSO steps in front of you. "You clearly were not paying attention during the classes. You are being dropped from this range." Your 1stSgt is notified. Assigned UNQUALIFIED.';
       RifleQual._quizFail(msg);
     } else {
       // Show inline error with wrong slots highlighted — player can fix and retry

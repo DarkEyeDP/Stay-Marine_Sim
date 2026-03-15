@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-start-bootcamp').addEventListener('click', () => {
     const { name, backgroundId, mosId, gender } = UI.getCreateSelections();
+    if (name) localStorage.setItem('sms_last_name', name);
     const marine = Character.create(name, mosId, backgroundId, gender);
     State.init(marine);
     UI.initTabs();
@@ -181,9 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const njpLine = (m.njpCount || 0) > 0 ? ' (Collected an NJP along the way 😬)' : ' Stayed out of trouble.';
     const msg =
       `I just wrapped a ${years}-year Marine Corps career in Stay Marine Sim! ` +
-      `Final rank: ${m.rankAbbr} ${m.rankTitle}. ${m.awards.length} award${m.awards.length !== 1 ? 's' : ''} on the DD-214.` +
+      `Final rank: ${m.rankAbbr} ${m.awards.length} award${m.awards.length !== 1 ? 's' : ''} on the DD-214.` +
       awardLine + familyLine + njpLine +
-      ` Think you can do better? Play free 👇\nhttps://stay-marine.com/`;
+      ` Think you can do better? Play free \nhttps://stay-marine.com/`;
 
     const encoded = encodeURIComponent(msg);
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);

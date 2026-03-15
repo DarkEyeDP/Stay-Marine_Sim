@@ -45,6 +45,12 @@
   flex-shrink: 0;
 }
 
+.rank-badge-img {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
 .rank-title-display {
   font-size: 0.7rem;
   color: var(--green);
