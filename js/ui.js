@@ -971,6 +971,10 @@ const UI = {
       }
     }
 
+    // Stash a snapshot on the share button so the click handler works even if State.game is gone
+    const shareBtn = document.getElementById('btn-share-career');
+    if (shareBtn) shareBtn._marineSnapshot = { ...m };
+
     UI.showScreen('screen-end');
     UI.renderEndOutlook(endStateId, m, tis);
   },

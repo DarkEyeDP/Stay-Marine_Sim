@@ -157,8 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Share Career ──────────────────────────────
-  document.getElementById('btn-share-career').addEventListener('click', () => {
-    const m = State.game.marine;
+  document.getElementById('btn-share-career').addEventListener('click', function () {
+    const m = this._marineSnapshot || (State.game && State.game.marine);
+    if (!m) return;
     const tis = m.timeInService;
     const years = Math.floor(tis / 12);
     const topAward = (() => {
