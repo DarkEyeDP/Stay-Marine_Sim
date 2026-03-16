@@ -1470,6 +1470,8 @@ const END_STATES = {
 };
 
 UI._achievementToastTimer = 0;
+UI._achievementToastQueue = [];
+UI._achievementToastActive = false;
 UI._achievementsBackTarget = 'screen-title';
 
 UI.showAchievementsScreen = function(backTarget = 'screen-title') {
@@ -1573,8 +1575,19 @@ UI.renderAchievementsScreen = function() {
   UI.bindAchievementPopovers();
 };
 UI.showAchievementToast = function(achievement) {
+  if (!achievement) return;
+  UI._achievementToastQueue.push(achievement);
+  if (!UI._achievementToastActive) UI._achievementToastNext();
+};
+
+UI._achievementToastNext = function() {
   const toast = document.getElementById('achievement-toast');
-  if (!toast || !achievement) return;
+  if (!toast || UI._achievementToastQueue.length === 0) {
+    UI._achievementToastActive = false;
+    return;
+  }
+  UI._achievementToastActive = true;
+  const achievement = UI._achievementToastQueue.shift();
   toast.innerHTML = '<div class="achievement-toast-label">Achievement Unlocked</div>' +
     '<div class="achievement-toast-title">' + achievement.title + '</div>' +
     '<div class="achievement-toast-desc">' + achievement.desc + '</div>';
@@ -1582,7 +1595,8 @@ UI.showAchievementToast = function(achievement) {
   clearTimeout(UI._achievementToastTimer);
   UI._achievementToastTimer = setTimeout(() => {
     toast.classList.remove('visible');
-  }, 3200);
+    setTimeout(() => UI._achievementToastNext(), 350);
+  }, 3000);
 };
 
 

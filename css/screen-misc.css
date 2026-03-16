@@ -250,6 +250,22 @@
 
 @media (max-width: 600px) {
   .btn-share { display: block; }
+
+  .end-action-row {
+    flex-wrap: wrap;
+  }
+
+  #btn-share-career {
+    flex: 1 1 100%;
+  }
+
+  #btn-end-achievements,
+  #btn-play-again {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.75rem;
+    padding: 0.6rem 0.4rem;
+  }
 }
 
 .end-coffee-link {

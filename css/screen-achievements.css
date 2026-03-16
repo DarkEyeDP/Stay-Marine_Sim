@@ -291,3 +291,49 @@
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
+
+/* ── Achievement Toast Popup ─────────────────────────── */
+.achievement-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  background: var(--panel, #1a1a1a);
+  border: 1px solid var(--yellow, #c8a84b);
+  border-radius: 6px;
+  padding: 0.75rem 1.1rem;
+  min-width: 220px;
+  max-width: 320px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+}
+
+.achievement-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.achievement-toast-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--yellow, #c8a84b);
+  margin-bottom: 0.3rem;
+}
+
+.achievement-toast-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: var(--tan, #d4b896);
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+}
+
+.achievement-toast-desc {
+  font-size: 0.7rem;
+  color: var(--muted, #888);
+  letter-spacing: 0.03em;
+}

@@ -237,12 +237,25 @@
 
 footer.mobile-game-footer {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
   background: var(--bg);
   border-top: 1px solid var(--border);
-  padding: var(--gap);
-  padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom, 0px));
+  padding: 0.6rem var(--gap);
+  padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
   margin-top: 0;
-  padding-top: var(--gap);
+}
+
+footer.mobile-game-footer .footer-start-over,
+footer.mobile-game-footer .footer-coffee,
+footer.mobile-game-footer .footer-feedback {
+  font-size: 0.65rem;
+  white-space: nowrap;
+  flex: 1;
+  text-align: center;
 }
 
 /* Desktop: all panels visible side-by-side */
