@@ -467,7 +467,7 @@ const UI = {
       const payHtml = evt.setDeployed ? UI._deployPayHtml(State.game.marine, evt.duration || 7, evt.id === 'evt_oif_deployment') : '';
       card.innerHTML = `
         <div class="event-card-header">
-          <span class="event-category ${catClass}">${evt.category.toUpperCase()}</span>
+          <span class="event-category ${catClass}">${evt.category.replace(/_/g, ' ').toUpperCase()}</span>
           ${evt.title}
         </div>
         <div class="event-card-body">${evt.narrative}${locationHtml}</div>
@@ -1359,7 +1359,7 @@ const UI = {
     if (!el) return;
     const disposable = gross - bills;
     const goal = m.savingsGoal || 0;
-    const lifestyle = Math.max(0, disposable - goal);
+    const lifestyle = disposable - goal;
 
     el.innerHTML = `
       <div class="sp-row">
@@ -1378,7 +1378,7 @@ const UI = {
         <span class="sp-label">Discretionary</span>
         <span class="sp-val">${Finance.fmt(lifestyle)}/mo</span>
       </div>
-      <div class="sp-note">${goal === 0 ? 'Saving nothing \u2014 spending everything.' : lifestyle > 300 ? 'You\'re living well and saving.' : 'Tight budget. Discipline.'}</div>
+      <div class="sp-note">${goal === 0 ? 'Saving nothing - most Marines blow the whole paycheck.' : lifestyle > 300 ? 'You are living well and still stacking cash.' : disposable < 0 ? 'You are upside down - libo and bills are eating you alive.' : 'Tight budget. Discipline.'}</div>
     `;
 
     document.getElementById('sp-minus').addEventListener('click', () => {
@@ -1643,3 +1643,4 @@ UI.bindAchievementPopovers = function() {
     document.querySelectorAll('#screen-achievements .is-revealed').forEach(card => card.classList.remove('is-revealed'));
   });
 };
+

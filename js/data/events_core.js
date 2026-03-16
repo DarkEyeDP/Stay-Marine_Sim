@@ -1209,8 +1209,144 @@ const EVENTS_CORE = [
       },
     ],
   },
+  {
+    id: 'evt_credit_card_offer',
+    category: 'finance',
+    title: 'Pre-Approved Credit Card at the PX',
+    weight: 10,
+    trigger: { minTIS: 3, maxTIS: 48, maxDebt: 8000, notDeployed: true },
+    narrative: 'A smiling civilian rep outside the PX says you are pre-approved. No annual fee, tiny minimum payment, and just enough fake freedom to make a bad idea feel smart. A lot of Marines learn this lesson the hard way.',
+    choices: [
+      {
+        text: 'Take the card. Future You can deal with it.',
+        hint: '+Morale now, +Debt, +Lifestyle creep',
+        effects: { morale: 5, stress: -2, debt: 1500, lifestyleScore: 1 },
+      },
+      {
+        text: 'Say no and keep walking.',
+        hint: '-Morale now, better long-term stability',
+        effects: { morale: -2, profConduct: 1, stress: 1, savingsGoal: 50 },
+      },
+    ],
+  },
 
-  // ══════════════════ DEBT ESCALATION ══════════════════
+  {
+    id: 'evt_payday_weekend',
+    category: 'young_marine',
+    title: 'Payday Weekend in Town',
+    weight: 12,
+    trigger: { minTIS: 3, notDeployed: true },
+    narrative: 'It is payday. The group chat is already moving. Food, drinks, random purchases, and whatever seemed smart in the parking lot at 2300. This is exactly how a lot of junior Marines stay broke.',
+    choices: [
+      {
+        text: 'Full send. You earned this.',
+        hint: 'Big morale now, money pain later',
+        effects: { morale: 8, stress: -3, savings: -350, debt: 250, lifestyleScore: 1, disciplineRisk: 3 },
+      },
+      {
+        text: 'Go out, but set a hard limit.',
+        hint: 'Moderate fun, moderate spend',
+        effects: { morale: 4, savings: -125, stress: -1 },
+      },
+      {
+        text: 'Stay in the barracks and stack your money.',
+        hint: '+Savings, -Morale, better discipline',
+        effects: { savings: 150, morale: -2, stress: 1, savingsGoal: 50 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_tattoo_idea',
+    category: 'young_marine',
+    title: 'Tattoo Appointment on Impulse',
+    weight: 8,
+    trigger: { minTIS: 6, notDeployed: true },
+    narrative: 'Your boys are going to the tattoo shop right off base. Nobody has slept enough. Nobody has thought this through. That has never stopped anybody before.',
+    choices: [
+      {
+        text: 'Get the tattoo. Regret is for civilians.',
+        hint: '+Morale, -Savings',
+        effects: { morale: 5, savings: -300, lifestyleScore: 1 },
+      },
+      {
+        text: 'Price it out and wait a month.',
+        hint: 'Minor morale hit, better money discipline',
+        effects: { morale: -1, stress: 1, profConduct: 1 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_online_cart_bender',
+    category: 'finance',
+    title: 'Late-Night Online Cart Full of Nonsense',
+    weight: 9,
+    trigger: { minTIS: 3, notDeployed: true },
+    narrative: 'One click turned into twelve. New headset, random gear, supplements, room decorations, maybe a knife you absolutely did not need. The cart feels harmless right up until checkout.',
+    choices: [
+      {
+        text: 'Check out. Retail therapy counts as therapy.',
+        hint: '+Morale, -Savings, +Lifestyle creep',
+        effects: { morale: 4, savings: -400, lifestyleScore: 1 },
+      },
+      {
+        text: 'Close the tab and sleep on it.',
+        hint: '-Morale now, money saved',
+        effects: { morale: -2, stress: -1, savings: 100 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_fast_cash_advance',
+    category: 'finance',
+    title: 'Quick Cash Advance Pitch',
+    weight: 6,
+    trigger: { minTIS: 6, maxSavings: 500, minDebt: 1000, notDeployed: true },
+    narrative: 'A buddy says there is an easy fix until next payday. It is not a fix. It is a fee wrapped around panic with a signature line at the bottom.',
+    choices: [
+      {
+        text: 'Take the cash advance and buy breathing room.',
+        hint: '-Stress now, +Debt later',
+        effects: { savings: 250, debt: 700, stress: -4, morale: 1 },
+      },
+      {
+        text: 'Do not touch it. Eat cheap and grind it out.',
+        hint: '+Stress now, avoids the trap',
+        effects: { stress: 3, morale: -2, profConduct: 1, savingsGoal: 50 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_new_relationship_spend',
+    category: 'personal',
+    title: 'Dating Gets Expensive Fast',
+    weight: 8,
+    trigger: { minTIS: 6, notDeployed: true, isMarried: false },
+    narrative: 'You are trying to impress somebody and your bank account is about to get involved. Dinners, bars, Ubers, random gifts, and the powerful urge to spend like you make more than you do.',
+    choices: [
+      {
+        text: 'Spend big and make it a whole thing.',
+        hint: '+Morale, -Savings, possible debt creep',
+        effects: { morale: 6, savings: -250, debt: 200, lifestyleScore: 1 },
+      },
+      {
+        text: 'Keep it modest and act like an adult.',
+        hint: 'Smaller morale bump, manageable cost',
+        effects: { morale: 3, savings: -80 },
+      },
+      {
+        text: 'Pump the brakes. Your budget is cooked already.',
+        hint: '+Discipline, -Morale',
+        effects: { morale: -2, stress: -1, profConduct: 1, savingsGoal: 50 },
+      },
+    ],
+  },
+
+
+  // ?????????????????????????????????????????????????????? DEBT ESCALATION ══════════════════
   {
     id: 'evt_debt_notice',
     category: 'finance',

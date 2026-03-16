@@ -53,14 +53,14 @@ const Character = {
       familyStability:  clamp(60 + (bg.stats.familyStability || 0) + (mos.startingStats.familyStability || 0),  0, 100),
 
       // ── Finance ───────────────────────────
-      savings:          clamp(500 + (bg.stats.savings        || 0) + (mos.startingStats.savings         || 0), 0, Infinity),
-      debt:             clamp(2000 + (bg.stats.debt          || 0) + (mos.startingStats.debt            || 0), 0, Infinity),
-      lifestyleScore:   2,
+      savings:          clamp(250 + (bg.stats.savings        || 0) + (mos.startingStats.savings         || 0), 0, Infinity),
+      debt:             clamp(2500 + (bg.stats.debt          || 0) + (mos.startingStats.debt            || 0), 0, Infinity),
+      lifestyleScore:   3,
       // Base non-housing expenses: phone (~$80), car insurance (~$150),
       // gas (~$120), eating out/going out (~$350), hygiene/incidentals (~$100),
       // subscriptions/entertainment (~$100), random spending (~$200) ≈ $1,100
       // Plus barracks lifestyle costs (field day supplies, boot polish, etc.) ≈ $200
-      monthlyExpenses:  1300,    // base non-housing, non-food expenses
+      monthlyExpenses:  850,     // base recurring expenses before libo / lifestyle spending
 
       // ── Transition ────────────────────────
       civilianEmployability: clamp(20 + (bg.stats.civilianEmployability || 0) + (mos.startingStats.civilianEmployability || 0), 0, 100),
@@ -92,7 +92,7 @@ const Character = {
       pendingCarLoanReveal: false, // true = reveal financing trap next advance
 
       // ── Checking Account ──────────────────
-      checking: 400,   // liquid balance; pay flows in, bills flow out each month
+      checking: 250,   // liquid balance; most junior Marines start tight between paychecks
 
       // ── Reserve Component ─────────────────
       reserveStatus: 'none',  // 'none' | 'IRR' | 'SMCR' — set at EAS
@@ -108,7 +108,7 @@ const Character = {
       deploymentCount:   0,   // completed deployments
 
       // ── Savings Goal ─────────────────────
-      savingsGoal: 200,   // player-set monthly savings target ($)
+      savingsGoal: 0,     // player-set monthly savings target ($)
     };
 
     return marine;
@@ -126,6 +126,7 @@ const Character = {
       'stress','morale','familyStability','savings','debt',
       'civilianEmployability','educationCredits','giBillMonths',
       'reputationWithLeadership','networkStrength','billetTier','lifestyleScore',
+      'monthlyExpenses','savingsGoal','checking',
     ];
     for (const [key, val] of Object.entries(effects)) {
       if (numericStats.includes(key)) {
@@ -159,6 +160,8 @@ const Character = {
     marine.lifestyleScore          = clamp(Math.round(marine.lifestyleScore), 1,   5);
     marine.savings                 = Math.max(0, marine.savings);
     marine.debt                    = Math.max(0, marine.debt);
+    marine.monthlyExpenses         = clamp(Math.round(marine.monthlyExpenses || 850), 500, 2200);
+    marine.savingsGoal             = clamp(Math.round(marine.savingsGoal || 0), 0, 2000);
     marine.checking                = Math.max(0, marine.checking || 0);
   },
 

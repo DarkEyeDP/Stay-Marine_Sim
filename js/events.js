@@ -95,6 +95,13 @@ const Events = {
     // Handle special choice flags
     if (choice.setMarried !== undefined) marine.isMarried = choice.setMarried;
     if (choice.bahIncrease)    marine.monthlyExpenses -= 150;  // married BAH offset
+    if (choice.monthlyExpenseDelta) marine.monthlyExpenses += choice.monthlyExpenseDelta;
+    if (choice.expenseIncrease) marine.monthlyExpenses += choice.expenseIncrease;
+    if (choice.expenseDecrease) marine.monthlyExpenses = Math.max(0, marine.monthlyExpenses - choice.expenseDecrease);
+    if (choice.savingsGoalDelta) marine.savingsGoal += choice.savingsGoalDelta;
+    if (choice.setSavingsGoal !== undefined) marine.savingsGoal = choice.setSavingsGoal;
+    if (choice.lifestyleShift) marine.lifestyleScore += choice.lifestyleShift;
+    if (choice.setLifestyleScore !== undefined) marine.lifestyleScore = choice.setLifestyleScore;
     if (choice.addChild)       marine.childCount = (marine.childCount || 0) + 1;
     if (choice.setInjury)      marine.injury = choice.setInjury;
     if (choice.meritoriousPromo) {

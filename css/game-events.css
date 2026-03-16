@@ -327,6 +327,10 @@
   border-left-color: #b0a060;
 }
 
+.cat-border-young_marine {
+  border-left-color: #64b5f6;
+}
+
 .event-card-header {
   padding: 0.6rem 0.75rem;
   background: rgba(255, 255, 255, 0.03);
@@ -401,6 +405,11 @@
 .cat-specialty {
   background: rgba(171, 71, 188, 0.18);
   color: #ce93d8;
+}
+
+.cat-young_marine {
+  background: rgba(100, 181, 246, 0.18);
+  color: #90caf9;
 }
 
 .cat-officer_program {

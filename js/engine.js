@@ -59,9 +59,31 @@ const Engine = {
     {
       id: 'focus_savings',
       label: 'Side hustle / cut expenses',
-      hint: '+$600 Savings, -Morale (grinding side work takes a toll)',
-      effects: { savings: 600, morale: -4 },
+      hint: '+$600 Savings, -Morale, lower lifestyle spending this quarter',
+      effects: { savings: 600, morale: -4, lifestyleScore: -1, savingsGoal: 50 },
       cost: 2,
+    },
+    {
+      id: 'focus_live_fast',
+      label: 'Blow the paycheck on libo',
+      hint: '++Morale, -Stress now, but +Lifestyle spending and debt temptation',
+      effects: { morale: 8, stress: -4, lifestyleScore: 1, savingsGoal: -100, debt: 200 },
+      cost: 1,
+      unavailableWhenDeployed: true,
+    },
+    {
+      id: 'focus_budget_lockdown',
+      label: 'Barracks monk mode',
+      hint: '+Savings goal, -Lifestyle spending, -Morale, better long-term stability',
+      effects: { morale: -5, stress: 2, lifestyleScore: -1, savingsGoal: 150, savings: 250 },
+      cost: 1,
+    },
+    {
+      id: 'focus_reset_budget',
+      label: 'Reset the budget',
+      hint: 'Trim the nonsense without becoming miserable',
+      effects: { morale: 1, stress: -2, savingsGoal: 50 },
+      cost: 1,
     },
     {
       id: 'focus_network',
@@ -280,6 +302,7 @@ const Engine = {
       m.debt    = Math.max(0, m.debt    - payAmount);
       m.stress  = clamp(m.stress - 4, 0, 100);
       m.morale  = clamp(m.morale + 3, 0, 100);
+      m.savingsGoal = Math.max(0, (m.savingsGoal || 0) - 50);
       State.game.log.unshift({ date: Engine._dateStr(), text: `Extra debt payment: ${Finance.fmt(payAmount)}`, major: false });
       State.save();
       return;   // skip generic applyEffects and generic log entry
@@ -356,4 +379,5 @@ const Engine = {
     return `${months[g.month - 1]} ${g.year}`;
   },
 };
+
 
