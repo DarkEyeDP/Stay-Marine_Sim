@@ -1536,11 +1536,10 @@ UI.renderAchievementsScreen = function() {
           <div class="rank-ach-art">
             <img src="img/${rank.asset}" alt="${rank.title}" class="rank-ach-img">
           </div>
+          ${rank.unlocked ? `<span class="rank-ach-count">×${rank.timesReached}</span>` : ''}
           <div class="rank-ach-meta">
-            <div class="rank-ach-title-row">
-              <span class="rank-ach-title">${rank.title}</span>
-              <span class="rank-ach-count">Reached ${rank.timesReached}x</span>
-            </div>${descHtml}
+            <div class="rank-ach-title">${rank.title}</div>
+            ${descHtml}
             <div class="rank-ach-status">${rank.unlocked ? 'Unlocked' : 'Locked'}</div>
           </div>
           ${popoverHtml}

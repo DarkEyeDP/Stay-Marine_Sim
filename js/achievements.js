@@ -48,6 +48,9 @@ const ACHIEVEMENT_DEFS = [
   { id: 'careerist', title: 'Careerist', tier: 'hard_charged', desc: 'You stopped counting days and started counting years.', iconifyIcon: 'mdi:calendar-range' },
   { id: 'qualified_sharpshooter', title: 'Qualified: Sharpshooter', tier: 'hard_charged', desc: 'Hold off, hold steady, send it.', iconifyIcon: 'mdi:crosshairs-gps' },
   { id: 'wind_whisperer', title: 'Wind Whisperer', tier: 'hard_charged', desc: 'You aimed where the bullet needed to be.', iconifyIcon: 'mdi:weather-windy' },
+  { id: 'perfect_card_prone_kneeling', title: 'Perfect Card: Prone + Kneeling', tier: 'hard_charged', desc: 'You did the easy hard parts.', iconifyIcon: 'mdi:crosshairs' },
+  { id: 'standing_on_business', title: 'Standing On Business', tier: 'hard_charged', desc: 'Your wobble did not own you.', iconifyIcon: 'mdi:human-handsup' },
+  { id: 'the_comeback_shot', title: 'The Comeback', tier: 'hard_charged', desc: 'You were in the dirt. Then you locked in.', iconifyIcon: 'mdi:trending-up' },
   { id: 'section_lead', title: 'Section Lead', tier: 'hard_charged', desc: 'You are the plan and the backup plan.', iconifyIcon: 'mdi:account-supervisor-outline' },
   { id: 'professional_student', title: 'Professional Student', tier: 'hard_charged', desc: 'You turned caffeine into credentials.', iconifyIcon: 'mdi:certificate-outline' },
   { id: 'debt_free_eas', title: 'Debt-Free EAS', tier: 'hard_charged', desc: 'Civilian life starts on easy mode.', iconifyIcon: 'mdi:piggy-bank' },
@@ -55,6 +58,7 @@ const ACHIEVEMENT_DEFS = [
   { id: 'quiet_professional', title: 'The Quiet Professional', tier: 'hard_charged', desc: 'No drama. Just unstoppable.', iconifyIcon: 'mdi:account-tie-voice-off-outline' },
   { id: 'combat_ready', title: 'Combat Ready', tier: 'hard_charged', desc: 'You fall to your training.', iconifyIcon: 'mdi:shield-check-outline' },
 
+  { id: 'one_point_short', title: 'One Point Short', tier: 'blood_stripe', desc: 'You will remember this forever.', iconifyIcon: 'mdi:minus-circle-outline' },
   { id: 'blood_stripe', title: 'Blood Stripe', tier: 'blood_stripe', desc: 'Welcome to the NCO tier. Now you are responsible.', iconifyIcon: 'mdi:chevron-up-box-outline' },
   { id: 'expert_rifleman', title: 'Expert Rifleman', tier: 'blood_stripe', desc: 'Clean, calm, surgical.', iconifyIcon: 'mdi:target-account' },
   { id: 'expert_or_bust', title: 'Expert or Bust', tier: 'blood_stripe', desc: 'You did not come to participate.', iconifyIcon: 'mdi:star-shooting-outline' },
@@ -66,6 +70,8 @@ const ACHIEVEMENT_DEFS = [
   { id: 'unq_redemption_arc', title: 'UNQ Redemption Arc', tier: 'blood_stripe', desc: 'From embarrassment to poster child.', iconifyIcon: 'mdi:restore-alert' },
   { id: 'the_comeback_tour', title: 'The Comeback Tour', tier: 'blood_stripe', desc: 'Plot armor earned.', iconifyIcon: 'mdi:arrow-u-up-left-bold' },
 
+  { id: 'standing_god_mode', title: 'Standing God Mode', tier: 'legend', desc: 'This is either skill or witchcraft.', iconifyIcon: 'mdi:lightning-bolt' },
+  { id: 'the_perfect_card', title: 'The Perfect Card', tier: 'legend', desc: 'Be honest. Who is mouse-clicking for you?', iconifyIcon: 'mdi:crown' },
   { id: 'staff_nco_energy', title: 'Staff NCO Energy', tier: 'legend', desc: 'People stop asking if you are serious.', iconifyIcon: 'mdi:account-star-outline' },
   { id: 'gunny_time', title: 'Gunny Time', tier: 'legend', desc: 'You have entered because I said so.', iconifyIcon: 'mdi:account-hard-hat-outline' },
   { id: 'twenty_years_of_damage', title: 'Twenty Years of Damage', tier: 'legend', desc: 'You made it. You paid for it. You won.', iconifyIcon: 'mdi:medal-outline' },
@@ -122,6 +128,12 @@ const UNLOCK_HINTS = {
   careerist: 'Reach careerist service length.',
   qualified_sharpshooter: 'Qualify as Sharpshooter on the rifle range.',
   wind_whisperer: 'Score a bullseye in moderate or strong wind.',
+  perfect_card_prone_kneeling: 'Score all 5s in both prone and kneeling in the same qualification.',
+  standing_on_business: 'In standing, score no 0s and at least three shots of 4 or higher.',
+  the_comeback_shot: 'Start any string with a 0 or 1, then end that same string with back-to-back 5s.',
+  one_point_short: 'Finish with a total score of exactly 64 — one point below Expert.',
+  standing_god_mode: 'Score all 5s in the standing string.',
+  the_perfect_card: 'Score all 15 shots as 5 — a perfect 75/75.',
   section_lead: 'Hold section-level leadership long enough to earn it.',
   professional_student: 'Stack enough school completions while active.',
   debt_free_eas: 'EAS with zero debt and at least ,000 saved.',
@@ -306,7 +318,7 @@ const Achievements = {
     }
   },
 
-  recordRifleQualification(level, score, marine) {
+  recordRifleQualification(level, score, marine, scores) {
     const game = State.game;
     const profile = Achievements.ensureProfile();
     const flags = Achievements.ensureRunState(game);
@@ -329,6 +341,38 @@ const Achievements = {
     if (flags.maxConsecutiveBullseyes >= 3) Achievements.unlock('pits_dont_sleep');
     if ((score || 0) >= 72) Achievements.unlock('distinguished');
     if (flags.highWindBullseye) Achievements.unlock('wind_whisperer');
+
+    // ── Shot-string achievements (require full 15-shot array) ──
+    if (scores && scores.length === 15) {
+      const prone    = scores.slice(0, 5);
+      const kneeling = scores.slice(5, 10);
+      const standing = scores.slice(10, 15);
+
+      // Perfect Card: Prone + Kneeling — all 5s in both strings
+      if (prone.every(s => s === 5) && kneeling.every(s => s === 5)) {
+        Achievements.unlock('perfect_card_prone_kneeling');
+      }
+
+      // Standing On Business — no 0s, at least three 4+ shots
+      if (standing.every(s => s > 0) && standing.filter(s => s >= 4).length >= 3) {
+        Achievements.unlock('standing_on_business');
+      }
+
+      // The Comeback — any string starts ≤1 and ends with two 5s
+      const strings = [prone, kneeling, standing];
+      if (strings.some(str => str[0] <= 1 && str[3] === 5 && str[4] === 5)) {
+        Achievements.unlock('the_comeback_shot');
+      }
+
+      // One Point Short — exactly 64 total
+      if ((score || 0) === 64) Achievements.unlock('one_point_short');
+
+      // Standing God Mode — all 5s in standing
+      if (standing.every(s => s === 5)) Achievements.unlock('standing_god_mode');
+
+      // The Perfect Card — all 15 shots are 5
+      if (scores.every(s => s === 5)) Achievements.unlock('the_perfect_card');
+    }
 
     Achievements.evaluateMarine(game, marine);
     Achievements._saveProfile();

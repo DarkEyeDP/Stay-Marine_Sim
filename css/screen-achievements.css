@@ -282,27 +282,26 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-}
-
-.rank-ach-title-row {
   display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  align-items: baseline;
-  margin-bottom: 0.35rem;
+  flex-direction: column;
 }
 
 .rank-ach-title {
   color: var(--white);
   font-size: 0.92rem;
   font-weight: 700;
+  margin-bottom: 0.35rem;
 }
 
 .rank-ach-count {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
   color: var(--green);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
-  flex-shrink: 0;
+  opacity: 0.75;
 }
 
 .rank-ach-desc {
@@ -315,6 +314,8 @@
 
 .rank-ach-status {
   display: inline-block;
+  align-self: flex-start;
+  margin-top: auto;
   font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;

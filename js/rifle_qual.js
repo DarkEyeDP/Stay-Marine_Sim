@@ -1498,7 +1498,7 @@ const RifleQual = {
       text:  `Annual rifle qualification: ${level} (${total}/75)`,
       major: true,
     });
-    Achievements.recordRifleQualification(level, total, m);
+    Achievements.recordRifleQualification(level, total, m, RifleQual._scores.slice());
     State.save();
 
     UI.updateRifleQualBadge(level);
