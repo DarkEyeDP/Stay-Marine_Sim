@@ -1487,11 +1487,20 @@ UI.renderAchievementsScreen = function() {
   const groups = Achievements.getAchievementGroups();
   const ranks = Achievements.getRankCards();
 
+  const progressEl = document.getElementById('ach-progress');
+  if (progressEl) {
+    progressEl.innerHTML =
+      '<div class="ach-progress-header">' +
+        '<span class="ach-progress-label">Overall Completion</span>' +
+        '<span class="ach-progress-pct">' + summary.completionPct + '%</span>' +
+      '</div>' +
+      '<div class="ach-progress-track"><div class="ach-progress-fill" style="width:' + summary.completionPct + '%"></div></div>';
+  }
+
   const summaryEl = document.getElementById('ach-summary');
   if (summaryEl) {
     summaryEl.innerHTML = [
       '<div class="ach-summary-card"><span class="ach-summary-label">Unlocked</span><span class="ach-summary-value">' + summary.unlocked + ' / ' + summary.total + '</span></div>',
-      '<div class="ach-summary-card"><span class="ach-summary-label">Completion</span><span class="ach-summary-value">' + summary.completionPct + '%</span></div>',
       '<div class="ach-summary-card"><span class="ach-summary-label">Best Savings</span><span class="ach-summary-value">' + Finance.fmt(summary.stats.bestSavings || 0) + '</span></div>',
       '<div class="ach-summary-card"><span class="ach-summary-label">Best Rifle Score</span><span class="ach-summary-value">' + (summary.stats.bestRifleScore || 0) + ' / 75</span></div>',
       '<div class="ach-summary-card"><span class="ach-summary-label">Highest Rank</span><span class="ach-summary-value">' + (summary.stats.highestRank || 'E-1') + '</span></div>',
@@ -1543,32 +1552,33 @@ UI.renderAchievementsScreen = function() {
   const groupsEl = document.getElementById('ach-groups');
   if (groupsEl) {
     groupsEl.innerHTML = groups.map(group => {
+      const unlockedCount = group.items.filter(i => i.unlocked).length;
       const cards = group.items.map(item => {
         const iconColor = item.unlocked ? 'c8a96e' : '6f766d';
         const iconHtml = item.iconifyIcon
           ? `<img src="${Achievements.buildIconUrl(item.iconifyIcon, iconColor)}" alt="${item.title}" class="ach-card-icon-img">`
           : '<span class="ach-card-icon-fallback">ACH</span>';
-        const descHtml = item.unlocked
+        const bodyContent = item.unlocked
           ? `<div class="ach-card-desc">${item.desc}</div>`
-          : '';
+          : `<div class="ach-card-hint">${item.unlockHint}</div>`;
         const popoverHtml = item.unlocked
-          ? `<div class="ach-popover" role="tooltip"><div class="ach-popover-label">Unlocked By</div><div class="ach-popover-text">${item.unlockHint}</div></div>`
+          ? `<div class="ach-popover" role="tooltip"><div class="ach-popover-label">How to Unlock</div><div class="ach-popover-text">${item.unlockHint}</div></div>`
           : '';
         const interactiveAttrs = item.unlocked
-          ? `tabindex="0" role="button" aria-label="${item.title}. Unlocked by ${item.unlockHint}"`
+          ? `tabindex="0" role="button" aria-label="${item.title}. How to unlock: ${item.unlockHint}"`
           : '';
         return `
           <article class="ach-card ${item.unlocked ? 'unlocked ach-popover-host' : 'locked'}" ${interactiveAttrs}>
             <div class="ach-card-icon">${iconHtml}</div>
             <div class="ach-card-body">
-              <div class="ach-card-title">${item.title}</div>${descHtml}
-              <div class="ach-card-status">${item.unlocked ? 'Unlocked' : 'Locked'}</div>
+              <div class="ach-card-title">${item.title}</div>${bodyContent}
+              <span class="ach-card-status">${item.unlocked ? 'Unlocked' : 'Locked'}</span>
             </div>
             ${popoverHtml}
           </article>
         `;
       }).join('');
-      return `<section class="ach-group"><h3 class="ach-group-title">${group.label}</h3><div class="ach-grid">${cards}</div></section>`;
+      return `<section class="ach-group" data-tier="${group.id}"><h3 class="ach-group-title">${group.label}<span class="ach-group-count">${unlockedCount} / ${group.items.length}</span></h3><div class="ach-grid">${cards}</div></section>`;
     }).join('');
   }
 
@@ -1588,7 +1598,10 @@ UI._achievementToastNext = function() {
   }
   UI._achievementToastActive = true;
   const achievement = UI._achievementToastQueue.shift();
+  const toastIconUrl = achievement.iconifyIcon ? Achievements.buildIconUrl(achievement.iconifyIcon, 'f0b429') : '';
+  const toastIconHtml = toastIconUrl ? '<img src="' + toastIconUrl + '" alt="" class="achievement-toast-icon">' : '';
   toast.innerHTML = '<div class="achievement-toast-label">Achievement Unlocked</div>' +
+    toastIconHtml +
     '<div class="achievement-toast-title">' + achievement.title + '</div>' +
     '<div class="achievement-toast-desc">' + achievement.desc + '</div>';
   toast.classList.add('visible');

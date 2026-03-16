@@ -2,11 +2,19 @@
    STAY MARINE - Achievements Screen + Toast
    =============================================== */
 
+/* ── Tier accent color variables ──────────────── */
+.ach-group[data-tier="issued"]       { --tier-accent: var(--muted);  --tier-glow: rgba(122,138,106,0.15); }
+.ach-group[data-tier="earned"]       { --tier-accent: var(--tan);    --tier-glow: rgba(200,169,110,0.15); }
+.ach-group[data-tier="hard_charged"] { --tier-accent: var(--green);  --tier-glow: rgba(76,175,80,0.15);  }
+.ach-group[data-tier="blood_stripe"] { --tier-accent: var(--red);    --tier-glow: rgba(229,57,53,0.15);  }
+.ach-group[data-tier="legend"]       { --tier-accent: var(--yellow); --tier-glow: rgba(240,180,41,0.15); }
+
+/* ── Screen ──────────────────────────── */
 #screen-achievements {
   justify-content: flex-start;
   overflow-y: auto;
   background:
-    radial-gradient(circle at top, rgba(200, 169, 110, 0.16), transparent 28%),
+    radial-gradient(circle at top, rgba(200,169,110,0.16), transparent 28%),
     linear-gradient(180deg, #0d120d 0%, #070907 100%);
   padding: 1rem;
 }
@@ -39,30 +47,73 @@
   font-size: 0.85rem;
 }
 
+/* ── Progress Bar ──────────────────────────── */
+.ach-progress-wrap {
+  margin-bottom: 1.25rem;
+}
+
+.ach-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.45rem;
+}
+
+.ach-progress-label {
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ach-progress-pct {
+  color: var(--tan);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ach-progress-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ach-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green) 0%, var(--yellow) 100%);
+  border-radius: 3px;
+  transition: width 0.7s cubic-bezier(0.22,1,0.36,1);
+  min-width: 2px;
+}
+
+/* ── Summary Cards ──────────────────────────── */
 .ach-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
-}
-
-.ach-summary-card,
-.ach-record-item,
-.ach-card,
-.rank-ach-card {
-  background: rgba(11, 15, 11, 0.92);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
 }
 
 .ach-summary-card {
+  background: rgba(11,15,11,0.92);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 0.85rem 0.95rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.ach-summary-label,
-.ach-record-label,
-.ach-card-status,
-.rank-ach-status {
+.ach-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--tan), transparent 80%);
+}
+
+.ach-summary-label {
   display: block;
   color: var(--muted);
   font-size: 0.68rem;
@@ -70,28 +121,70 @@
   text-transform: uppercase;
 }
 
-.ach-summary-value,
-.ach-record-value {
+.ach-summary-value {
   color: var(--white);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   margin-top: 0.25rem;
 }
 
+/* ── Section / Group Headers ──────────────────────────── */
 .achievements-section,
 .ach-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
 
-.ach-section-title,
-.ach-group-title {
+.ach-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--tan);
-  font-size: 0.82rem;
-  letter-spacing: 0.16em;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   margin-bottom: 0.75rem;
 }
 
+.ach-section-title::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 1em;
+  background: var(--tan);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ach-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  color: var(--tier-accent, var(--tan));
+}
+
+.ach-group-title::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 1em;
+  background: var(--tier-accent, var(--tan));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ach-group-count {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  font-weight: normal;
+}
+
+/* ── Service Records ──────────────────────────── */
 .ach-records {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -103,155 +196,62 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.85rem 0.95rem;
+  background: rgba(11,15,11,0.92);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .ach-record-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   margin-right: 0.75rem;
 }
 
-.ach-grid,
+.ach-record-value {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* ── Rank Milestone Cards ──────────────────────────── */
 .rank-achievements-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.8rem;
 }
 
-.ach-card {
-  display: flex;
-  gap: 0.8rem;
-  padding: 0.9rem;
-  min-height: 112px;
-}
-
-.ach-card-icon {
-  width: 58px;
-  min-width: 58px;
-  height: 58px;
-  border-radius: 14px;
-  border: 1px solid rgba(200, 169, 110, 0.28);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tan);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: linear-gradient(180deg, rgba(200, 169, 110, 0.12), rgba(200, 169, 110, 0.04));
-}
-
-.ach-card-icon-img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
-
-.ach-card-icon-fallback {
-  color: var(--tan);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.ach-card-body,
-.rank-ach-meta {
-  flex: 1;
-}
-
-.ach-card-title,
-.rank-ach-title {
-  color: var(--white);
-  font-size: 0.92rem;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-}
-
-.ach-card-desc,
-.rank-ach-desc {
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.5;
-  margin-bottom: 0.45rem;
-}
-
-.ach-card.unlocked,
-.rank-ach-card.unlocked {
-  border-color: rgba(76, 175, 80, 0.42);
-  box-shadow: 0 0 0 1px rgba(76, 175, 80, 0.14) inset;
-}
-
-
-
-.ach-popover-host {
-  position: relative;
-  cursor: pointer;
-}
-
-.ach-popover-host:focus-visible {
-  outline: 1px solid rgba(200, 169, 110, 0.55);
-  outline-offset: 2px;
-}
-
-.ach-popover {
-  display: none;
-  position: absolute;
-  left: 0.9rem;
-  right: 0.9rem;
-  bottom: calc(100% + 0.55rem);
-  padding: 0.75rem 0.8rem;
-  border-radius: 12px;
-  border: 1px solid rgba(200, 169, 110, 0.35);
-  background: rgba(9, 13, 9, 0.98);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
-  z-index: 5;
-}
-
-.ach-popover::after {
-  content: '';
-  position: absolute;
-  left: 1.1rem;
-  top: 100%;
-  border-width: 7px;
-  border-style: solid;
-  border-color: rgba(200, 169, 110, 0.35) transparent transparent transparent;
-}
-
-.ach-popover-label {
-  color: var(--tan);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 0.3rem;
-}
-
-.ach-popover-text {
-  color: var(--white);
-  font-size: 0.76rem;
-  line-height: 1.45;
-}
-
-.ach-popover-host:hover .ach-popover,
-.ach-popover-host:focus-within .ach-popover,
-.ach-popover-host.is-revealed .ach-popover {
-  display: block;
-}
-
-@media (max-width: 700px) {
-  .ach-popover {
-    left: 0.75rem;
-    right: 0.75rem;
-  }
-}
-
-
-
-
-/* Rank milestone size override */
 .rank-ach-card {
   display: flex;
   gap: 0.8rem;
   align-items: center;
   padding: 0.9rem;
-  min-height: 112px;
+  min-height: 108px;
+  background: rgba(11,15,11,0.92);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+}
+
+.rank-ach-card.unlocked {
+  border-left-color: var(--tan);
+  border-top-color: rgba(200,169,110,0.28);
+  box-shadow: 0 2px 14px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.rank-ach-card.unlocked::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(200,169,110,0.45), transparent 70%);
+}
+
+.rank-ach-card.locked {
+  opacity: 0.4;
 }
 
 .rank-ach-art {
@@ -259,8 +259,8 @@
   min-width: 58px !important;
   height: 58px !important;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(200, 169, 110, 0.18);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(200,169,110,0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,7 +275,13 @@
   object-fit: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+
+.rank-ach-meta {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .rank-ach-title-row {
@@ -286,54 +292,313 @@
   margin-bottom: 0.35rem;
 }
 
-.rank-ach-count {
-  color: var(--green);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
+.rank-ach-title {
+  color: var(--white);
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
-/* ── Achievement Toast Popup ─────────────────────────── */
+.rank-ach-count {
+  color: var(--green);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.rank-ach-desc {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  margin-bottom: 0.4rem;
+  font-style: italic;
+}
+
+.rank-ach-status {
+  display: inline-block;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  background: rgba(76,175,80,0.12);
+  color: var(--green);
+  border: 1px solid rgba(76,175,80,0.25);
+}
+
+.rank-ach-card.locked .rank-ach-status {
+  background: rgba(122,138,106,0.1);
+  color: var(--muted);
+  border-color: rgba(122,138,106,0.2);
+}
+
+/* ── Achievement Cards ──────────────────────────── */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.ach-card {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  min-height: 108px;
+  background: rgba(11,15,11,0.92);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+}
+
+.ach-card.unlocked {
+  border-left-color: var(--tier-accent, var(--tan));
+  border-top-color: rgba(200,169,110,0.2);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.ach-card.unlocked::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--tier-accent, var(--tan)), transparent 70%);
+  opacity: 0.5;
+}
+
+.ach-card.locked {
+  opacity: 0.38;
+}
+
+/* ── Card Icon ──────────────────────────── */
+.ach-card-icon {
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid rgba(200,169,110,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, rgba(200,169,110,0.1), rgba(200,169,110,0.03));
+  flex-shrink: 0;
+}
+
+.ach-card.locked .ach-card-icon {
+  border-color: rgba(122,138,106,0.18);
+  background: rgba(122,138,106,0.05);
+  filter: grayscale(0.5);
+}
+
+.ach-card-icon-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.ach-card-icon-fallback {
+  color: var(--muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Card Body ──────────────────────────── */
+.ach-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ach-card-title {
+  color: var(--white);
+  font-size: 0.86rem;
+  font-weight: 700;
+  margin-bottom: 0.28rem;
+  line-height: 1.25;
+}
+
+.ach-card.locked .ach-card-title {
+  color: var(--muted);
+}
+
+.ach-card-desc {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  margin-bottom: 0.4rem;
+  font-style: italic;
+  flex: 1;
+}
+
+.ach-card-hint {
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+  flex: 1;
+  filter: blur(4px);
+  user-select: none;
+}
+
+.ach-card-status {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  margin-top: auto;
+}
+
+.ach-card.unlocked .ach-card-status {
+  background: rgba(76,175,80,0.12);
+  color: var(--green);
+  border: 1px solid rgba(76,175,80,0.25);
+}
+
+.ach-card.locked .ach-card-status {
+  background: rgba(122,138,106,0.08);
+  color: var(--muted);
+  border: 1px solid rgba(122,138,106,0.18);
+}
+
+/* ── Popover (smooth fade/slide) ──────────────────────────── */
+.ach-popover-host {
+  position: relative;
+  cursor: pointer;
+}
+
+.ach-popover-host:focus-visible {
+  outline: 1px solid rgba(200,169,110,0.55);
+  outline-offset: 2px;
+}
+
+.ach-popover {
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: calc(100% + 0.55rem);
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(200,169,110,0.35);
+  background: rgba(9,13,9,0.98);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.45);
+  z-index: 5;
+  /* Smooth transition — opacity/visibility instead of display toggle */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+}
+
+.ach-popover::after {
+  content: '';
+  position: absolute;
+  left: 1.1rem;
+  top: 100%;
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(200,169,110,0.35) transparent transparent transparent;
+}
+
+@media (hover: hover) {
+  .ach-popover-host:hover .ach-popover {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0s;
+  }
+}
+
+.ach-popover-host:focus-within .ach-popover,
+.ach-popover-host.is-revealed .ach-popover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0s;
+}
+
+.ach-popover-label {
+  color: var(--tan);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.ach-popover-text {
+  color: var(--white);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+  .ach-popover {
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
+/* ── Achievement Toast ──────────────────────────── */
 .achievement-toast {
   position: fixed;
-  bottom: 5rem;
+  bottom: 5.5rem;
   left: 50%;
-  transform: translateX(-50%) translateY(1rem);
-  background: var(--panel, #1a1a1a);
-  border: 1px solid var(--yellow, #c8a84b);
-  border-radius: 6px;
-  padding: 0.75rem 1.1rem;
-  min-width: 220px;
-  max-width: 320px;
+  transform: translateX(-50%) translateY(1.5rem) scale(0.93);
+  background: rgba(9,13,9,0.97);
+  border: 1px solid rgba(240,180,41,0.6);
+  border-top: 3px solid var(--yellow);
+  border-radius: 8px;
+  padding: 0.85rem 1.25rem 0.9rem;
+  min-width: 240px;
+  max-width: 340px;
   text-align: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22,1,0.36,1);
   z-index: 9999;
+  box-shadow: 0 10px 36px rgba(0,0,0,0.55), 0 0 0 1px rgba(240,180,41,0.08) inset;
 }
 
 .achievement-toast.visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .achievement-toast-label {
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--yellow, #c8a84b);
+  color: var(--yellow);
   margin-bottom: 0.3rem;
 }
 
+.achievement-toast-icon {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0.2rem auto 0.4rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(240,180,41,0.35));
+}
+
 .achievement-toast-title {
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
-  color: var(--tan, #d4b896);
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  color: var(--tan);
   font-weight: bold;
   margin-bottom: 0.2rem;
 }
 
 .achievement-toast-desc {
   font-size: 0.7rem;
-  color: var(--muted, #888);
-  letter-spacing: 0.03em;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  font-style: italic;
 }

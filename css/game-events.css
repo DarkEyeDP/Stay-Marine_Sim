@@ -174,9 +174,11 @@
   transition: background 0.15s, border-color 0.15s;
 }
 
-.orient-dismiss-btn:hover {
-  background: rgba(200, 169, 110, 0.1);
-  border-color: var(--tan);
+@media (hover: hover) {
+  .orient-dismiss-btn:hover {
+    background: rgba(200, 169, 110, 0.1);
+    border-color: var(--tan);
+  }
 }
 
 /* Mobile nav tip — visible only below the 900px breakpoint */
@@ -445,11 +447,13 @@
   transition: border-color 0.15s, background 0.15s;
 }
 
-.event-choice-btn:hover {
-  border-color: var(--green);
-  border-left: 3px solid var(--green);
-  background: rgba(76, 175, 80, 0.12);
-  color: var(--white);
+@media (hover: hover) {
+  .event-choice-btn:hover {
+    border-color: var(--green);
+    border-left: 3px solid var(--green);
+    background: rgba(76, 175, 80, 0.12);
+    color: var(--white);
+  }
 }
 
 .event-choice-btn .choice-hint {
@@ -519,9 +523,11 @@
   transition: border-color 0.15s, color 0.15s;
 }
 
-.chance-ack-btn:hover {
-  border-color: var(--tan);
-  color: var(--tan);
+@media (hover: hover) {
+  .chance-ack-btn:hover {
+    border-color: var(--tan);
+    color: var(--tan);
+  }
 }
 
 .chance-ack-btn:disabled {
@@ -537,8 +543,10 @@
   letter-spacing: 0.12em;
 }
 
-.chance-ack-brig:hover {
-  background: rgba(229, 57, 53, 0.1) !important;
+@media (hover: hover) {
+  .chance-ack-brig:hover {
+    background: rgba(229, 57, 53, 0.1) !important;
+  }
 }
 
 /* Deployment location banner */
@@ -746,9 +754,11 @@
   line-height: 1.2;
 }
 
-.monthly-choice-btn:hover:not(.unaffordable) {
-  border-color: var(--green);
-  background: rgba(76, 175, 80, 0.08);
+@media (hover: hover) {
+  .monthly-choice-btn:hover:not(.unaffordable) {
+    border-color: var(--green);
+    background: rgba(76, 175, 80, 0.08);
+  }
 }
 
 .monthly-choice-btn.selected {
@@ -826,10 +836,12 @@
   transition: color 0.12s, background 0.12s, border-color 0.12s;
 }
 
-.choice-decrement:hover {
-  color: var(--red);
-  background: rgba(229, 57, 53, 0.12);
-  border-color: var(--red);
+@media (hover: hover) {
+  .choice-decrement:hover {
+    color: var(--red);
+    background: rgba(229, 57, 53, 0.12);
+    border-color: var(--red);
+  }
 }
 
 .effect-pos {
@@ -882,8 +894,10 @@
   transition: color 0.15s;
 }
 
-.footer-start-over:hover {
-  color: var(--red);
+@media (hover: hover) {
+  .footer-start-over:hover {
+    color: var(--red);
+  }
 }
 
 .footer-feedback {
@@ -894,8 +908,10 @@
   transition: color 0.15s;
 }
 
-.footer-feedback:hover {
-  color: var(--tan);
+@media (hover: hover) {
+  .footer-feedback:hover {
+    color: var(--tan);
+  }
 }
 
 .footer-coffee {
@@ -907,9 +923,11 @@
   animation: coffee-pulse 12s ease-in-out infinite;
 }
 
-.footer-coffee:hover {
-  color: var(--yellow);
-  animation: none;
+@media (hover: hover) {
+  .footer-coffee:hover {
+    color: var(--yellow);
+    animation: none;
+  }
 }
 
 @keyframes coffee-pulse {

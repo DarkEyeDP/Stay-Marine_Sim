@@ -265,8 +265,10 @@
   padding: 0;
 }
 
-.sp-btn:hover {
-  background: var(--green-dim);
+@media (hover: hover) {
+  .sp-btn:hover {
+    background: var(--green-dim);
+  }
 }
 
 .sp-note {
