@@ -70,6 +70,7 @@ const ACHIEVEMENT_DEFS = [
   { id: 'unq_redemption_arc', title: 'UNQ Redemption Arc', tier: 'blood_stripe', desc: 'From embarrassment to poster child.', iconifyIcon: 'mdi:restore-alert' },
   { id: 'the_comeback_tour', title: 'The Comeback Tour', tier: 'blood_stripe', desc: 'Plot armor earned.', iconifyIcon: 'mdi:arrow-u-up-left-bold' },
 
+  { id: 'legendary_bloodline', title: 'Legendary Bloodline', tier: 'legend', desc: 'The name on the nameplate carries weight. You had to earn it anyway.', iconifyIcon: 'mdi:shield-star-outline' },
   { id: 'standing_god_mode', title: 'Standing God Mode', tier: 'legend', desc: 'This is either skill or witchcraft.', iconifyIcon: 'mdi:lightning-bolt' },
   { id: 'the_perfect_card', title: 'The Perfect Card', tier: 'legend', desc: 'Be honest. Who is mouse-clicking for you?', iconifyIcon: 'mdi:crown' },
   { id: 'staff_nco_energy', title: 'Staff NCO Energy', tier: 'legend', desc: 'People stop asking if you are serious.', iconifyIcon: 'mdi:account-star-outline' },
@@ -132,6 +133,7 @@ const UNLOCK_HINTS = {
   standing_on_business: 'In standing, score no 0s and at least three shots of 4 or higher.',
   the_comeback_shot: 'Start any string with a 0 or 1, then end that same string with back-to-back 5s.',
   one_point_short: 'Finish with a total score of exactly 64 — one point below Expert.',
+  legendary_bloodline: 'Complete a career using a randomly generated legendary name (Puller, Basilone, Hathcock, Mattis, and others).',
   standing_god_mode: 'Score all 5s in the standing string.',
   the_perfect_card: 'Score all 15 shots as 5 — a perfect 75/75.',
   section_lead: 'Hold section-level leadership long enough to earn it.',
@@ -206,6 +208,10 @@ const Achievements = {
     Achievements.unlock('welcome_aboard');
     if (game?.marine?.assignmentId) Achievements.recordAssignment(game, game.marine.assignmentId, false);
     flags.lastPhysicalFitness = game?.marine?.physicalFitness || 0;
+    // Flag legendary names (format is "Last, First")
+    const LEGEND_LAST = ['Puller','Daly','Basilone','Hathcock','Butler','Mattis','Lejeune','Vandegrift'];
+    const lastName = (game?.marine?.name || '').split(',')[0].trim();
+    flags.hasLegendaryName = LEGEND_LAST.includes(lastName);
     Achievements._saveProfile();
   },
 
@@ -297,7 +303,7 @@ const Achievements = {
     Achievements.evaluateMarine(game, marine);
   },
 
-  recordFocusChoice(game, choiceId) {
+  recordFocusChoice(game, _choiceId) {
     const marine = game?.marine;
     if (!marine) return;
     Achievements.evaluateMarine(game, marine);
@@ -410,6 +416,7 @@ const Achievements = {
       if (marine.injury !== 'major') Achievements.unlock('retired_with_knees');
     }
     if (flags.hadMajorSetback && goodEnding) Achievements.unlock('the_comeback_tour');
+    if (flags.hasLegendaryName && goodEnding) Achievements.unlock('legendary_bloodline');
     if (isRetire && marine.rifleQualLevel === 'Expert' && marine.physicalFitness >= 85 && marine.reputationWithLeadership >= 80 && marine.stress <= 35 && marine.debt <= 0 && (marine.njpCount || 0) === 0) {
       Achievements.unlock('perfect_run');
     }
