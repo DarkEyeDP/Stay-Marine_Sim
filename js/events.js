@@ -10,10 +10,10 @@ const Events = {
     // Base 35% chance of a second event; first event is always guaranteed
     if (!forced && Math.random() > 0.35) return null;
 
-    // Filter eligible events — exclude recently fired events (last 2 quarters / 6 slots)
+    // Filter eligible events — exclude intro-only and recently fired events
     const recentIds = (State.game && State.game.recentEventIds) || [];
     const eligible = EVENTS_DATA.filter(evt =>
-      Events._meetsConditions(evt, marine) && !recentIds.includes(evt.id)
+      !evt.introOnly && Events._meetsConditions(evt, marine) && !recentIds.includes(evt.id)
     );
     if (eligible.length === 0) return null;
 
@@ -256,6 +256,13 @@ const Events = {
       return true;
     }
     return false;
+  },
+
+  /** Pick one random intro event for the first-turn pre-load */
+  rollIntroEvent() {
+    const pool = EVENTS_DATA.filter(e => e.introOnly);
+    if (!pool.length) return null;
+    return pool[Math.floor(Math.random() * pool.length)];
   },
 };
 

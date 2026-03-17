@@ -270,6 +270,12 @@ const UI = {
     UI.showScreen('screen-game');
     UI.renderGameState(null);
     UI.renderMonthlyChoices();
+
+    // Pre-load one intro event on a fresh game so the tutorial (and first screen) has content
+    if (State.game.orientationDismissed === false && State.game.marine.timeInService <= 4) {
+      const introEvt = Events.rollIntroEvent();
+      if (introEvt) UI.renderEvents([introEvt]);
+    }
   },
 
   /** Full game state render (called after each month) */
@@ -349,7 +355,6 @@ const UI = {
     document.getElementById('fin-savings').textContent = Finance.fmt(m.savings);
     document.getElementById('fin-debt').textContent = Finance.fmt(m.debt);
     document.getElementById('fin-edu').textContent = `${m.educationCredits} cr (${m.degreeProgress})`;
-    document.getElementById('fin-gibill').textContent = `${m.giBillMonths} months`;
 
     // Car loan row
     const carLoanRow = document.getElementById('fin-carloan-row');
@@ -370,11 +375,11 @@ const UI = {
     UI.renderTrack('track-civilian', 'Smooth EAS', tracks.civilian);
     UI.renderTrack('track-family', 'Family First', tracks.family);
 
-    // Orientation panel — show until dismissed; hide for any loaded save that predates this flag
+    // Orientation — hide legacy static panel; launch interactive tour for new players
     const orientEl = document.getElementById('orientation-panel');
-    if (orientEl) {
-      const show = State.game.orientationDismissed === false && m.timeInService < 6;
-      orientEl.classList.toggle('hidden', !show);
+    if (orientEl) orientEl.classList.add('hidden');
+    if (State.game.orientationDismissed === false && m.timeInService < 6 && !Tutorial.active) {
+      Tutorial.start();
     }
 
     // Alerts

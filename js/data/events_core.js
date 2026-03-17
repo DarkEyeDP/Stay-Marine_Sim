@@ -513,33 +513,146 @@ const EVENTS_CORE = [
     ],
   },
 
-  // ══════════════════ YOUNG MARINE LIFE ══════════════════
+  // ══════════════════ INTRO (first-turn only) ══════════════════
+  // introOnly: true — these are pre-loaded on game screen open for new games.
+  // They are skipped by the normal rollEvent() pool.
+
   {
-    id: 'evt_first_payday',
+    id: 'evt_intro_first_payday',
     category: 'finance',
     title: 'First Real Paycheck',
-    weight: 20,
-    trigger: { minTIS: 3, maxTIS: 15 },
-    narrative: 'It\'s your first full paycheck as a Marine — more money than you\'ve ever had at once. The guys are already talking about what to buy. There\'s a car lot just off base and a predatory "military friendly" lender right next to it.',
+    introOnly: true,
+    weight: 1,
+    trigger: {},
+    narrative: 'First full paycheck as a Marine — more money than you\'ve ever had in one place. The guys in the barracks are already talking about what to buy. There\'s a car lot just off base and a predatory "military friendly" lender sitting right next to it.',
     choices: [
       {
-        text: 'Open a savings account and put half away. Be smart.',
-        hint: '+Savings, +CivilianEmployability, -Morale slightly',
+        text: 'Open a savings account and put half away.',
+        hint: '+Savings, +CivilianEmployability, small morale dip',
         effects: { savings: 600, civilianEmployability: 3, morale: -2 },
       },
       {
         text: 'Buy something nice. You earned it.',
-        hint: '-Savings, +Morale short-term',
-        effects: { savings: -800, morale: 8, debt: 500 },
+        hint: '+Morale short-term, but it costs you',
+        effects: { savings: -400, morale: 8, debt: 500 },
       },
       {
         text: 'Talk to the MCCS financial counselor first.',
-        hint: '+Financial literacy, good foundation',
-        effects: { savings: 300, civilianEmployability: 4, debt: -200 },
+        hint: 'Best long-term move — builds real literacy',
+        effects: { savings: 300, civilianEmployability: 5, debt: -200 },
       },
     ],
   },
 
+  {
+    id: 'evt_intro_first_unit',
+    category: 'young_marine',
+    title: 'Checking In to the Fleet',
+    introOnly: true,
+    weight: 1,
+    trigger: {},
+    narrative: 'You\'ve checked in to your first unit. The platoon sergeant looked you over in about four seconds and already made up his mind about something. The other junior Marines are watching to see how you carry yourself.',
+    choices: [
+      {
+        text: 'Stand tall, firm handshake, make eye contact. Set the tone.',
+        hint: '+Reputation, +Conduct — first impressions hold',
+        effects: { reputationWithLeadership: 6, profConduct: 4, morale: 3 },
+      },
+      {
+        text: 'Stay quiet, watch, learn the culture before you open your mouth.',
+        hint: '+MOS Proficiency long-term — you\'re taking notes',
+        effects: { mosProficiency: 5, stress: -3, morale: 2 },
+      },
+      {
+        text: 'Get in with the senior lance corporals immediately. Know the real rules.',
+        hint: 'Social capital now, discipline risk later',
+        effects: { morale: 7, disciplineRisk: 5, reputationWithLeadership: -3 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_intro_gear_cage',
+    category: 'discipline',
+    title: 'Gear Accountability — Already',
+    introOnly: true,
+    weight: 1,
+    trigger: {},
+    narrative: 'First gear accountability muster and something is already wrong. A piece of your issued kit is either missing or was never actually issued — the armory record says it\'s yours. Your section leader is watching.',
+    choices: [
+      {
+        text: 'Buy a replacement out of pocket and don\'t make it a thing.',
+        hint: '-Savings, but no drama and no flags on your record',
+        effects: { savings: -150, stress: 3, profConduct: 2 },
+      },
+      {
+        text: 'Dig up your original issue receipt and fight the paperwork battle.',
+        hint: 'Slow and painful but the right answer',
+        effects: { stress: 8, civilianEmployability: 3, profConduct: 4 },
+      },
+      {
+        text: 'Ask your squad leader quietly — maybe someone has a spare.',
+        hint: 'Builds unit trust, low-key solution',
+        effects: { reputationWithLeadership: 4, morale: 2, stress: 2 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_intro_first_liberty',
+    category: 'young_marine',
+    title: 'First Weekend Liberty',
+    introOnly: true,
+    weight: 1,
+    trigger: {},
+    narrative: 'End of your first full week. Liberty call hits and everyone\'s already making plans. Poker night in the barracks, a road trip three hours out, or just decompress for two days before Monday owns you again.',
+    choices: [
+      {
+        text: 'Stay on base, catch up on sleep, and save the money.',
+        hint: '-Stress, +Savings — boring but effective',
+        effects: { stress: -8, savings: 80, morale: 2 },
+      },
+      {
+        text: 'Go out with the platoon. You need to know these people.',
+        hint: '+Morale, +Reputation — costs a little money',
+        effects: { morale: 10, reputationWithLeadership: 3, savings: -120, stress: -4 },
+      },
+      {
+        text: 'Hit the base gym and meal prep for the week. Lock in early.',
+        hint: '+Physical Fitness, sets a good pattern',
+        effects: { physicalFitness: 3, stress: -5, morale: 3 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_intro_barracks_draw',
+    category: 'young_marine',
+    title: 'Barracks Room Draw',
+    introOnly: true,
+    weight: 1,
+    trigger: {},
+    narrative: 'Room assignments are random. You don\'t pick your roommate — you get what you get. Yours shows up with a PlayStation, three energy drink cases, and a worldview that will either motivate you or drag you sideways.',
+    choices: [
+      {
+        text: 'Set ground rules early. Cleaning schedule, quiet hours, the basics.',
+        hint: 'Small friction now prevents big friction later',
+        effects: { stress: -4, profConduct: 3, familyStability: 2 },
+      },
+      {
+        text: 'Let it ride. You can handle it — this is not worth the energy.',
+        hint: 'Low effort, moderate stress risk down the road',
+        effects: { morale: 4, stress: 3, disciplineRisk: 3 },
+      },
+      {
+        text: 'Request a room change before this becomes a problem.',
+        hint: 'Might work, might make you look soft — 50/50',
+        effects: { stress: -2, reputationWithLeadership: -3, morale: 2 },
+      },
+    ],
+  },
+
+  // ══════════════════ YOUNG MARINE LIFE ══════════════════
   {
     id: 'evt_payday_loan',
     category: 'finance',
