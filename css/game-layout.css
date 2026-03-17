@@ -239,11 +239,11 @@ footer.mobile-game-footer {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 0;
   background: var(--bg);
   border-top: 1px solid var(--border);
-  padding: 0.55rem var(--gap);
+  padding: 0.55rem 0;
   padding-bottom: calc(0.55rem + env(safe-area-inset-bottom, 0px));
   margin-top: 0;
 }
