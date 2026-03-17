@@ -9,6 +9,69 @@
 .ach-group[data-tier="blood_stripe"] { --tier-accent: var(--red);    --tier-glow: rgba(229,57,53,0.15);  }
 .ach-group[data-tier="legend"]       { --tier-accent: var(--yellow); --tier-glow: rgba(240,180,41,0.15); }
 
+/* ── Scroll-to-top stamp button ──────────────── */
+.ach-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 1.25rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  background: #0d120d;
+  border: 2px solid var(--tan);
+  outline: 1px solid var(--tan);
+  outline-offset: 3px;
+  border-radius: 2px;
+  padding: 0.5rem 0.75rem 0.45rem;
+  cursor: pointer;
+  font-family: var(--font-main);
+  transform: rotate(-2deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+}
+
+.ach-top-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.ach-top-btn:active {
+  animation: ach-stamp-press 0.18s ease forwards;
+}
+
+@keyframes ach-stamp-press {
+  0%   { transform: rotate(-2deg) scale(1); }
+  40%  { transform: rotate(-2deg) scale(0.88); }
+  100% { transform: rotate(-2deg) scale(1); }
+}
+
+.ach-top-arrow {
+  font-size: 0.85rem;
+  color: var(--tan);
+  line-height: 1;
+}
+
+.ach-top-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--tan);
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.ach-top-sub {
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
 /* ── Screen ──────────────────────────── */
 #screen-achievements {
   justify-content: flex-start;

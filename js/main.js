@@ -48,6 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.showScreen(target);
   });
 
+  // Scroll-to-top stamp button on achievements screen
+  const _achScreen = document.getElementById('screen-achievements');
+  const _achTopBtn = document.getElementById('btn-ach-top');
+  _achScreen.addEventListener('scroll', () => {
+    _achTopBtn.classList.toggle('visible', _achScreen.scrollTop > 220);
+  }, { passive: true });
+  _achTopBtn.addEventListener('click', () => {
+    _achScreen.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
   window.addEventListener('achievement-unlocked', (event) => {
     UI.showAchievementToast(event.detail.achievement);
   });
