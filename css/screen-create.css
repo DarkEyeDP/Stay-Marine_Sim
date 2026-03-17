@@ -74,6 +74,18 @@
   letter-spacing: 0.04em;
 }
 
+.title-feedback {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+  opacity: 0.55;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: opacity 0.15s, color 0.15s;
+}
+.title-feedback:hover { opacity: 1; color: var(--tan); }
+
 /* ══════════════════════════════════════════════
    BUTTONS
 ══════════════════════════════════════════════ */
