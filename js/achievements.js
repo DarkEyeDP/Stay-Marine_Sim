@@ -86,7 +86,10 @@ const RANK_ACHIEVEMENTS = [
   { id: 'rank_pfc', grade: 'E-2', title: 'Private First Class', shortTitle: 'PFC', desc: 'Reach Private First Class.', asset: 'pfc-rank.svg', tier: 'issued' },
   { id: 'rank_lcpl', grade: 'E-3', title: 'Lance Corporal', shortTitle: 'LCpl', desc: 'Reach Lance Corporal.', asset: 'lcpl-rank.svg', tier: 'issued' },
   { id: 'rank_cpl', grade: 'E-4', title: 'Corporal', shortTitle: 'Cpl', desc: 'Reach Corporal.', asset: 'cpl-rank.svg', tier: 'blood_stripe' },
-  { id: 'rank_sgt', grade: 'E-5', title: 'Sergeant', shortTitle: 'Sgt', desc: 'Reach Sergeant.', asset: 'sgt-rank.svg', tier: 'earned' }
+  { id: 'rank_sgt',   grade: 'E-5', title: 'Sergeant',          shortTitle: 'Sgt',   desc: 'Reach Sergeant.',          asset: 'sgt-rank.svg',   tier: 'earned' },
+  { id: 'rank_ssgt',  grade: 'E-6', title: 'Staff Sergeant',    shortTitle: 'SSgt',  desc: 'Reach Staff Sergeant.',    asset: 'ssgt-rank.svg',  tier: 'hard_charged' },
+  { id: 'rank_gysgt', grade: 'E-7', title: 'Gunnery Sergeant',  shortTitle: 'GySgt', desc: 'Reach Gunnery Sergeant.',  asset: 'gysgt-rank.svg', tier: 'hard_charged' },
+  { id: 'rank_msgt',  grade: 'E-8', title: 'Master Sergeant',   shortTitle: 'MSgt',  desc: 'Reach Master Sergeant.',   asset: 'msgt-rank.svg',  tier: 'legend' }
 ];
 
 const STATION_BADGES = {

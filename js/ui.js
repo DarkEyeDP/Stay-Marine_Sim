@@ -283,6 +283,9 @@ const UI = {
       'E-3': 'img/lcpl-rank.svg',
       'E-4': 'img/cpl-rank.svg',
       'E-5': 'img/sgt-rank.svg',
+      'E-6': 'img/ssgt-rank.svg',
+      'E-7': 'img/gysgt-rank.svg',
+      'E-8': 'img/msgt-rank.svg',
     };
     const rankBadgeEl = document.getElementById('rank-badge');
     const rankImg = RANK_IMAGES[m.payGrade];

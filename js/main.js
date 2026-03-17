@@ -214,8 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Play Again ────────────────────────────────
   document.getElementById('btn-play-again').addEventListener('click', () => {
     State.clearSave();
-    UI.renderCreateScreen();
-    UI.showScreen('screen-create');
+    UI.showScreen('screen-main-menu');
   });
 
   // Main Menu (mid-game)
