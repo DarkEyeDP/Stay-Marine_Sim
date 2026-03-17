@@ -209,7 +209,9 @@ const Achievements = {
     const flags = Achievements.ensureRunState(game);
     profile.stats.careersStarted += 1;
     Achievements.unlock('welcome_aboard');
-    if (game?.marine?.assignmentId) Achievements.recordAssignment(game, game.marine.assignmentId, false);
+    // Track starting station but don't award the base badge — that only unlocks on a real PCS move
+    if (game?.marine?.assignmentId && !flags.stationsVisited.includes(game.marine.assignmentId))
+      flags.stationsVisited.push(game.marine.assignmentId);
     flags.lastPhysicalFitness = game?.marine?.physicalFitness || 0;
     // Flag legendary names (format is "Last, First")
     const LEGEND_LAST = ['Puller','Daly','Basilone','Hathcock','Butler','Mattis','Lejeune','Vandegrift'];
@@ -220,6 +222,11 @@ const Achievements = {
 
   recordMarineTitle(marine) {
     Achievements.unlock('boot_phase_complete');
+    // Now award the base badge for their first duty station — they've hit the fleet
+    if (State.game?.marine?.assignmentId) {
+      const badgeId = STATION_BADGES[State.game.marine.assignmentId];
+      if (badgeId) Achievements.unlock(badgeId);
+    }
     Achievements.evaluateMarine(State.game, marine);
   },
 
