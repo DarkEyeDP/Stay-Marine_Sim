@@ -111,6 +111,7 @@ const UI = {
 
     const q = (searchTerm || '').toLowerCase();
     const filtered = MOS_DATA.filter(m => {
+      if (m.secret) return false; // hidden PMOS entries never appear in character creation
       const fieldMatch = filterField === 'all' || m.field === filterField;
       const searchMatch = !q || m.code.toLowerCase().includes(q) || m.title.toLowerCase().includes(q);
       return fieldMatch && searchMatch;
@@ -302,7 +303,10 @@ const UI = {
     }
     document.getElementById('rank-title-display').textContent = m.rankTitle;
     document.getElementById('marine-name').textContent = m.name;
-    document.getElementById('marine-sub').textContent = `${m.mosCode} · ${m.mosTitle}`;
+    const _pmosDef = m.secondaryMosId && MOS_DATA.find(x => x.id === m.secondaryMosId);
+    document.getElementById('marine-sub').textContent = _pmosDef
+      ? `${m.mosCode} · ${m.mosTitle}  |  PMOS ${_pmosDef.code}`
+      : `${m.mosCode} · ${m.mosTitle}`;
     const awardsHeaderEl = document.getElementById('marine-awards');
     if (awardsHeaderEl) {
       awardsHeaderEl.innerHTML = formatAwardsDisplay(m.awards).map(a => `<span class="mh-award-item">${a}</span>`).join('');
@@ -319,7 +323,8 @@ const UI = {
     // Assignment
     const asgn = ASSIGNMENTS_DATA.find(a => a.id === m.assignmentId) || ASSIGNMENTS_DATA[0];
     const _billetField = m.mosField || 'infantry';
-    const _billetTierRow = (BILLET_TIERS[_billetField] || BILLET_TIERS['infantry'])[m.billetTier];
+    const _mosDef = MOS_DATA.find(x => x.id === m.mosId);
+    const _billetTierRow = (_mosDef?.billetTiers || BILLET_TIERS[_billetField] || BILLET_TIERS['infantry'])[m.billetTier];
     document.getElementById('billet-label').textContent = m.isDeployed ? '⚔ DEPLOYED' : _billetTierRow?.label;
     document.getElementById('billet-location').textContent = m.isDeployed ? `Return in ${m.deploymentMonthsLeft}mo` : asgn.name;
 

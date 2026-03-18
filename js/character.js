@@ -107,6 +107,9 @@ const Character = {
       volunteerCount:    0,   // total volunteer focus choices (3 = MSM)
       deploymentCount:   0,   // completed deployments
 
+      // ── Secondary MOS (PMOS) ─────────────
+      secondaryMosId: null,   // unlocked by special career events (e.g. 6591 at E-7)
+
       // ── Savings Goal ─────────────────────
       savingsGoal: 0,     // player-set monthly savings target ($)
     };

@@ -160,6 +160,37 @@ const MOS_DATA = [
     civilianValue: 72,
     pmeBonus: false,
   },
+  {
+    id: 'mos_6531',
+    code: '6531',
+    title: 'Aircraft Ordnance Technician',
+    field: 'aviation',
+    description: 'Load, maintain, and troubleshoot aviation ordnance systems — bombs, missiles, rockets, and gun systems. You are the reason things explode on purpose.',
+    startingStats: { mosProficiency: 8, stress: 5, civilianEmployability: 8 },
+    optempo: 3,
+    civilianValue: 55,
+    pmeBonus: false,
+    billetTiers: {
+      1: { label: 'Ordnance Handler',        desc: 'E1–E3, handling, assembling, and transporting munitions under direct supervision.' },
+      2: { label: 'Ordnance Technician',     desc: 'E4–E5, independently arming and configuring weapons systems on assigned aircraft.' },
+      3: { label: 'Ordnance Chief / QA',     desc: 'E6–E7, managing the ordnance crew, performing QA on all loads and safety checks.' },
+      4: { label: 'Weapons Chief',           desc: 'E7–E8, overseeing all squadron ordnance operations, readiness, and training.' },
+      5: { label: 'Senior Ordnance Advisor', desc: 'E8–E9, advising the commanding officer on all ordnance requirements and policy.' },
+    },
+  },
+  // ── SECRET PMOS — not shown in character creation ──
+  {
+    id: 'mos_6591',
+    code: '6591',
+    title: 'Senior Aviation Ordnance Chief (Classified)',
+    field: 'aviation',
+    secret: true,   // hidden from character creation selector
+    description: 'A designation so classified even the MOS manual redacts it. You have been read into a program that does not officially exist. Things explode. Frequently. Heroically.',
+    startingStats: {},
+    optempo: 3,
+    civilianValue: 55,
+    pmeBonus: false,
+  },
 
   // ── MP / LAW ENFORCEMENT (58) ────────────────
   {

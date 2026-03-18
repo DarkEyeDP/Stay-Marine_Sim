@@ -57,6 +57,9 @@ const Events = {
     if (t.minOptempo     !== undefined && marine.optempo < t.minOptempo)               return false;
     if (t.mosField            !== undefined && marine.mosField !== t.mosField)              return false;
     if (t.mosFields           !== undefined && !t.mosFields.includes(marine.mosField))      return false;
+    if (t.mosId               !== undefined && marine.mosId !== t.mosId)                   return false;
+    if (t.secondaryMos        !== undefined && marine.secondaryMosId !== t.secondaryMos)   return false;
+    if (t.notHasPMOS          === true      && marine.secondaryMosId)                      return false;
     if (t.retirementSubmitted !== undefined && !!marine.retirementSubmitted !== t.retirementSubmitted) return false;
 
     // Month-specific annual events (e.g. Marine Corps Ball in November)
@@ -93,6 +96,7 @@ const Events = {
     Character.applyEffects(marine, choice.effects || {});
 
     // Handle special choice flags
+    if (choice.setPMOS) marine.secondaryMosId = choice.setPMOS;
     if (choice.setMarried !== undefined) marine.isMarried = choice.setMarried;
     if (choice.bahIncrease)    marine.monthlyExpenses -= 150;  // married BAH offset
     if (choice.monthlyExpenseDelta) marine.monthlyExpenses += choice.monthlyExpenseDelta;

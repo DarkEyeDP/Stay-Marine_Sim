@@ -406,6 +406,134 @@ const EVENTS_MOS = [
     ],
   },
 
+  // ══════════════════ MOS-SPECIFIC: 6531 AIRCRAFT ORDNANCE ══════════════════
+  {
+    id: 'evt_6531_weapons_cert',
+    category: 'career',
+    title: 'New Weapons System Certification',
+    weight: 10,
+    trigger: { mosId: 'mos_6531', minTIS: 6 },
+    narrative: 'The squadron is transitioning to a new weapons system — either a new variant of a guided bomb or an updated missile rail configuration. A certification course opens up. Getting qualified now means more load assignments and higher visibility with the Ordnance Chief. It also means extra study on your own time.',
+    choices: [
+      {
+        text: 'Sign up immediately. More quals means more value.',
+        hint: '++MOS Proficiency, +Reputation — additional weapons certification',
+        effects: { mosProficiency: 10, reputationWithLeadership: 8, profConduct: 3, stress: 6 },
+      },
+      {
+        text: 'Wait for a better time window. You\'re already loaded up.',
+        hint: 'No gain now — opportunity passes',
+        effects: { stress: -3 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6531_hot_pit',
+    category: 'unit',
+    title: 'Hot Pit Rearm',
+    weight: 9,
+    trigger: { mosId: 'mos_6531', minTIS: 12 },
+    narrative: 'The flight schedule pushes a hot pit rearm — engines running, rotors turning, and your crew has minutes to rearm the aircraft and get it back in the air. The noise is deafening. The rotor wash is trying to knock you over. Every movement has to be precise and fast. This is the job at its most intense and most honest.',
+    choices: [
+      {
+        text: 'Lead the rearm. You know the sequence cold.',
+        hint: '+MOS Proficiency, +Morale, +Reputation — smooth execution under pressure',
+        effects: { mosProficiency: 9, morale: 10, reputationWithLeadership: 8, stress: 8, profConduct: 4 },
+      },
+      {
+        text: 'Support your team lead and execute your lane without deviation.',
+        hint: '+MOS Proficiency, solid team performance',
+        effects: { mosProficiency: 5, morale: 6, stress: 6 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6531_mishap',
+    category: 'discipline',
+    title: 'Ordnance Safety Incident',
+    weight: 7,
+    trigger: { mosId: 'mos_6531', minTIS: 8 },
+    narrative: 'During a routine load, a junior Marine mishandles a fuze adapter — it is not armed, but the drop was hard and the safety pin was already pulled. No one was hurt. Nothing went off. But the Ordnance Chief saw it and you are the senior person on the load crew. How you handle the next five minutes will determine whether this becomes a near-miss report or a career event.',
+    choices: [
+      {
+        text: 'Stop the evolution, report the incident, and retrain the crew on the spot.',
+        hint: '+ProCon, +Reputation — zero-tolerance for safety shortcuts',
+        effects: { profConduct: 8, reputationWithLeadership: 10, mosProficiency: 6, stress: 10, disciplineRisk: -5 },
+      },
+      {
+        text: 'Handle it quietly within the crew. No harm done — you\'ll address it internally.',
+        hint: 'Risk of it surfacing later — short-term ease, long-term exposure',
+        effects: { disciplineRisk: 15, stress: 8, reputationWithLeadership: -6 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6531_combat_surge',
+    category: 'deployment',
+    title: 'Ordnance Surge Operations',
+    weight: 8,
+    trigger: { mosId: 'mos_6531', isDeployed: true },
+    narrative: 'The ATO doubles overnight. Tasking is up, sorties are stacked, and the ordnance section is the bottleneck. Your chief has the crew running double shifts to meet the load schedule. You are tired, the flight line is hot, and every aircraft that launches carries something your hands built. This is what the MOS is actually for.',
+    choices: [
+      {
+        text: 'Lead from the front. You set the pace for the crew.',
+        hint: '++MOS Proficiency, ++Morale, +Reputation — combat-tempo performance',
+        effects: { mosProficiency: 12, morale: 10, reputationWithLeadership: 12, profConduct: 5, stress: 15 },
+        combatAwardChance: 0.35,
+      },
+      {
+        text: 'Execute your section\'s workload and keep the tempo sustainable.',
+        hint: '+MOS Proficiency, manages the stress load',
+        effects: { mosProficiency: 7, stress: 8, morale: 5 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6531_iyaoyas',
+    category: 'personal',
+    title: 'IYAOYAS',
+    weight: 6,
+    trigger: { mosId: 'mos_6531', minTIS: 18, maxTIS: 120 },
+    narrative: 'A Marine from a different MOS makes a comment about ordnance techs — something dismissive about the job being just loading and unloading. You\'ve spent years getting certified on weapons systems that most Marines will never see, working under flight schedules that don\'t forgive mistakes, in conditions where a single error has consequence far beyond a missed PT formation. You have something to say.',
+    choices: [
+      {
+        text: 'Invite them to the flight line at 0400 load-out and show them the job.',
+        hint: '+Morale, +Network — earn respect the right way',
+        effects: { morale: 12, networkStrength: 8, mosProficiency: 4 },
+      },
+      {
+        text: 'Let it go. Your record speaks. You don\'t need to.',
+        hint: '+Morale, +ProCon — quiet professionalism',
+        effects: { morale: 8, profConduct: 5 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6531_qa_lead',
+    category: 'career',
+    title: 'QA Representative Opportunity',
+    weight: 7,
+    trigger: { mosId: 'mos_6531', minTIS: 30, minGrade: 'E-5' },
+    narrative: 'The Quality Assurance section is short a body. The Ordnance Officer asks if you want to take on being a QA representative — you\'d be signing off on loads and conducting spot-checks across the entire ordnance crew. More responsibility, more visibility, more scrutiny on your own work. It\'s the kind of assignment that either makes or breaks a career.',
+    choices: [
+      {
+        text: 'Accept the QA billet. You hold yourself to that standard anyway.',
+        hint: '++MOS Proficiency, +ProCon, +Reputation — senior leadership visibility',
+        effects: { mosProficiency: 12, profConduct: 8, reputationWithLeadership: 12, stress: 8 },
+      },
+      {
+        text: 'Decline for now. You want more reps before you\'re signing off on others.',
+        hint: '+MOS at current level — measured career development',
+        effects: { mosProficiency: 5, stress: -3 },
+      },
+    ],
+  },
+
   // ══════════════════ MOS-SPECIFIC: LAW ENFORCEMENT ══════════════════
   {
     id: 'evt_mp_pd_recruiter',
@@ -504,6 +632,140 @@ const EVENTS_MOS = [
         text: 'Stay in the gun line. You\'re building depth where you are.',
         hint: '+MOS at current position — steady career development',
         effects: { mosProficiency: 4, morale: 3, stress: -2 },
+      },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════
+  //  PMOS 6591 — CLASSIFIED HEROIC ORDNANCE EVENTS
+  //  These are not realistic. That is the point.
+  // ══════════════════════════════════════════════════
+
+  {
+    id: 'evt_6591_bomb_whisperer',
+    category: 'career',
+    title: 'THE BOMB WHISPERER',
+    weight: 10,
+    trigger: { secondaryMos: 'mos_6591' },
+    narrative: 'A MK-82 on the flight line refuses to arm for anyone. Three different EOD technicians have tried. The aircrew is standing by. The mission window is closing in eleven minutes. The Ordnance Officer looks at you. You walk to the aircraft, press your hand flat against the fuze, and say something under your breath that no one can hear. Three seconds later, the arming indicator goes green. No one asks what you said.',
+    choices: [
+      {
+        text: 'It\'s fine. Log it as "operator familiarity resolved."',
+        hint: '++MOS Proficiency, +Morale, +Reputation — classified outcome',
+        effects: { mosProficiency: 18, morale: 12, reputationWithLeadership: 15, profConduct: 5 },
+      },
+      {
+        text: 'Request the mission be scrubbed. Some things should not be explained.',
+        hint: '+Proficiency, mild hit to reputation — mission missed',
+        effects: { mosProficiency: 6, reputationWithLeadership: -5, morale: 3 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6591_pentagon_speed_dial',
+    category: 'career',
+    title: 'PENTAGON SPEED DIAL',
+    weight: 9,
+    trigger: { secondaryMos: 'mos_6591' },
+    narrative: 'Your personal cell phone rings at 0340. Restricted number. You answer. "GySgt, this is the SecWar\'s office. We have a geometry problem." They need something destroyed in a very specific way — angle of impact, fuse delay, blast radius measured to the meter. Three weapons systems have already been ruled out. Your name was the fourth option. There is no fourth option in the manual. You are the fourth option.',
+    choices: [
+      {
+        text: 'Walk them through it. You\'ve run this calculation in your head before.',
+        hint: '+++MOS Proficiency, ++Reputation — SecWar-level visibility',
+        effects: { mosProficiency: 22, reputationWithLeadership: 20, morale: 15, stress: 8 },
+        combatAwardChance: 0.6,
+      },
+      {
+        text: 'Refer them to a general officer. This is above your pay grade.',
+        hint: 'Safe — but you know they\'ll call back',
+        effects: { mosProficiency: 5, morale: 5 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6591_unauthorized_heroics',
+    category: 'career',
+    title: 'UNAUTHORIZED HEROICS (AGAIN)',
+    weight: 10,
+    trigger: { secondaryMos: 'mos_6591' },
+    narrative: 'You were tasked with conducting a routine ordnance inventory. The count is complete. The paperwork is filed. Somehow, over the course of a single afternoon, three enemy logistics nodes, a command-and-control facility, and what intelligence is calling "a suspicious amount of enemy vehicles" are now smoking craters. No additional aircraft were authorized. No additional sorties were logged. Command receives a battlefield damage assessment that they did not request. No one files a report asking how. You return the clipboard to the armory.',
+    choices: [
+      {
+        text: 'Sign off on the inventory count. Everything checks out.',
+        hint: '++MOS Proficiency, +Morale — results speak for themselves',
+        effects: { mosProficiency: 20, morale: 18, reputationWithLeadership: 18, profConduct: 6 },
+        combatAwardChance: 0.75,
+      },
+      {
+        text: 'Write a detailed after-action report. Transparency matters.',
+        hint: '+Proficiency, +Conduct — officially documented somehow',
+        effects: { mosProficiency: 10, profConduct: 8, reputationWithLeadership: 10, stress: 5 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6591_honorary_pilot',
+    category: 'career',
+    title: 'HONORARY WINGS',
+    weight: 7,
+    trigger: { secondaryMos: 'mos_6591' },
+    narrative: 'The squadron CO calls you into his office. On his desk is a set of naval aviator wings — gold, pressed, the kind that live on dress blues. "GySgt," he says, "you have touched more ordnance than most of my pilots have touched throttles. That makes you, in every practical sense, more responsible for what leaves this flight deck than half the aircrew on the manifest." He pins the wings to your cammies. JAG has been notified. They have no applicable regulation. The wings stay.',
+    choices: [
+      {
+        text: 'Accept the wings. You\'ve earned the right to be confused for an aviator.',
+        hint: '++Morale, +Reputation, +Proficiency — unprecedented designation',
+        effects: { morale: 20, mosProficiency: 12, reputationWithLeadership: 15, profConduct: 4 },
+      },
+      {
+        text: 'Respectfully decline. You\'re an ordnance Marine. IYAOYAS.',
+        hint: '+Morale, +Proficiency — integrity intact',
+        effects: { morale: 12, mosProficiency: 8, profConduct: 6 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6591_human_bomb',
+    category: 'career',
+    title: 'WEAPONS SYSTEM DESIGNATION',
+    weight: 8,
+    trigger: { secondaryMos: 'mos_6591' },
+    narrative: 'A classified intelligence brief circulates at the three-star level. Someone on the J2 staff has formally assessed that your ordnance qualifications, institutional knowledge, and — the brief uses the phrase "documented behavioral patterns" — constitute, in aggregate, a precision weapon system. There is a footnote. The footnote recommends that you be listed on the Theater asset register under the weapons systems column. It is not clear if this is legal. It is also not clear if it is a compliment.',
+    choices: [
+      {
+        text: 'Request a copy of the brief for your service record.',
+        hint: '+++MOS Proficiency, ++Morale — officially a weapons system',
+        effects: { mosProficiency: 25, morale: 20, reputationWithLeadership: 20 },
+      },
+      {
+        text: 'Ask to be removed from the weapons systems column.',
+        hint: '+Proficiency — you still feel like a person',
+        effects: { mosProficiency: 8, morale: 8, stress: -5 },
+      },
+    ],
+  },
+
+  {
+    id: 'evt_6591_operation_thunder_crayon',
+    category: 'career',
+    title: 'OPERATION THUNDER CRAYON',
+    weight: 6,
+    trigger: { secondaryMos: 'mos_6591' },
+    narrative: 'SOCOM sends a single-page op order. The classification level requires a separate page just to list the classification level. The mission: accompany a joint strike element into a denied-access area and ensure terminal ordnance effects on a target that does not appear on any satellite imagery because the imagery itself is classified. You are issued one (1) standard government-issue crayon — red, for marking surfaces. You are not told why. You figure it out on the way in. The crayon works.',
+    choices: [
+      {
+        text: 'Execute the mission. The crayon is mightier than the sword.',
+        hint: '++++MOS Proficiency, +++Morale, high award chance — legendary outcome',
+        effects: { mosProficiency: 30, morale: 22, reputationWithLeadership: 25, profConduct: 8, stress: 10 },
+        combatAwardChance: 0.9,
+      },
+      {
+        text: 'Ask for clarification on the crayon before stepping off.',
+        hint: '+Proficiency — you\'re methodical, even on classified ops',
+        effects: { mosProficiency: 12, morale: 10, reputationWithLeadership: 8 },
       },
     ],
   },

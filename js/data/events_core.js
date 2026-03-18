@@ -1523,4 +1523,27 @@ const EVENTS_CORE = [
     ],
   },
 
+  // ── SECRET PMOS 6591 UNLOCK (6531 only, fires at E-7) ──
+  {
+    id: 'evt_6591_unlock',
+    category: 'career',
+    title: 'CLASSIFIED PROGRAM BRIEFING',
+    weight: 99,
+    trigger: { mosId: 'mos_6531', minGrade: 'E-7', maxGrade: 'E-7', notHasPMOS: true },
+    narrative: 'A man in a suit with no name badge sits across from you in a room that does not appear on any base map. He slides a folder across the table. The cover sheet is entirely black except for two words and a number. PROGRAM THUNDERBIRD. 6591. "GySgt," he says, "your ordnance record has been flagged. We need someone who understands weapons systems the way a musician understands keys. The program is voluntary. The program is classified. The program does not exist." He folds his hands. "Do you accept?"',
+    choices: [
+      {
+        text: 'Pick up the folder. Accept the assignment.',
+        hint: 'PMOS 6591 unlocked — classified events begin',
+        effects: { morale: 15, mosProficiency: 10, reputationWithLeadership: 12 },
+        setPMOS: 'mos_6591',
+      },
+      {
+        text: 'Push the folder back. You\'re a GySgt, not a ghost.',
+        hint: 'Decline — program access permanently denied',
+        effects: { morale: -5 },
+      },
+    ],
+  },
+
 ];
