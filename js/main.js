@@ -534,6 +534,25 @@ const Main = {
 
     UI._selectedFocuses = new Map();
     UI._focusBudgetSpent = 0;
+
+    // Show promotion ceremony for each promotion before rendering the game state
+    const promotions = result.promotions || [];
+    if (promotions.length > 0) {
+      let idx = 0;
+      const showNext = () => {
+        if (idx < promotions.length) {
+          UI.showPromotionCeremony(promotions[idx++], showNext);
+        } else {
+          UI.renderGameState(result);
+          UI.renderMonthlyChoices();
+          const eventsBody = document.querySelector('.events-body');
+          if (eventsBody) eventsBody.scrollTop = 0;
+        }
+      };
+      showNext();
+      return;
+    }
+
     UI.renderGameState(result);
     UI.renderMonthlyChoices();
 

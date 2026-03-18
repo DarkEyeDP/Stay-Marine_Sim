@@ -597,3 +597,220 @@
     max-width: min(280px, calc(100vw - 16px));
   }
 }
+
+/* ══════════════════════════════════════════════
+   PROMOTION CEREMONY OVERLAY
+══════════════════════════════════════════════ */
+.promo-ceremony {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.promo-ceremony.hidden {
+  display: none;
+}
+
+/* Scanline background matching title screen aesthetic */
+.promo-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(200,169,110,0.018) 2px, rgba(200,169,110,0.018) 4px),
+    radial-gradient(ellipse at center, #1c1506 0%, #0a0d07 70%);
+}
+
+/* Dismiss fade-out */
+@keyframes promo-dismiss {
+  to { opacity: 0; transform: scale(1.03); }
+}
+.promo-ceremony.is-dismissing .promo-content {
+  animation: promo-dismiss 0.35s ease forwards;
+}
+
+/* Center column */
+.promo-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 2rem 3rem;
+  max-width: 420px;
+  width: 100%;
+  gap: 0;
+  pointer-events: none;
+}
+
+/* ── Entrance animations (reuse title-screen keyframes) ─── */
+.promo-kicker {
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  color: var(--muted);
+  opacity: 0;
+  animation: title-header-in 0.5s cubic-bezier(0.22,1,0.36,1) 0.05s forwards;
+  margin-bottom: 0.6rem;
+}
+
+.promo-rule {
+  width: 160px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,169,110,0.4), transparent);
+  opacity: 0;
+  animation: title-header-in 0.5s cubic-bezier(0.22,1,0.36,1) 0.12s forwards;
+  margin-bottom: 1.6rem;
+}
+
+/* Badge container */
+.promo-badge-wrap {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: promo-badge-in 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s forwards;
+  margin-bottom: 1.4rem;
+}
+
+@keyframes promo-badge-in {
+  from { opacity: 0; transform: scale(0.75); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.promo-badge-img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(200,169,110,0.5));
+  animation: promo-badge-glow 3s ease-in-out 0.8s infinite;
+}
+
+.promo-badge-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--tan);
+  letter-spacing: 0.06em;
+}
+
+@keyframes promo-badge-glow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(200,169,110,0.4)); }
+  50%       { filter: drop-shadow(0 0 26px rgba(200,169,110,0.8)) drop-shadow(0 0 50px rgba(200,169,110,0.25)); }
+}
+
+.promo-eyebrow {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  opacity: 0;
+  animation: title-header-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.32s forwards;
+  margin-bottom: 0.3rem;
+}
+
+.promo-grade {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: rgba(200,169,110,0.55);
+  opacity: 0;
+  animation: title-elem-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.40s forwards;
+  margin-bottom: 0.15rem;
+}
+
+.promo-title {
+  font-size: clamp(1.8rem, 7vw, 2.4rem);
+  letter-spacing: 0.14em;
+  color: var(--tan);
+  font-weight: bold;
+  opacity: 0;
+  animation: title-elem-in 0.5s cubic-bezier(0.22,1,0.36,1) 0.46s forwards;
+  line-height: 1.1;
+  margin-bottom: 0.2rem;
+}
+
+.promo-abbr {
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  color: rgba(200,169,110,0.6);
+  opacity: 0;
+  animation: title-elem-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.52s forwards;
+  margin-bottom: 1.2rem;
+}
+
+.promo-flavor {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0;
+  animation: title-elem-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.60s forwards;
+  margin-bottom: 2.5rem;
+}
+
+@keyframes promo-prompt-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,169,110,0); }
+  50%       { box-shadow: 0 0 18px 3px rgba(200,169,110,0.15); }
+}
+
+.promo-prompt {
+  /* Card-style button matching title screen */
+  width: 260px;
+  text-align: center;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(200,169,110,0.035) 2px, rgba(200,169,110,0.035) 4px),
+    rgba(11,15,11,0.85);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-left: 3px solid var(--tan);
+  border-right: 3px solid var(--tan);
+  border-radius: var(--radius);
+  color: var(--tan);
+  padding: 0.85rem 1.1rem;
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+  font-weight: bold;
+  letter-spacing: 0.16em;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  animation:
+    title-elem-in 0.45s cubic-bezier(0.22,1,0.36,1) 0.78s forwards,
+    promo-prompt-pulse 2.8s ease-in-out 1.4s infinite;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.promo-prompt::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(200,169,110,0.15), rgba(200,169,110,0.35) 50%, rgba(200,169,110,0.15));
+  pointer-events: none;
+}
+
+.promo-prompt:hover {
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(200,169,110,0.055) 2px, rgba(200,169,110,0.055) 4px),
+    rgba(200,169,110,0.09);
+}
+
+.promo-prompt:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+  .promo-badge-wrap { width: 80px; height: 80px; }
+  .promo-badge-img  { width: 72px; height: 72px; }
+}

@@ -1625,6 +1625,65 @@ UI._achievementToastNext = function() {
 };
 
 
+UI.showPromotionCeremony = function(promo, onDismiss) {
+  const RANK_IMAGES = {
+    'E-2': 'img/pfc-rank.svg',
+    'E-3': 'img/lcpl-rank.svg',
+    'E-4': 'img/cpl-rank.svg',
+    'E-5': 'img/sgt-rank.svg',
+    'E-6': 'img/ssgt-rank.svg',
+    'E-7': 'img/gysgt-rank.svg',
+    'E-8': 'img/msgt-rank.svg',
+  };
+  const PROMO_FLAVOR = {
+    'E-2': 'Welcome to the ranks.',
+    'E-3': 'The backbone of every fire team.',
+    'E-4': 'First to lead. First to answer.',
+    'E-5': 'The heart of the NCO Corps.',
+    'E-6': 'Your Marines are watching.',
+    'E-7': 'The soul of the infantry.',
+    'E-8': 'Few reach this far.',
+    'E-9': 'The pinnacle of enlisted service.',
+  };
+
+  const overlay   = document.getElementById('promo-ceremony');
+  const imgEl     = document.getElementById('promo-badge-img');
+  const textEl    = document.getElementById('promo-badge-text');
+  const gradeEl   = document.getElementById('promo-grade');
+  const titleEl   = document.getElementById('promo-title');
+  const abbrEl    = document.getElementById('promo-abbr');
+  const flavorEl  = document.getElementById('promo-flavor');
+
+  const imgSrc = RANK_IMAGES[promo.grade];
+  imgEl.src = imgSrc || '';
+  imgEl.style.display = imgSrc ? '' : 'none';
+  textEl.textContent  = imgSrc ? '' : promo.grade;
+  gradeEl.textContent = promo.grade;
+  titleEl.textContent = (promo.title || '').toUpperCase();
+  abbrEl.textContent  = promo.abbr || '';
+  flavorEl.textContent = PROMO_FLAVOR[promo.grade] || '';
+
+  // Reset animation state so entrance plays fresh each time
+  overlay.classList.remove('hidden', 'is-dismissing');
+  const content = overlay.querySelector('.promo-content');
+  content.style.animation = 'none';
+  void content.offsetWidth;
+  content.style.animation = '';
+
+  function dismiss() {
+    overlay.removeEventListener('click', dismiss);
+    overlay.classList.add('is-dismissing');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('is-dismissing');
+      if (onDismiss) onDismiss();
+    }, 350);
+  }
+
+  // Delay click binding so an accidental tap on Advance Quarter doesn't immediately dismiss
+  setTimeout(() => overlay.addEventListener('click', dismiss), 700);
+};
+
 UI.bindAchievementPopovers = function() {
   const cards = document.querySelectorAll('#screen-achievements .ach-popover-host');
   cards.forEach(card => {
