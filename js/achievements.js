@@ -16,70 +16,79 @@ const TIER_LABELS = {
 };
 
 const ACHIEVEMENT_DEFS = [
-  { id: 'welcome_aboard', title: 'Welcome Aboard', tier: 'issued', desc: 'You signed. The machine is now aware of you.', iconifyIcon: 'mdi:account-plus-outline' },
+  // ── Issued ────────────────────────────────────────────────────────────────
+  { id: 'barracks_maintenance_tech', title: 'Barracks Maintenance Tech', tier: 'issued', desc: 'You can fix anything with tape and spite.', iconifyIcon: 'mdi:tools' },
   { id: 'boot_phase_complete', title: 'Boot Phase Complete', tier: 'issued', desc: 'You survived the part where everyone yells.', iconifyIcon: 'mdi:badge-account-horizontal-outline' },
+  { id: 'energy_drink_logistics', title: 'Energy Drink Logistics', tier: 'issued', desc: 'This is your supply chain.', iconifyIcon: 'mdi:lightning-bolt-outline' },
+  { id: 'iyaoyas', title: 'IYAOYAS', tier: 'issued', desc: 'If you ain\'t ordnance, you ain\'t shit. Now prove it.', iconifyIcon: 'mdi:bomb-outline' },
   { id: 'mustang_incident', title: 'The Mustang Incident', tier: 'issued', desc: '19% APR builds character.', iconifyIcon: 'mdi:car-arrow-right' },
   { id: 'two_paychecks_still_broke', title: 'Two Paychecks, Still Broke', tier: 'issued', desc: 'Finance says it is a you problem.', iconifyIcon: 'mdi:cash-remove' },
-  { id: 'energy_drink_logistics', title: 'Energy Drink Logistics', tier: 'issued', desc: 'This is your supply chain.', iconifyIcon: 'mdi:lightning-bolt-outline' },
-  { id: 'barracks_maintenance_tech', title: 'Barracks Maintenance Tech', tier: 'issued', desc: 'You can fix anything with tape and spite.', iconifyIcon: 'mdi:tools' },
+  { id: 'welcome_aboard', title: 'Welcome Aboard', tier: 'issued', desc: 'You signed. The machine is now aware of you.', iconifyIcon: 'mdi:account-plus-outline' },
 
-  { id: 'four_year_any_percent', title: '4-Year Any%', tier: 'earned', desc: 'Blink twice and you are at CIF.', iconifyIcon: 'mdi:timer-outline' },
-  { id: 'speed_bump_career', title: 'Speed Bump Career', tier: 'earned', desc: 'Some careers are a journey. This one was an exit ramp.', iconifyIcon: 'mdi:fast-forward-outline' },
-  { id: 'barracks_king', title: 'Barracks King', tier: 'earned', desc: 'No dependas. No drama. Just field day.', iconifyIcon: 'mdi:bunk-bed-outline' },
-  { id: 'first_reenlistment', title: 'First Reenlistment', tier: 'earned', desc: 'You signed again. The plot thickens.', iconifyIcon: 'mdi:clipboard-text-clock-outline' },
-  { id: 'honorable_eas', title: 'Honorable EAS', tier: 'earned', desc: 'You left on your terms.', iconifyIcon: 'mdi:file-certificate-outline' },
-  { id: 'fire_team_lead', title: 'Fire Team Lead', tier: 'earned', desc: 'Congrats. You now own someone else\'s mistakes.', iconifyIcon: 'mdi:account-group-outline' },
-  { id: 'schoolhouse_ghost', title: 'Schoolhouse Ghost', tier: 'earned', desc: 'You live in classrooms now.', iconifyIcon: 'mdi:school-outline' },
-  { id: 'qualified_marksman', title: 'Qualified: Marksman', tier: 'earned', desc: 'Not pretty, but it counts.', iconifyIcon: 'mdi:target-variant' },
-  { id: 'high_first_class', title: 'High First Class', tier: 'earned', desc: 'Run time says do not talk to me.', iconifyIcon: 'mdi:run-fast' },
-  { id: 'new_duty_station', title: 'New Duty Station', tier: 'earned', desc: 'Fresh map. Same chaos.', iconifyIcon: 'mdi:map-marker-path' },
-  { id: 'camp_lejeune_hydration_program', title: 'Camp Lejeune Hydration Program', tier: 'earned', desc: 'Eligible for a future class action, maybe.', iconifyIcon: 'mdi:water-alert-outline' },
-  { id: 'pendleton_regular', title: 'Pendleton Regular', tier: 'earned', desc: 'You can smell the ocean and the op order.', iconifyIcon: 'mdi:waves' },
+  // ── Earned ────────────────────────────────────────────────────────────────
   { id: 'palms_sun_touched', title: '29 Palms Sun Touched', tier: 'earned', desc: 'Your car interior is now a stovetop.', iconifyIcon: 'mdi:white-balance-sunny' },
-  { id: 'okinawa_liberty_expert', title: 'Okinawa Liberty Expert', tier: 'earned', desc: 'You know the curfew math.', iconifyIcon: 'mdi:palm-tree' },
-  { id: 'quantico_paper_warrior', title: 'Quantico Paper Warrior', tier: 'earned', desc: 'You became PowerPoint.', iconifyIcon: 'mdi:presentation' },
+  { id: 'four_year_any_percent', title: '4-Year Any%', tier: 'earned', desc: 'Blink twice and you are at CIF.', iconifyIcon: 'mdi:timer-outline' },
+  { id: 'barracks_king', title: 'Barracks King', tier: 'earned', desc: 'No dependas. No drama. Just field day.', iconifyIcon: 'mdi:bunk-bed-outline' },
+  { id: 'camp_lejeune_hydration_program', title: 'Camp Lejeune Hydration Program', tier: 'earned', desc: 'Eligible for a future class action, maybe.', iconifyIcon: 'mdi:water-alert-outline' },
+  { id: 'certified_dangerous', title: 'Certified Dangerous', tier: 'earned', desc: 'The paperwork says you are authorized to do this. The paperwork is optimistic.', iconifyIcon: 'mdi:clipboard-check-outline' },
+  { id: 'fire_team_lead', title: 'Fire Team Lead', tier: 'earned', desc: 'Congrats. You now own someone else\'s mistakes.', iconifyIcon: 'mdi:account-group-outline' },
+  { id: 'first_reenlistment', title: 'First Reenlistment', tier: 'earned', desc: 'You signed again. The plot thickens.', iconifyIcon: 'mdi:clipboard-text-clock-outline' },
+  { id: 'high_first_class', title: 'High First Class', tier: 'earned', desc: 'Run time says do not talk to me.', iconifyIcon: 'mdi:run-fast' },
+  { id: 'honorable_eas', title: 'Honorable EAS', tier: 'earned', desc: 'You left on your terms.', iconifyIcon: 'mdi:file-certificate-outline' },
   { id: 'kaneohe_bay_breeze', title: 'Kaneohe Bay Breeze', tier: 'earned', desc: 'You cannot be sad in Hawaii. You can try.', iconifyIcon: 'mdi:island' },
+  { id: 'new_duty_station', title: 'New Duty Station', tier: 'earned', desc: 'Fresh map. Same chaos.', iconifyIcon: 'mdi:map-marker-path' },
+  { id: 'okinawa_liberty_expert', title: 'Okinawa Liberty Expert', tier: 'earned', desc: 'You know the curfew math.', iconifyIcon: 'mdi:palm-tree' },
+  { id: 'pendleton_regular', title: 'Pendleton Regular', tier: 'earned', desc: 'You can smell the ocean and the op order.', iconifyIcon: 'mdi:waves' },
+  { id: 'qualified_marksman', title: 'Qualified: Marksman', tier: 'earned', desc: 'Not pretty, but it counts.', iconifyIcon: 'mdi:target-variant' },
+  { id: 'quantico_paper_warrior', title: 'Quantico Paper Warrior', tier: 'earned', desc: 'You became PowerPoint.', iconifyIcon: 'mdi:presentation' },
+  { id: 'schoolhouse_ghost', title: 'Schoolhouse Ghost', tier: 'earned', desc: 'You live in classrooms now.', iconifyIcon: 'mdi:school-outline' },
+  { id: 'speed_bump_career', title: 'Speed Bump Career', tier: 'earned', desc: 'Some careers are a journey. This one was an exit ramp.', iconifyIcon: 'mdi:fast-forward-outline' },
   { id: 'uniform_inspection_pass', title: 'Uniform Inspection Pass', tier: 'earned', desc: 'One thread away from disaster.', iconifyIcon: 'mdi:check-decagram-outline' },
 
-  { id: 'retirement_any_percent', title: 'Retirement Any%', tier: 'hard_charged', desc: 'You skipped the plot and went straight to paperwork.', iconifyIcon: 'mdi:timer-star-outline' },
-  { id: 'never_paid_it_off', title: 'Never Paid It Off', tier: 'hard_charged', desc: 'You carried that debt like a rifle.', iconifyIcon: 'mdi:credit-card-clock-outline' },
-  { id: 'clean_record', title: 'Clean Record', tier: 'hard_charged', desc: 'No NJP. No drama. Just results.', iconifyIcon: 'mdi:file-check-outline' },
-  { id: 'the_long_game', title: 'The Long Game', tier: 'hard_charged', desc: 'You did not just stay. You built a career.', iconifyIcon: 'mdi:timeline-check-outline' },
+  // ── Hard-Charged ──────────────────────────────────────────────────────────
   { id: 'careerist', title: 'Careerist', tier: 'hard_charged', desc: 'You stopped counting days and started counting years.', iconifyIcon: 'mdi:calendar-range' },
-  { id: 'qualified_sharpshooter', title: 'Qualified: Sharpshooter', tier: 'hard_charged', desc: 'Hold off, hold steady, send it.', iconifyIcon: 'mdi:crosshairs-gps' },
-  { id: 'wind_whisperer', title: 'Wind Whisperer', tier: 'hard_charged', desc: 'You aimed where the bullet needed to be.', iconifyIcon: 'mdi:weather-windy' },
+  { id: 'clean_record', title: 'Clean Record', tier: 'hard_charged', desc: 'No NJP. No drama. Just results.', iconifyIcon: 'mdi:file-check-outline' },
+  { id: 'combat_ready', title: 'Combat Ready', tier: 'hard_charged', desc: 'You fall to your training.', iconifyIcon: 'mdi:shield-check-outline' },
+  { id: 'debt_free_eas', title: 'Debt-Free EAS', tier: 'hard_charged', desc: 'Civilian life starts on easy mode.', iconifyIcon: 'mdi:piggy-bank' },
+  { id: 'never_paid_it_off', title: 'Never Paid It Off', tier: 'hard_charged', desc: 'You carried that debt like a rifle.', iconifyIcon: 'mdi:credit-card-clock-outline' },
   { id: 'perfect_card_prone_kneeling', title: 'Perfect Card: Prone + Kneeling', tier: 'hard_charged', desc: 'You did the easy hard parts.', iconifyIcon: 'mdi:crosshairs' },
+  { id: 'professional_student', title: 'Professional Student', tier: 'hard_charged', desc: 'You turned caffeine into credentials.', iconifyIcon: 'mdi:certificate-outline' },
+  { id: 'qualified_sharpshooter', title: 'Qualified: Sharpshooter', tier: 'hard_charged', desc: 'Hold off, hold steady, send it.', iconifyIcon: 'mdi:crosshairs-gps' },
+  { id: 'quiet_professional', title: 'The Quiet Professional', tier: 'hard_charged', desc: 'No drama. Just unstoppable.', iconifyIcon: 'mdi:account-tie-voice-off-outline' },
+  { id: 'retirement_any_percent', title: 'Retirement Any%', tier: 'hard_charged', desc: 'You skipped the plot and went straight to paperwork.', iconifyIcon: 'mdi:timer-star-outline' },
+  { id: 'section_lead', title: 'Section Lead', tier: 'hard_charged', desc: 'You are the plan and the backup plan.', iconifyIcon: 'mdi:account-supervisor-outline' },
+  { id: 'smcr_encore', title: 'SMCR Encore', tier: 'hard_charged', desc: 'You did not leave. You just changed tempo.', iconifyIcon: 'mdi:account-arrow-right-outline' },
   { id: 'standing_on_business', title: 'Standing On Business', tier: 'hard_charged', desc: 'Your wobble did not own you.', iconifyIcon: 'mdi:human-handsup' },
   { id: 'the_comeback_shot', title: 'The Comeback', tier: 'hard_charged', desc: 'You were in the dirt. Then you locked in.', iconifyIcon: 'mdi:trending-up' },
-  { id: 'section_lead', title: 'Section Lead', tier: 'hard_charged', desc: 'You are the plan and the backup plan.', iconifyIcon: 'mdi:account-supervisor-outline' },
-  { id: 'professional_student', title: 'Professional Student', tier: 'hard_charged', desc: 'You turned caffeine into credentials.', iconifyIcon: 'mdi:certificate-outline' },
-  { id: 'debt_free_eas', title: 'Debt-Free EAS', tier: 'hard_charged', desc: 'Civilian life starts on easy mode.', iconifyIcon: 'mdi:piggy-bank' },
-  { id: 'smcr_encore', title: 'SMCR Encore', tier: 'hard_charged', desc: 'You did not leave. You just changed tempo.', iconifyIcon: 'mdi:account-arrow-right-outline' },
-  { id: 'quiet_professional', title: 'The Quiet Professional', tier: 'hard_charged', desc: 'No drama. Just unstoppable.', iconifyIcon: 'mdi:account-tie-voice-off-outline' },
-  { id: 'combat_ready', title: 'Combat Ready', tier: 'hard_charged', desc: 'You fall to your training.', iconifyIcon: 'mdi:shield-check-outline' },
+  { id: 'the_long_game', title: 'The Long Game', tier: 'hard_charged', desc: 'You did not just stay. You built a career.', iconifyIcon: 'mdi:timeline-check-outline' },
+  { id: 'wind_whisperer', title: 'Wind Whisperer', tier: 'hard_charged', desc: 'You aimed where the bullet needed to be.', iconifyIcon: 'mdi:weather-windy' },
 
-  { id: 'one_point_short', title: 'One Point Short', tier: 'blood_stripe', desc: 'You will remember this forever.', iconifyIcon: 'mdi:minus-circle-outline' },
+  // ── Blood Stripe ──────────────────────────────────────────────────────────
   { id: 'blood_stripe', title: 'Blood Stripe', tier: 'blood_stripe', desc: 'Welcome to the NCO tier. Now you are responsible.', iconifyIcon: 'mdi:chevron-up-box-outline' },
-  { id: 'expert_rifleman', title: 'Expert Rifleman', tier: 'blood_stripe', desc: 'Clean, calm, surgical.', iconifyIcon: 'mdi:target-account' },
-  { id: 'expert_or_bust', title: 'Expert or Bust', tier: 'blood_stripe', desc: 'You did not come to participate.', iconifyIcon: 'mdi:star-shooting-outline' },
-  { id: 'pits_dont_sleep', title: 'Pits Don\'t Sleep', tier: 'blood_stripe', desc: 'They are tired of seeing your targets.', iconifyIcon: 'mdi:bullseye-arrow' },
   { id: 'distinguished', title: 'Distinguished (Not Today, Satan)', tier: 'blood_stripe', desc: 'The pits started taking notes.', iconifyIcon: 'mdi:trophy-award' },
-  { id: 'the_professional', title: 'The Professional', tier: 'blood_stripe', desc: 'Not flashy. Just unstoppable.', iconifyIcon: 'mdi:briefcase-account-outline' },
-  { id: 'stack_builder', title: 'Stack Builder', tier: 'blood_stripe', desc: 'Your chest looks like a resume.', iconifyIcon: 'mdi:medal' },
+  { id: 'expert_or_bust', title: 'Expert or Bust', tier: 'blood_stripe', desc: 'You did not come to participate.', iconifyIcon: 'mdi:star-shooting-outline' },
+  { id: 'expert_rifleman', title: 'Expert Rifleman', tier: 'blood_stripe', desc: 'Clean, calm, surgical.', iconifyIcon: 'mdi:target-account' },
+  { id: 'one_point_short', title: 'One Point Short', tier: 'blood_stripe', desc: 'You will remember this forever.', iconifyIcon: 'mdi:minus-circle-outline' },
+  { id: 'pits_dont_sleep', title: 'Pits Don\'t Sleep', tier: 'blood_stripe', desc: 'They are tired of seeing your targets.', iconifyIcon: 'mdi:bullseye-arrow' },
+  { id: 'program_thunderbird', title: 'Program Thunderbird', tier: 'blood_stripe', desc: 'You read the folder. The folder read you back.', iconifyIcon: 'mdi:folder-lock-outline' },
   { id: 'smooth_transition', title: 'Smooth Transition', tier: 'blood_stripe', desc: 'You planned like an adult.', iconifyIcon: 'mdi:briefcase-check-outline' },
-  { id: 'unq_redemption_arc', title: 'UNQ Redemption Arc', tier: 'blood_stripe', desc: 'From embarrassment to poster child.', iconifyIcon: 'mdi:restore-alert' },
+  { id: 'stack_builder', title: 'Stack Builder', tier: 'blood_stripe', desc: 'Your chest looks like a resume.', iconifyIcon: 'mdi:medal' },
+  { id: 'staff_nco_energy', title: 'Staff NCO Energy', tier: 'blood_stripe', desc: 'People stop asking if you are serious.', iconifyIcon: 'mdi:account-star-outline' },
   { id: 'the_comeback_tour', title: 'The Comeback Tour', tier: 'blood_stripe', desc: 'Plot armor earned.', iconifyIcon: 'mdi:arrow-u-up-left-bold' },
+  { id: 'the_professional', title: 'The Professional', tier: 'blood_stripe', desc: 'Not flashy. Just unstoppable.', iconifyIcon: 'mdi:briefcase-account-outline' },
+  { id: 'unq_redemption_arc', title: 'UNQ Redemption Arc', tier: 'blood_stripe', desc: 'From embarrassment to poster child.', iconifyIcon: 'mdi:restore-alert' },
 
-  { id: 'legendary_bloodline', title: 'Legendary Bloodline', tier: 'legend', desc: 'The name on the nameplate carries weight. You had to earn it anyway.', iconifyIcon: 'mdi:shield-star-outline' },
-  { id: 'standing_god_mode', title: 'Standing God Mode', tier: 'legend', desc: 'This is either skill or witchcraft.', iconifyIcon: 'mdi:lightning-bolt' },
-  { id: 'the_perfect_card', title: 'The Perfect Card', tier: 'legend', desc: 'Be honest. Who is mouse-clicking for you?', iconifyIcon: 'mdi:crown' },
-  { id: 'staff_nco_energy', title: 'Staff NCO Energy', tier: 'legend', desc: 'People stop asking if you are serious.', iconifyIcon: 'mdi:account-star-outline' },
+  // ── Legend ────────────────────────────────────────────────────────────────
   { id: 'gunny_time', title: 'Gunny Time', tier: 'legend', desc: 'You have entered because I said so.', iconifyIcon: 'mdi:account-hard-hat-outline' },
-  { id: 'twenty_years_of_damage', title: 'Twenty Years of Damage', tier: 'legend', desc: 'You made it. You paid for it. You won.', iconifyIcon: 'mdi:medal-outline' },
-  { id: 'retired_with_knees', title: 'Retired With Knees (Impossible)', tier: 'legend', desc: 'Medical would like a word.', iconifyIcon: 'mdi:run' },
-  { id: 'perfect_run', title: 'Perfect Run', tier: 'legend', desc: 'This is propaganda.', iconifyIcon: 'mdi:crown-outline' },
+  { id: 'legendary_bloodline', title: 'Legendary Bloodline', tier: 'legend', desc: 'The name on the nameplate carries weight. You had to earn it anyway.', iconifyIcon: 'mdi:shield-star-outline' },
   { id: 'legendary_consistency', title: 'Legendary Consistency', tier: 'legend', desc: 'You never slipped. Not once.', iconifyIcon: 'mdi:infinity' },
-  { id: 'the_standard', title: 'The Standard', tier: 'legend', desc: 'Other Marines got compared to you.', iconifyIcon: 'mdi:star-circle-outline' }
+  { id: 'perfect_run', title: 'Perfect Run', tier: 'legend', desc: 'This is propaganda.', iconifyIcon: 'mdi:crown-outline' },
+  { id: 'retired_with_knees', title: 'Retired With Knees (Impossible)', tier: 'legend', desc: 'Medical would like a word.', iconifyIcon: 'mdi:run' },
+  { id: 'standing_god_mode', title: 'Standing God Mode', tier: 'legend', desc: 'This is either skill or witchcraft.', iconifyIcon: 'mdi:lightning-bolt' },
+  { id: 'the_crayon_works', title: 'The Crayon Works', tier: 'legend', desc: 'Results sealed until 2075. You know what you did.', iconifyIcon: 'mdi:lead-pencil' },
+  { id: 'the_perfect_card', title: 'The Perfect Card', tier: 'legend', desc: 'Be honest. Who is mouse-clicking for you?', iconifyIcon: 'mdi:crown' },
+  { id: 'the_standard', title: 'The Standard', tier: 'legend', desc: 'Other Marines got compared to you.', iconifyIcon: 'mdi:star-circle-outline' },
+  { id: 'twenty_years_of_damage', title: 'Twenty Years of Damage', tier: 'legend', desc: 'You made it. You paid for it. You won.', iconifyIcon: 'mdi:medal-outline' }
 ];
 
 const RANK_ACHIEVEMENTS = [
@@ -102,6 +111,10 @@ const STATION_BADGES = {
 };
 
 const UNLOCK_HINTS = {
+  iyaoyas: 'Start a career as an Aircraft Ordnance Technician (MOS 6531).',
+  certified_dangerous: 'Complete your weapons certification as a 6531.',
+  program_thunderbird: 'Accept the PMOS 6591 designation at GySgt.',
+  the_crayon_works: 'Complete Operation Thunder Crayon as a 6591.',
   welcome_aboard: 'Start your first run.',
   boot_phase_complete: 'Complete boot camp and earn the title Marine.',
   mustang_incident: 'Take on the early-career car loan.',
@@ -209,6 +222,7 @@ const Achievements = {
     const flags = Achievements.ensureRunState(game);
     profile.stats.careersStarted += 1;
     Achievements.unlock('welcome_aboard');
+    if (game?.marine?.mosId === 'mos_6531') Achievements.unlock('iyaoyas');
     // Track starting station but don't award the base badge — that only unlocks on a real PCS move
     if (game?.marine?.assignmentId && !flags.stationsVisited.includes(game.marine.assignmentId))
       flags.stationsVisited.push(game.marine.assignmentId);
@@ -292,6 +306,15 @@ const Achievements = {
     if (!evt || !choice) return;
     const flags = Achievements.ensureRunState(game);
 
+    if (evt.id === 'evt_6531_weapons_cert' && choiceIndex === 0) {
+      Achievements.unlock('certified_dangerous');
+    }
+    if (evt.id === 'evt_6591_unlock' && choiceIndex === 0) {
+      Achievements.unlock('program_thunderbird');
+    }
+    if (evt.id === 'evt_6591_operation_thunder_crayon' && choiceIndex === 0) {
+      Achievements.unlock('the_crayon_works');
+    }
     if (evt.id === 'evt_school_orders' && choiceIndex === 0) {
       flags.schoolCount += 1;
       Achievements.unlock('schoolhouse_ghost');
