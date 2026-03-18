@@ -124,12 +124,13 @@
   padding: 0.85rem 1.1rem;
   font-size: 0.82rem;
   letter-spacing: 0.12em;
-  position: relative;
+  position: fixed;
+  top: 0.55rem;
+  right: 1rem;
   overflow: hidden;
   transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
-  flex-shrink: 0;
-  align-self: center;
   border-radius: var(--radius);
+  z-index: 100;
 }
 
 #btn-achievements-back::before {
