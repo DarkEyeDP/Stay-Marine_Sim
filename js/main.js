@@ -18,25 +18,42 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('save-hint').textContent = 'A saved career was found.';
   }
 
+  function _titleExit(callback) {
+    const screen = document.getElementById('screen-title');
+    screen.classList.add('is-exiting');
+    setTimeout(() => {
+      screen.classList.remove('is-exiting');
+      callback();
+    }, 350);
+  }
+
   document.getElementById('btn-new-game').addEventListener('click', () => {
-    State.clearSave();
-    UI.renderCreateScreen();
-    UI.showScreen('screen-create');
+    _titleExit(() => {
+      State.clearSave();
+      UI.renderCreateScreen();
+      UI.showScreen('screen-create');
+    });
   });
 
   document.getElementById('btn-continue').addEventListener('click', () => {
-    if (State.load()) {
-      UI.initTabs();
-      UI.showGameScreen();
-    }
+    _titleExit(() => {
+      if (State.load()) {
+        UI.initTabs();
+        UI.showGameScreen();
+      }
+    });
   });
 
   document.getElementById('btn-rifle-practice').addEventListener('click', () => {
-    RifleQual.startPractice();
+    _titleExit(() => {
+      RifleQual.startPractice();
+    });
   });
 
   document.getElementById('btn-achievements').addEventListener('click', () => {
-    UI.showAchievementsScreen('screen-title');
+    _titleExit(() => {
+      UI.showAchievementsScreen('screen-title');
+    });
   });
 
   document.getElementById('btn-end-achievements').addEventListener('click', () => {
