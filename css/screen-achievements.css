@@ -125,8 +125,8 @@
   font-size: 0.82rem;
   letter-spacing: 0.12em;
   position: fixed;
-  top: 0.55rem;
-  right: 1rem;
+  top: 0.2rem;
+  right: .1rem;
   overflow: hidden;
   transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
   border-radius: var(--radius);

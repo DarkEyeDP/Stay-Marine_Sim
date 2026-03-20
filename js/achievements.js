@@ -20,7 +20,7 @@ const ACHIEVEMENT_DEFS = [
   { id: 'barracks_maintenance_tech', title: 'Barracks Maintenance Tech', tier: 'issued', desc: 'You can fix anything with tape and spite.', iconifyIcon: 'mdi:tools' },
   { id: 'boot_phase_complete', title: 'Boot Phase Complete', tier: 'issued', desc: 'You survived the part where everyone yells.', iconifyIcon: 'mdi:badge-account-horizontal-outline' },
   { id: 'energy_drink_logistics', title: 'Energy Drink Logistics', tier: 'issued', desc: 'This is your supply chain.', iconifyIcon: 'mdi:lightning-bolt-outline' },
-  { id: 'iyaoyas', title: 'IYAOYAS', tier: 'issued', desc: 'If you ain\'t ordnance, you ain\'t shit. Now prove it.', iconifyIcon: 'mdi:bomb-outline' },
+  { id: 'iyaoyas', title: 'IYAOYAS', tier: 'issued', desc: 'If you ain\'t ordnance, you ain\'t shit. Now prove it.', iconifyIcon: 'mdi:bomb' },
   { id: 'mustang_incident', title: 'The Mustang Incident', tier: 'issued', desc: '19% APR builds character.', iconifyIcon: 'mdi:car-arrow-right' },
   { id: 'two_paychecks_still_broke', title: 'Two Paychecks, Still Broke', tier: 'issued', desc: 'Finance says it is a you problem.', iconifyIcon: 'mdi:cash-remove' },
   { id: 'welcome_aboard', title: 'Welcome Aboard', tier: 'issued', desc: 'You signed. The machine is now aware of you.', iconifyIcon: 'mdi:account-plus-outline' },

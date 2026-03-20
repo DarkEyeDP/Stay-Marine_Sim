@@ -833,7 +833,18 @@ const UI = {
     document.addEventListener('mouseleave', hide);
 
     // ── Mobile: tap to show / tap elsewhere to dismiss ──
+    let _touchStartX = 0;
+    let _touchStartY = 0;
+    document.addEventListener('touchstart', (e) => {
+      _touchStartX = e.touches[0].clientX;
+      _touchStartY = e.touches[0].clientY;
+    }, { passive: true });
     document.addEventListener('touchend', (e) => {
+      // Ignore if the finger moved more than 10px — it was a swipe or scroll, not a tap
+      const movedX = Math.abs(e.changedTouches[0].clientX - _touchStartX);
+      const movedY = Math.abs(e.changedTouches[0].clientY - _touchStartY);
+      if (movedX > 10 || movedY > 10) return;
+
       const el = e.target.closest('[data-tip]');
       if (el) {
         // Tapping the same element a second time dismisses
@@ -1360,8 +1371,8 @@ const UI = {
       const dy = e.changedTouches[0].clientY - startY;
       // Only register as a horizontal swipe if horizontal motion dominates
       if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
-      if (dx < 0 && UI._activeTab === 'events') UI._switchTab('stats');   // swipe left → stats
-      if (dx > 0 && UI._activeTab === 'stats')  UI._switchTab('events');  // swipe right → events
+      if (dx < 0 && UI._activeTab === 'stats')  UI._switchTab('events');  // swipe left  → events (right tab)
+      if (dx > 0 && UI._activeTab === 'events') UI._switchTab('stats');   // swipe right → stats  (left tab)
     }, { passive: true });
   },
 
@@ -1686,33 +1697,52 @@ UI.showPromotionCeremony = function(promo, onDismiss) {
 
 UI.bindAchievementPopovers = function() {
   const cards = document.querySelectorAll('#screen-achievements .ach-popover-host');
+  const isTouch = window.matchMedia('(hover: none)').matches;
+
+  const closeAll = () => cards.forEach(c => c.classList.remove('is-revealed'));
+
   cards.forEach(card => {
-    card.addEventListener('click', (e) => {
-      const wasRevealed = card.classList.contains('is-revealed');
-      cards.forEach(other => other.classList.remove('is-revealed'));
-      if (!wasRevealed) card.classList.add('is-revealed');
-      e.stopPropagation();
-    });
-    card.addEventListener('blur', () => {
-      card.classList.remove('is-revealed');
-    });
+    if (isTouch) {
+      // Mobile: tap only — ignore scrolls/swipes
+      let _tx = 0, _ty = 0;
+      card.addEventListener('touchstart', e => {
+        _tx = e.touches[0].clientX;
+        _ty = e.touches[0].clientY;
+      }, { passive: true });
+      card.addEventListener('touchend', e => {
+        if (Math.abs(e.changedTouches[0].clientX - _tx) > 10 ||
+            Math.abs(e.changedTouches[0].clientY - _ty) > 10) return;
+        const wasRevealed = card.classList.contains('is-revealed');
+        closeAll();
+        if (!wasRevealed) card.classList.add('is-revealed');
+        e.stopPropagation();
+      }, { passive: true });
+    }
+    // Desktop: hover handled entirely by CSS — click does nothing
+    // Keyboard support (both platforms)
+    card.addEventListener('blur', () => card.classList.remove('is-revealed'));
     card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
-      }
-      if (e.key === 'Escape') {
-        card.classList.remove('is-revealed');
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+      if (e.key === 'Escape') card.classList.remove('is-revealed');
     });
   });
 
   const screen = document.getElementById('screen-achievements');
   if (!screen || screen.dataset.popoverBind === 'true') return;
   screen.dataset.popoverBind = 'true';
-  screen.addEventListener('click', (e) => {
-    if (e.target.closest('.ach-popover-host')) return;
-    document.querySelectorAll('#screen-achievements .is-revealed').forEach(card => card.classList.remove('is-revealed'));
-  });
+
+  if (isTouch) {
+    // Dismiss on scroll (any touch that moves) or tap outside a card
+    let _sx = 0, _sy = 0;
+    screen.addEventListener('touchstart', e => {
+      _sx = e.touches[0].clientX;
+      _sy = e.touches[0].clientY;
+    }, { passive: true });
+    screen.addEventListener('touchend', e => {
+      const moved = Math.abs(e.changedTouches[0].clientX - _sx) > 10 ||
+                    Math.abs(e.changedTouches[0].clientY - _sy) > 10;
+      if (moved || !e.target.closest('.ach-popover-host')) closeAll();
+    }, { passive: true });
+  }
 };
 
