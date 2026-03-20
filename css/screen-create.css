@@ -210,6 +210,7 @@
       transparent 0px, transparent 2px,
       rgba(76,175,80,0.08) 2px, rgba(76,175,80,0.08) 4px),
     rgba(76,175,80,0.16);
+  box-shadow: 0 0 0 1px var(--green);
 }
 
 /* CONTINUE CAREER — tan */
@@ -232,6 +233,7 @@
       transparent 0px, transparent 2px,
       rgba(200,169,110,0.05) 2px, rgba(200,169,110,0.05) 4px),
     rgba(200,169,110,0.08);
+  box-shadow: 0 0 0 1px var(--tan);
 }
 
 /* ── NEW GAME — green shine ─── */

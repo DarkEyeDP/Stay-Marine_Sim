@@ -110,27 +110,30 @@
   margin-bottom: 1.25rem;
 }
 
-/* ── Back button — card style matching title screen buttons ─── */
+/* ── Back button — ribbon style ─── */
 #btn-achievements-back {
-  text-align: left;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
   background:
     repeating-linear-gradient(0deg,
       transparent 0px, transparent 2px,
-      rgba(200,169,110,0.035) 2px, rgba(200,169,110,0.035) 4px),
-    rgba(11,15,11,0.85);
+      rgba(200,169,110,0.05) 2px, rgba(200,169,110,0.05) 4px),
+    rgba(200,169,110,0.09);
   border: 1px solid rgba(255,255,255,0.05);
   border-left: 3px solid var(--tan);
+  border-right: 3px solid var(--tan);
   color: var(--tan);
   padding: 0.85rem 1.1rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.12em;
   position: fixed;
   top: 0.2rem;
-  right: .1rem;
+  right: 0.1rem;
   overflow: hidden;
-  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s, filter 0.15s;
   border-radius: var(--radius);
   z-index: 100;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7);
 }
 
 #btn-achievements-back::before {
@@ -138,18 +141,14 @@
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, rgba(200,169,110,0.18), transparent 55%);
+  background: linear-gradient(90deg, transparent, rgba(200,169,110,0.2) 50%, transparent);
   pointer-events: none;
 }
 
 #btn-achievements-back:hover {
-  transform: translateX(5px);
-  background:
-    repeating-linear-gradient(0deg,
-      transparent 0px, transparent 2px,
-      rgba(200,169,110,0.05) 2px, rgba(200,169,110,0.05) 4px),
-    rgba(200,169,110,0.08);
-  filter: none;
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0 0 0 1px var(--tan);
 }
 
 #btn-achievements-back:active {
