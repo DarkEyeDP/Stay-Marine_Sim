@@ -82,9 +82,11 @@
 }
 
 .title-buttons {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 /* ── Shared keyframes ────────────────────── */
@@ -143,7 +145,7 @@
 
 /* ── Card-style title menu buttons ─────────── */
 .title-buttons .btn {
-  text-align: left;
+  text-align: center;
   background:
     repeating-linear-gradient(0deg,
       transparent 0px, transparent 2px,
@@ -151,13 +153,16 @@
     rgba(11,15,11,0.85);
   border: 1px solid rgba(255,255,255,0.05);
   border-left: 3px solid var(--border);
+  border-right: 3px solid var(--border);
   color: var(--muted);
-  padding: 0.85rem 1.1rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.12em;
+  padding: 0.85rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   position: relative;
   overflow: hidden;
   transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7);
 }
 
 .title-buttons .btn::before {
@@ -165,13 +170,13 @@
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent 55%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 50%, transparent);
   pointer-events: none;
 }
 
 .title-buttons .btn:not(:disabled):hover {
-  transform: translateX(5px);
-  filter: none;
+  transform: translateY(-2px);
+  filter: brightness(1.12);
 }
 
 .title-buttons .btn:active { transform: scale(0.98); }
@@ -179,6 +184,7 @@
 .title-buttons .btn:disabled {
   opacity: 0.28;
   border-left-color: var(--border);
+  border-right-color: var(--border);
   color: var(--muted);
   cursor: not-allowed;
 }
@@ -192,10 +198,11 @@
       rgba(76,175,80,0.06) 2px, rgba(76,175,80,0.06) 4px),
     rgba(76,175,80,0.09);
   border-left-color: var(--green);
+  border-right-color: var(--green);
   color: var(--green);
 }
 .title-buttons .btn-primary::before {
-  background: linear-gradient(90deg, rgba(76,175,80,0.2), transparent 55%);
+  background: linear-gradient(90deg, transparent, rgba(76,175,80,0.22) 50%, transparent);
 }
 .title-buttons .btn-primary:not(:disabled):hover {
   background:
@@ -213,10 +220,11 @@
       rgba(200,169,110,0.035) 2px, rgba(200,169,110,0.035) 4px),
     rgba(11,15,11,0.85);
   border-left-color: var(--tan);
+  border-right-color: var(--tan);
   color: var(--tan);
 }
 .title-buttons .btn-secondary::before {
-  background: linear-gradient(90deg, rgba(200,169,110,0.18), transparent 55%);
+  background: linear-gradient(90deg, transparent, rgba(200,169,110,0.2) 50%, transparent);
 }
 .title-buttons .btn-secondary:not(:disabled):hover {
   background:
@@ -224,6 +232,42 @@
       transparent 0px, transparent 2px,
       rgba(200,169,110,0.05) 2px, rgba(200,169,110,0.05) 4px),
     rgba(200,169,110,0.08);
+}
+
+/* ── NEW GAME — green shine ─── */
+@keyframes new-game-shine {
+  0%, 70%, 100% { left: -65%; opacity: 0; }
+  75%           { opacity: 1; }
+  96%           { left: 115%; opacity: 0; }
+}
+
+.title-buttons .btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -65%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(76,175,80,0.22), transparent);
+  animation: new-game-shine 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── CONTINUE CAREER — tan shine (enabled only) ─── */
+@keyframes continue-shine {
+  0%, 72%, 100% { left: -65%; opacity: 0; }
+  77%           { opacity: 1; }
+  96%           { left: 115%; opacity: 0; }
+}
+
+.title-buttons .btn-secondary:not(:disabled)::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -65%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(200,169,110,0.22), transparent);
+  animation: continue-shine 6s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* ── PRACTICE RIFLE RANGE — 3D press + scan sweep ─── */
@@ -235,6 +279,7 @@
 
 .title-buttons .btn-tertiary {
   border-left-color: var(--red);
+  border-right-color: var(--red);
   color: var(--red);
   background:
     repeating-linear-gradient(0deg,
@@ -246,7 +291,7 @@
   border-bottom: 1px solid rgba(0,0,0,0.5);
 }
 .title-buttons .btn-tertiary::before {
-  background: linear-gradient(90deg, rgba(229,57,53,0.2), transparent 55%);
+  background: linear-gradient(90deg, transparent, rgba(229,57,53,0.22) 50%, transparent);
 }
 .title-buttons .btn-tertiary::after {
   content: '';
@@ -284,6 +329,7 @@
 
 .title-buttons .btn-legend {
   border-left-color: var(--yellow);
+  border-right-color: var(--yellow);
   color: var(--yellow);
   background:
     repeating-linear-gradient(0deg,
@@ -293,7 +339,7 @@
   animation: ach-glow-pulse 3.5s ease-in-out infinite;
 }
 .title-buttons .btn-legend::before {
-  background: linear-gradient(90deg, rgba(240,180,41,0.18), transparent 55%);
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.2) 50%, transparent);
 }
 .title-buttons .btn-legend::after {
   content: '';
