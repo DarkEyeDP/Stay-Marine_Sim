@@ -883,66 +883,123 @@
 
 .game-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.4rem;
   margin-top: var(--gap);
   padding-top: var(--gap);
   border-top: 1px solid var(--border);
 }
 
-.footer-start-over {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: var(--font);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-@media (hover: hover) {
-  .footer-start-over:hover {
-    color: var(--red);
-  }
-}
-
+/* ── Shared thin ribbon base ── */
+.footer-start-over,
+.footer-coffee,
 .footer-feedback {
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  color: var(--muted);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
   text-decoration: none;
-  transition: color 0.15s;
+  cursor: pointer;
+  padding: 0.4rem 0.5rem;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(255,255,255,0.018) 2px, rgba(255,255,255,0.018) 4px),
+    rgba(11,15,11,0.85);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 5px rgba(0,0,0,0.7);
+  transition: filter 0.15s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.footer-start-over,
+.footer-coffee,
+.footer-feedback {
+  /* top highlight */
+}
+.footer-start-over::before,
+.footer-coffee::before,
+.footer-feedback::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 50%, transparent);
+  pointer-events: none;
 }
 
 @media (hover: hover) {
+  .footer-start-over:hover,
+  .footer-coffee:hover,
   .footer-feedback:hover {
-    color: var(--tan);
+    transform: translateY(-1px);
+    filter: brightness(1.15);
   }
 }
 
+/* Main Menu — red */
+.footer-start-over {
+  border-left: 2px solid var(--red);
+  border-right: 2px solid var(--red);
+  color: var(--red);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(229,57,53,0.06) 2px, rgba(229,57,53,0.06) 4px),
+    rgba(229,57,53,0.18);
+}
+.footer-start-over::before {
+  background: linear-gradient(90deg, transparent, rgba(229,57,53,0.2) 50%, transparent);
+}
+
+/* Buy Me Some Crayons — yellow */
 .footer-coffee {
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.15s;
+  border-left: 2px solid var(--yellow);
+  border-right: 2px solid var(--yellow);
+  color: var(--yellow);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(240,180,41,0.05) 2px, rgba(240,180,41,0.05) 4px),
+    rgba(240,180,41,0.18);
   animation: coffee-pulse 12s ease-in-out infinite;
 }
+.footer-coffee::before {
+  background: linear-gradient(90deg, transparent, rgba(240,180,41,0.2) 50%, transparent);
+}
 
 @media (hover: hover) {
-  .footer-coffee:hover {
-    color: var(--yellow);
-    animation: none;
-  }
+  .footer-coffee:hover { animation: none; }
+}
+
+/* Send Feedback — tan */
+.footer-feedback {
+  border-left: 2px solid var(--tan);
+  border-right: 2px solid var(--tan);
+  color: var(--tan);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(200,169,110,0.05) 2px, rgba(200,169,110,0.05) 4px),
+    rgba(200,169,110,0.18);
+}
+.footer-feedback::before {
+  background: linear-gradient(90deg, transparent, rgba(200,169,110,0.2) 50%, transparent);
 }
 
 @keyframes coffee-pulse {
-  0%, 70%   { color: var(--muted); }
-  75%       { color: var(--yellow); }
-  80%       { color: var(--muted); }
-  85%       { color: var(--yellow); }
-  90%, 100% { color: var(--muted); }
+  0%, 70%   { filter: brightness(1); }
+  75%       { filter: brightness(1.35); }
+  80%       { filter: brightness(1); }
+  85%       { filter: brightness(1.35); }
+  90%, 100% { filter: brightness(1); }
 }
