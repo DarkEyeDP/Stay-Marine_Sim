@@ -767,4 +767,108 @@
 
 .create-footer .btn {
   pointer-events: all;
+  flex: 1;
+  max-width: 260px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 0.85rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-left: 3px solid var(--border);
+  border-right: 3px solid var(--border);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(255,255,255,0.022) 2px, rgba(255,255,255,0.022) 4px),
+    rgba(11,15,11,0.85);
+  color: var(--muted);
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7);
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+.create-footer .btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 50%, transparent);
+  pointer-events: none;
+}
+
+.create-footer .btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.create-footer .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.create-footer .btn:disabled:active { transform: none; }
+
+/* BACK TO MAIN MENU — red */
+.create-footer .btn-tertiary {
+  border-left-color: var(--red);
+  border-right-color: var(--red);
+  color: var(--red);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(229,57,53,0.08) 2px, rgba(229,57,53,0.08) 4px),
+    rgba(229,57,53,0.22);
+}
+.create-footer .btn-tertiary::before {
+  background: linear-gradient(90deg, transparent, rgba(229,57,53,0.22) 50%, transparent);
+}
+.create-footer .btn-tertiary::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -65%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(229,57,53,0.2), transparent);
+  animation: rifle-scan 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.create-footer .btn-tertiary:not(:disabled):hover {
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(229,57,53,0.08) 2px, rgba(229,57,53,0.08) 4px),
+    rgba(229,57,53,0.13);
+}
+
+/* SHIP OUT TO MCRD — green (shine only when enabled) */
+.create-footer .btn-primary {
+  border-left-color: var(--green);
+  border-right-color: var(--green);
+  color: var(--green);
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(76,175,80,0.08) 2px, rgba(76,175,80,0.08) 4px),
+    rgba(76,175,80,0.22);
+}
+.create-footer .btn-primary::before {
+  background: linear-gradient(90deg, transparent, rgba(76,175,80,0.22) 50%, transparent);
+}
+.create-footer .btn-primary:not(:disabled)::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -65%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(76,175,80,0.22), transparent);
+  animation: new-game-shine 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.create-footer .btn-primary:not(:disabled):hover {
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 2px,
+      rgba(76,175,80,0.08) 2px, rgba(76,175,80,0.08) 4px),
+    rgba(76,175,80,0.16);
 }
