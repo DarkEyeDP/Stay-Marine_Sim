@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>7-Ton To The Gas Chamber</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/gas-chamber.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div class="hud">
+    <div class="hud-row">
+      <span class="hud-label">Marines</span>
+      <span class="hud-value" id="hud-marines">6 / 6</span>
+    </div>
+    <hr class="hud-divider">
+    <div class="hud-row hud-warning" id="hud-warning"></div>
+    <div class="hud-actions">
+      <button id="hud-restart-button" class="hud-button" type="button">↺ Restart</button>
+    </div>
+  </div>
+
+  <div class="mobile-banner"><strong>◀ reverse</strong> &nbsp;|&nbsp; <strong>▼ brake</strong> &nbsp;|&nbsp; <strong>accelerate ▶</strong></div>
+
+  <!-- Briefing screen -->
+  <div class="overlay" id="menu-screen">
+    <div class="panel">
+      <p class="kicker">Motor-T — Convoy Challenge</p>
+      <h1 class="title">7-Ton To The Gas Chamber</h1>
+      <p class="lead">
+        Drive a loaded Marine Corps 7-ton through rocks, step-ups, a rolling boulder, barrel obstacles,
+        and a hanging suspension bridge. Reach the gas chamber parking lot with your Marines still aboard.
+      </p>
+      <div class="feature-grid">
+        <div class="feature">
+          <strong>Accelerate</strong>
+          <span>→ Right Arrow (desktop)<br>Hold right side of screen</span>
+        </div>
+        <div class="feature">
+          <strong>Brake / Skid</strong>
+          <span>↓ Down Arrow (desktop)<br>Hold left side of screen<br>Fast braking causes a skid</span>
+        </div>
+        <div class="feature">
+          <strong>Reverse</strong>
+          <span>← Left Arrow (desktop only)</span>
+        </div>
+        <div class="feature">
+          <strong>Mission</strong>
+          <span>Cross the bridge and ease into the marked parking zone upright with at least 4 Marines.</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="start-button">Commence Convoy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div class="overlay hidden" id="result-screen">
+    <div class="panel">
+      <p class="kicker" id="result-kicker">After Action Report</p>
+      <h2 class="title" id="result-title">Mission Complete</h2>
+      <p class="lead" id="result-text"></p>
+      <div class="aar-breakdown" id="result-summary"></div>
+      <div class="actions">
+        <button id="restart-button">Run Again</button>
+        <button class="secondary" id="menu-button">Back To The Unit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
+  <script src="js/gas-chamber/world.js"></script>
+  <script src="js/gas-chamber/entities.js"></script>
+  <script src="js/gas-chamber/render.js"></script>
+  <script src="js/gas-chamber/main.js"></script>
+</body>
+</html>

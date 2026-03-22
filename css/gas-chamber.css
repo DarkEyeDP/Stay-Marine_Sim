@@ -1,0 +1,186 @@
+:root {
+  --bg:        #090d0a;
+  --green:     #4a8741;
+  --green-dim: rgba(74, 135, 65, 0.14);
+  --border:    rgba(74, 135, 65, 0.3);
+  --text:      #d8e4d0;
+  --muted:     #6a7c62;
+  --accent:    #c4a44a;
+  --danger:    #cc3333;
+  --font:      'Share Tech Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: var(--bg); color: var(--text); font-family: var(--font);
+}
+
+body { position: relative; touch-action: none; }
+#game { display: block; width: 100vw; height: 100vh; }
+
+/* ── HUD ── */
+.hud {
+  position: fixed; inset: 0 auto auto 0;
+  width: min(310px, calc(100vw - 24px));
+  margin: 12px; padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: rgba(9, 13, 10, 0.9);
+  border-radius: 3px; z-index: 3; pointer-events: none;
+}
+
+.hud-row {
+  display: flex; justify-content: space-between;
+  align-items: baseline; gap: 10px; margin-bottom: 5px;
+}
+.hud-row:last-child { margin-bottom: 0; }
+
+.hud-label {
+  font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+.hud-value { font-size: 0.82rem; color: var(--text); letter-spacing: 0.04em; }
+.hud-value.good { color: var(--green); }
+.hud-value.warn { color: var(--accent); }
+.hud-value.bad  { color: var(--danger); }
+
+.hud-divider { border: none; border-top: 1px solid var(--border); margin: 5px 0; }
+
+.hud-warning {
+  min-height: 1rem; font-size: 0.68rem;
+  letter-spacing: 0.1em; color: var(--danger);
+  text-transform: uppercase;
+}
+
+.hud-actions { margin-top: 8px; display: flex; gap: 8px; pointer-events: auto; }
+
+.hud-button {
+  padding: 5px 10px; background: transparent;
+  color: var(--muted); border: 1px solid var(--border);
+  border-radius: 2px; font-family: var(--font);
+  font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.hud-button:hover { color: var(--text); border-color: var(--green); }
+
+/* ── Overlays ── */
+.overlay {
+  position: fixed; inset: 0; display: flex;
+  align-items: center; justify-content: center; padding: 20px;
+  background: radial-gradient(ellipse at top, rgba(74,135,65,0.06), transparent 55%),
+              rgba(9, 13, 10, 0.84);
+  z-index: 4;
+}
+.overlay.hidden { display: none; }
+
+.panel {
+  width: min(640px, 100%); padding: 24px 28px;
+  background: rgba(9, 13, 10, 0.97);
+  border: 1px solid var(--border); border-radius: 3px;
+  box-shadow: 0 0 48px rgba(74, 135, 65, 0.08);
+}
+
+h1, h2, p { margin: 0; }
+
+.kicker {
+  margin-bottom: 6px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--muted); font-size: 0.68rem;
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2.6rem);
+  line-height: 1.05; margin-bottom: 12px;
+  color: var(--text); letter-spacing: 0.04em;
+}
+
+.lead {
+  color: var(--muted); font-size: 0.82rem;
+  line-height: 1.75; margin-bottom: 14px;
+}
+
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px; margin: 14px 0 18px;
+}
+
+.feature {
+  padding: 10px 12px;
+  background: rgba(74, 135, 65, 0.05);
+  border: 1px solid var(--border); border-radius: 2px;
+}
+.feature strong {
+  display: block; margin-bottom: 4px; color: var(--green);
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em;
+}
+.feature span { color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+button {
+  appearance: none; border: 1px solid var(--green); border-radius: 2px;
+  padding: 10px 20px; background: var(--green-dim); color: var(--text);
+  font-family: var(--font); font-size: 0.78rem;
+  letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+button:hover { background: rgba(74, 135, 65, 0.28); border-color: #6ab050; }
+
+button.secondary {
+  background: transparent; border-color: var(--border); color: var(--muted);
+}
+button.secondary:hover {
+  background: rgba(74, 135, 65, 0.08);
+  border-color: var(--green); color: var(--text);
+}
+
+.summary {
+  margin: 14px 0 0; padding: 12px 14px;
+  background: rgba(74, 135, 65, 0.05);
+  border: 1px solid var(--border); border-radius: 2px;
+  color: var(--muted); font-size: 0.8rem; line-height: 2;
+}
+.summary strong { color: var(--text); }
+
+/* ── Score breakdown animation ── */
+.aar-breakdown {
+  margin: 14px 0 0; display: flex; flex-direction: column; gap: 0;
+}
+.aar-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 7px 14px; border: 1px solid transparent;
+  opacity: 0; transform: translateX(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 0.78rem; letter-spacing: 0.06em;
+}
+.aar-row.visible { opacity: 1; transform: translateX(0); }
+.aar-row-label { color: var(--muted); text-transform: uppercase; }
+.aar-row-val   { font-size: 0.88rem; letter-spacing: 0.04em; }
+.aar-row.positive { background: rgba(74,135,65,0.07); border-color: rgba(74,135,65,0.2); }
+.aar-row.negative { background: rgba(180,60,40,0.07); border-color: rgba(180,60,40,0.2); }
+.aar-row.positive .aar-row-val { color: var(--green); }
+.aar-row.negative .aar-row-val { color: var(--danger); }
+.aar-row.total    { background: rgba(196,164,74,0.08); border-color: rgba(196,164,74,0.35); margin-top: 4px; }
+.aar-row.total .aar-row-label { color: var(--accent); font-size: 0.82rem; }
+.aar-row.total .aar-row-val   { color: var(--accent); font-size: 1.05rem; font-weight: bold; }
+@keyframes aar-tick { from { opacity: 0.5 } to { opacity: 1 } }
+.aar-counting { animation: aar-tick 0.07s steps(1) infinite; }
+
+.mobile-banner {
+  position: fixed; left: 50%; bottom: 14px;
+  transform: translateX(-50%); padding: 7px 16px;
+  background: rgba(9, 13, 10, 0.84); border: 1px solid var(--border);
+  border-radius: 2px; color: var(--muted); font-family: var(--font);
+  font-size: 0.68rem; letter-spacing: 0.06em; z-index: 2;
+  pointer-events: none; white-space: nowrap;
+}
+.mobile-banner strong { color: var(--text); }
+
+@media (max-width: 700px) {
+  .hud { width: calc(100vw - 20px); margin: 10px; padding: 8px 12px; }
+  .panel { padding: 16px 18px; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .mobile-banner { width: calc(100vw - 24px); text-align: center; white-space: normal; line-height: 1.5; }
+}

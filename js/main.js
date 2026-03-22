@@ -343,7 +343,13 @@ const Main = {
       return;
     }
 
-    // 2. Check for forced EAS (contract already expired)
+    // 2. Gas chamber convoy — fires once per contract, TIS >= 7, not deployed
+    if (!m.gasChamberDone && m.timeInService >= 7 && !m.isDeployed) {
+      Main.startGasChamberMiniGame(() => Main._checkEASAndRun());
+      return;
+    }
+
+    // 3. Check for forced EAS (contract already expired)
     if (Career.shouldTriggerEAS(m)) {
       // If retirement papers were already submitted and the marine hit 20 years, retire automatically
       if (m.retirementSubmitted && m.timeInService >= 240) {
@@ -381,6 +387,7 @@ const Main = {
         if (decision === 'reenlist') {
           const srb = Career.reenlist(m, data.years, data.srb);
           State.game.rifleQualCompleted = false;
+          m.gasChamberDone = false;
           m.ordersDeclined = false;
           State.game.log.unshift({
             date: Engine._dateStr(),
@@ -707,6 +714,56 @@ const Main = {
       `,
       choices,
     });
+  },
+
+  startGasChamberMiniGame(onComplete) {
+    const m = State.game.marine;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'gas-chamber-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#090d0a;display:flex;flex-direction:column;';
+
+    const iframe = document.createElement('iframe');
+    iframe.src = 'seven-ton-gas-chamber.html';
+    iframe.style.cssText = 'width:100%;flex:1;border:none;';
+    iframe.setAttribute('allow', 'autoplay');
+    overlay.appendChild(iframe);
+    document.body.appendChild(overlay);
+
+    function applyResult(data) {
+      const { win, marineCount } = data;
+      let effects;
+      if (!win)                                        effects = { morale: -8,  stress:  10, disciplineRisk:  8 };
+      else if (marineCount >= data.totalMarines)     effects = { morale:  6,  profConduct: 3, mosProficiency: 2 };
+      else if (marineCount >= data.totalMarines - 1) effects = { morale:  3,  profConduct: 1 };
+      else if (marineCount >= 1)                       effects = { morale: -2,  disciplineRisk: 5, stress: 3 };
+      else                                             effects = { morale: -6,  disciplineRisk: 12, stress: 8 };
+
+      Character.applyEffects(m, effects);
+      m.gasChamberDone = true;
+
+      const label = win
+        ? `Gas Chamber run: ${marineCount}/${data.totalMarines} Marines delivered. Score: ${data.score.toLocaleString()}`
+        : 'Gas Chamber run: truck flipped. Convoy aborted.';
+      if (State.game.log) State.game.log.unshift({ text: label, major: false });
+      State.save();
+    }
+
+    function handleMessage(e) {
+      if (!e.data || (e.data.type !== 'gasChamberResult' && e.data.type !== 'gasChamberClosed')) return;
+      window.removeEventListener('message', handleMessage);
+      if (e.data.type === 'gasChamberResult') {
+        applyResult(e.data);
+        // Give player 3s to read the AAR before returning to main game
+        setTimeout(() => { document.body.removeChild(overlay); onComplete(); }, 3000);
+      } else {
+        // Player hit "Back To Briefing" without finishing — count as a failed run
+        applyResult({ win: false, marineCount: 0, totalMarines: 6, score: 0 });
+        document.body.removeChild(overlay);
+        onComplete();
+      }
+    }
+    window.addEventListener('message', handleMessage);
   },
 
   triggerRetirement() {
