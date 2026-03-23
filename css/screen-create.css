@@ -326,6 +326,14 @@
   box-shadow: 0 1px 0 rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.25) !important;
 }
 
+@media (max-width: 767px) {
+  .title-buttons #btn-gas-chamber-practice {
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    transition: border-color 1.2s ease-in-out, background 1.2s ease-in-out;
+  }
+}
+
 @keyframes convoy-scan {
   0%, 55%, 100% { left: -55%; opacity: 0; }
   62%           { opacity: 1; }
@@ -335,6 +343,7 @@
   animation: convoy-scan 6.2s ease-in-out infinite;
   animation-delay: -2.8s;
 }
+
 
 /* ── ACHIEVEMENTS — shimmer + glow pulse ─── */
 @keyframes ach-shimmer {

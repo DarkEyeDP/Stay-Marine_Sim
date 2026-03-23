@@ -171,7 +171,7 @@ button.secondary:hover {
   color: var(--muted); background: rgba(9, 13, 10, 0.92);
   border-top: 1px solid var(--border);
   transition: background 0.08s, color 0.08s, border-color 0.08s;
-  cursor: pointer; touch-action: none;
+  cursor: pointer;
 }
 .ctrl-btn + .ctrl-btn { border-left: 1px solid var(--border); }
 .ctrl-btn.active {
@@ -187,3 +187,41 @@ button.secondary:hover {
   #game { height: calc(100vh - 63px); }
 }
 
+/* ── Landscape prompt ── */
+#rotate-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  align-items: center; justify-content: center; flex-direction: column;
+  text-align: center; padding: 32px;
+}
+#rotate-screen.visible { display: flex; }
+
+.rotate-icon {
+  font-size: 4rem; line-height: 1;
+  margin-bottom: 20px;
+  animation: rotate-hint 1.6s ease-in-out infinite;
+}
+@keyframes rotate-hint {
+  0%   { transform: rotate(0deg); }
+  40%  { transform: rotate(90deg); }
+  60%  { transform: rotate(90deg); }
+  100% { transform: rotate(90deg) scale(1.05); }
+}
+.rotate-title {
+  font-size: 1.1rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text);
+  margin-bottom: 8px;
+}
+.rotate-sub {
+  font-size: 0.75rem; color: var(--muted);
+  letter-spacing: 0.08em; margin-bottom: 28px;
+}
+.rotate-skip {
+  font-size: 0.65rem; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid var(--border); border-radius: 2px;
+  padding: 8px 18px; background: transparent;
+  cursor: pointer; font-family: var(--font);
+}
+.rotate-skip:hover { color: var(--text); border-color: var(--green); }

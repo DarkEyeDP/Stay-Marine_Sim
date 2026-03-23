@@ -50,9 +50,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.getElementById('btn-gas-chamber-practice').addEventListener('click', () => {
-    Main.startGasChamberMiniGame(() => UI.showScreen('screen-title'));
-  });
+  const gasChamberBtn = document.getElementById('btn-gas-chamber-practice');
+  if (window.innerWidth < 768) {
+    gasChamberBtn.innerHTML = '<span style="color:#e84040">C</span><span style="color:#f07828">R</span><span style="color:#f0d020">A</span><span style="color:#48c040">Y</span><span style="color:#3898e8">O</span><span style="color:#9848d8">N</span><span style="color:#e840a0">S</span>';
+    gasChamberBtn.addEventListener('click', () => {
+      window.open('https://buymeacoffee.com/staymarinesim', '_blank');
+    });
+    // Cycle button border/background color once per shimmer pass (6.2s)
+    const _crayonPalette = [
+      { border: '#e84040', bg: 'rgba(232,64,64,0.12)'   },
+      { border: '#f07828', bg: 'rgba(240,120,40,0.12)'  },
+      { border: '#f0d020', bg: 'rgba(240,208,32,0.12)'  },
+      { border: '#48c040', bg: 'rgba(72,192,64,0.12)'   },
+      { border: '#3898e8', bg: 'rgba(56,152,232,0.12)'  },
+      { border: '#9848d8', bg: 'rgba(152,72,216,0.12)'  },
+      { border: '#e840a0', bg: 'rgba(232,64,160,0.12)'  },
+    ];
+    let _crayonIdx = 0;
+    setInterval(() => {
+      _crayonIdx = (_crayonIdx + 1) % _crayonPalette.length;
+      const c = _crayonPalette[_crayonIdx];
+      gasChamberBtn.style.borderLeftColor   = c.border;
+      gasChamberBtn.style.borderRightColor  = c.border;
+      gasChamberBtn.style.borderTopColor    = 'transparent';
+      gasChamberBtn.style.borderBottomColor = 'transparent';
+      gasChamberBtn.style.background        = c.bg;
+    }, 6200);
+  } else {
+    gasChamberBtn.addEventListener('click', () => {
+      Main.startGasChamberMiniGame(() => UI.showScreen('screen-title'));
+    });
+  }
 
   document.getElementById('btn-achievements').addEventListener('click', () => {
     _titleExit(() => {
@@ -348,10 +376,11 @@ const Main = {
     }
 
     // 2. Gas chamber convoy — fires once per contract, TIS >= 7, not deployed
-    if (!m.gasChamberDone && m.timeInService >= 7 && !m.isDeployed) {
+    if (!m.gasChamberDone && m.timeInService >= 7 && !m.isDeployed && window.innerWidth >= 768) {
       Main.startGasChamberMiniGame(() => Main._checkEASAndRun());
       return;
     }
+    if (!m.gasChamberDone) m.gasChamberDone = true; // skip silently on mobile
 
     // 3. Check for forced EAS (contract already expired)
     if (Career.shouldTriggerEAS(m)) {

@@ -1,3 +1,36 @@
+/* ── Landscape orientation prompt ───────────────── */
+(function () {
+  const screen = document.getElementById('rotate-screen');
+  const skip   = document.getElementById('rotate-skip');
+  let dismissed = false;
+  let autoTimer = null;
+
+  function isPortraitMobile() {
+    return window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+  }
+
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimeout(autoTimer);
+    screen.classList.remove('visible');
+  }
+
+  function check() {
+    if (dismissed) return;
+    if (isPortraitMobile()) {
+      screen.classList.add('visible');
+      autoTimer = setTimeout(dismiss, 5000);
+    } else {
+      dismiss();
+    }
+  }
+
+  skip.addEventListener('click', dismiss);
+  window.addEventListener('resize', () => { if (!dismissed && !isPortraitMobile()) dismiss(); });
+  check();
+})();
+
 /* ── Matter.js destructure ──────────────────────── */
 const { Engine, World, Bodies, Body, Composites, Constraint, Vector, Events } = Matter;
 
@@ -96,10 +129,9 @@ function gameLoop(now) {
   const deltaMs = Math.min(33, now - state.lastTime || 16.67);
   state.lastTime  = now;
   state.elapsedMs = now - state.startTime;
-  const dt = deltaMs / 1000;
-  updateControls(dt);
+  updateControls();
   Engine.update(state.engine, deltaMs);
-  updateGameState(dt);
+  updateGameState(deltaMs / 1000);
   render();
   if (!state.gameOver) state.rafId = requestAnimationFrame(gameLoop);
 }
@@ -113,22 +145,21 @@ function gameLoop(now) {
      Right half of screen = accelerate
      Left half of screen  = brake
 ─────────────────────────────────────────────────── */
-function updateControls(dt) {
+function updateControls() {
   if (!state.truck || state.gameOver) return;
 
-  const s            = Math.max(1.0, dt * 60);     // scale up for slow frames only; 120Hz stays at 1.0
-  const maxFrontSpin = 0.92, maxRearSpin = 0.80;
-  const frontGrip    = 0.022 * s, rearGrip = 0.020 * s;
-  const coastDrag    = Math.pow(0.988, s);
+  const maxFrontSpin = 0.92, maxRearSpin = 0.80;  // top speed unchanged
+  const frontGrip    = 0.022, rearGrip   = 0.020; // slow wind-up (~3s to full speed)
+  const coastDrag    = 0.988;                      // heavier rolling resistance
   const fwdSpeed     = state.truck.body.velocity.x;
   const speed        = Math.abs(fwdSpeed);
   const rearComp     = state.truck.rearWheel.position.y  - state.truck.body.position.y;
   const frontComp    = state.truck.frontWheel.position.y - state.truck.body.position.y;
   const grounded     = rearComp > 18 || frontComp > 18;
+  const dt           = 1 / 60;
 
   state.stunt.preloadTimer      = Math.max(0, state.stunt.preloadTimer      - dt);
   state.stunt.wheelieBoostTimer = Math.max(0, state.stunt.wheelieBoostTimer - dt);
-
 
   // ── BRAKE (Down arrow / mobile left half) ──────────────────
   if (state.input.brake && !state.input.accelerate) {
@@ -387,18 +418,12 @@ window.addEventListener('pointercancel', clearPointer, { passive: true });
   { id: 'ctrl-accel',   flag: 'btnAccelerate' },
 ].forEach(({ id, flag }) => {
   const el = document.getElementById(id);
-  function activate()   { state.input[flag] = true;  el.classList.add('active');    updateTouchFromPointers(); }
-  function deactivate() { state.input[flag] = false; el.classList.remove('active'); updateTouchFromPointers(); }
-
-  // Touch events — most reliable for held buttons on iOS/Android
-  el.addEventListener('touchstart',  e => { e.preventDefault(); activate(); },   { passive: false });
-  el.addEventListener('touchend',    () => deactivate(), { passive: true });
-  el.addEventListener('touchcancel', () => deactivate(), { passive: true });
-
-  // Mouse events for desktop
-  el.addEventListener('mousedown',  e => { activate(); });
-  el.addEventListener('mouseup',    () => deactivate());
-  el.addEventListener('mouseleave', () => deactivate());
+  function press(e)   { e.preventDefault(); state.input[flag] = true;  el.classList.add('active');    updateTouchFromPointers(); }
+  function release(e) {                      state.input[flag] = false; el.classList.remove('active'); updateTouchFromPointers(); }
+  el.addEventListener('pointerdown',   press,   { passive: false });
+  el.addEventListener('pointerup',     release, { passive: true });
+  el.addEventListener('pointercancel', release, { passive: true });
+  el.addEventListener('pointerleave',  release, { passive: true });
 });
 
 document.getElementById('start-button').addEventListener('click', initGame);
