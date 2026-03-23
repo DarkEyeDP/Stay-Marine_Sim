@@ -58,7 +58,7 @@ window.addEventListener('resize', () => {
 /* ── Game state ─────────────────────────────────── */
 let state = {
   engine: null, world: null, truck: null,
-  marines: [], dust: [], obstacles: [],
+  marines: [], dust: [], flames: [], obstacles: [],
   terrainBodies: [], terrainSurfaces: [],
   bridgePlanks: [], bridgeConstraints: [],
   camera: { x: 0, y: 0 },
@@ -72,9 +72,11 @@ let state = {
     btnAccelerate: false,
     btnBrake:      false,
     btnReverse:    false,
+    flamethrower:  false,
     pointers: new Map()
   },
   stunt: { preloadTimer: 0, wheelieBoostTimer: 0, lastDrive: 0 },
+  headlights:      false,
   isSkidding:      false,
   started:         false,
   gameOver:        false,
@@ -239,6 +241,8 @@ function updateGameState(dt) {
   updateMarines(dt);
   updateWaitMarine(dt);
   updateDust(dt);
+  if (state.input.flamethrower && !state.gameOver) emitFlames();
+  updateFlames(dt);
   updateIdleRumble(dt);
   updateHud();
   checkFailure(dt);
@@ -262,6 +266,14 @@ function updateHud() {
 ─────────────────────────────────────────────────── */
 function checkFailure(dt) {
   if (state.gameOver) return;
+
+  // Drove off either end of the map
+  const tx = state.truck.body.position.x;
+  if (tx < -200)
+    { endGame(false, 'The 7-ton reversed off the start of the route. Convoy aborted.'); return; }
+  if (tx > WORLD.levelLength + 200)
+    { endGame(false, 'The 7-ton drove off the end of the route. Convoy aborted.'); return; }
+
   if (Math.abs(state.truck.body.angle) > Math.PI / 2) state.flippedTimer += dt;
   else state.flippedTimer = Math.max(0, state.flippedTimer - dt * 1.5);
   if (state.flippedTimer > 0.9) {
@@ -373,7 +385,9 @@ function keyHandler(e, pressed) {
   if (e.key === 'ArrowRight') { state.input.keyboardAccelerate = pressed; updateTouchFromPointers(); e.preventDefault(); }
   else if (e.key === 'ArrowDown') { state.input.keyboardBrake   = pressed; updateTouchFromPointers(); e.preventDefault(); }
   else if (e.key === 'ArrowLeft') { state.input.keyboardReverse = pressed; updateTouchFromPointers(); e.preventDefault(); }
+  else if (e.key === 'ArrowUp')             { state.input.flamethrower = pressed; e.preventDefault(); }
   else if (e.key === 'r' || e.key === 'R') { if (pressed && state.started) initGame(); }
+  else if (e.key === ' ') { if (pressed) state.headlights = !state.headlights; e.preventDefault(); }
 }
 
 function pointerSide(clientX) { return clientX > window.innerWidth * 0.5 ? 'right' : 'left'; }

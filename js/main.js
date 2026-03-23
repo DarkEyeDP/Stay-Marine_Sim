@@ -50,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  document.getElementById('btn-gas-chamber-practice').addEventListener('click', () => {
+    Main.startGasChamberMiniGame(() => UI.showScreen('screen-title'));
+  });
+
   document.getElementById('btn-achievements').addEventListener('click', () => {
     _titleExit(() => {
       UI.showAchievementsScreen('screen-title');
@@ -717,7 +721,7 @@ const Main = {
   },
 
   startGasChamberMiniGame(onComplete) {
-    const m = State.game.marine;
+    const m = State.game && State.game.marine;
 
     const overlay = document.createElement('div');
     overlay.id = 'gas-chamber-overlay';
@@ -731,6 +735,7 @@ const Main = {
     document.body.appendChild(overlay);
 
     function applyResult(data) {
+      if (!m) return; // practice mode — no active career to affect
       const { win, marineCount } = data;
       let effects;
       if (!win)                                        effects = { morale: -8,  stress:  10, disciplineRisk:  8 };
@@ -751,13 +756,12 @@ const Main = {
 
     function handleMessage(e) {
       if (!e.data || (e.data.type !== 'gasChamberResult' && e.data.type !== 'gasChamberClosed')) return;
-      window.removeEventListener('message', handleMessage);
       if (e.data.type === 'gasChamberResult') {
         applyResult(e.data);
-        // Give player 3s to read the AAR before returning to main game
-        setTimeout(() => { document.body.removeChild(overlay); onComplete(); }, 3000);
+        // Stay on AAR until player clicks Back To Main Menu
       } else {
-        // Player hit "Back To Briefing" without finishing — count as a failed run
+        // Player clicked Back To Main Menu
+        window.removeEventListener('message', handleMessage);
         applyResult({ win: false, marineCount: 0, totalMarines: 6, score: 0 });
         document.body.removeChild(overlay);
         onComplete();

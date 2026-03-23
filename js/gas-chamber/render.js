@@ -15,7 +15,9 @@ function render() {
   renderObstacles();
   renderDust();
   renderMarines();
+  renderHeadlights();
   renderTruck();
+  renderFlames();
   renderWaitMarine();
   renderParkTimer();
   ctx.restore();
@@ -431,6 +433,71 @@ function renderDust() {
 /* ── Truck renderer ─────────────────────────────────
    Chassis drawn at physics body position/angle; wheels drawn separately.
 ─────────────────────────────────────────────────── */
+function renderFlames() {
+  if (!state.flames.length) return;
+  state.flames.forEach(p => {
+    const pt = worldToScreen({ x: p.x, y: p.y });
+    // Colour shifts white→yellow→orange→red as life drops
+    let col;
+    if      (p.life > 0.75) col = `rgba(255,240,180,${p.life * 0.9})`;
+    else if (p.life > 0.45) col = `rgba(255,140,20,${p.life * 0.85})`;
+    else if (p.life > 0.2)  col = `rgba(220,50,10,${p.life * 0.8})`;
+    else                     col = `rgba(80,20,5,${p.life * 0.6})`;
+
+    const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, p.size);
+    grad.addColorStop(0, col);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  });
+}
+
+function renderHeadlights() {
+  if (!state.headlights || !state.truck || !state.truck.body) return;
+
+  const angle = state.truck.body.angle;
+  const p     = worldToScreen(state.truck.body.position);
+  const cos   = Math.cos(angle), sin = Math.sin(angle);
+
+  // Headlight lens center in local truck space (front grille, top light)
+  const lx = 116, ly = -30;
+  const hl = {
+    x: p.x + lx * cos - ly * sin,
+    y: p.y + lx * sin + ly * cos
+  };
+
+  ctx.save();
+
+  // Beam cone (wide, long, soft-edged)
+  const beamLen       = 320;
+  const coneHalfAngle = 0.36;
+  const beamGrad = ctx.createRadialGradient(hl.x, hl.y, 0, hl.x, hl.y, beamLen);
+  beamGrad.addColorStop(0,    'rgba(255,255,200,0.18)');
+  beamGrad.addColorStop(0.3,  'rgba(230,220,160,0.09)');
+  beamGrad.addColorStop(1,    'rgba(200,180,80,0)');
+  ctx.beginPath();
+  ctx.moveTo(hl.x, hl.y);
+  ctx.arc(hl.x, hl.y, beamLen, angle - coneHalfAngle, angle + coneHalfAngle);
+  ctx.closePath();
+  ctx.fillStyle = beamGrad;
+  ctx.fill();
+
+  // Lens glow
+  const lensGrad = ctx.createRadialGradient(hl.x, hl.y, 0, hl.x, hl.y, 16);
+  lensGrad.addColorStop(0,   'rgba(255,255,220,0.95)');
+  lensGrad.addColorStop(0.4, 'rgba(220,210,140,0.55)');
+  lensGrad.addColorStop(1,   'rgba(200,180,80,0)');
+  ctx.fillStyle = lensGrad;
+  ctx.beginPath();
+  ctx.arc(hl.x, hl.y, 16, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
 function renderTruck() {
   const p = worldToScreen(state.truck.body.position);
 

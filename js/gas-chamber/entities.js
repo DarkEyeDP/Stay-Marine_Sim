@@ -399,3 +399,48 @@ function updateDust(dt) {
     return p.life > 0;
   });
 }
+
+/* ── Flamethrower ───────────────────────────────── */
+function emitFlames() {
+  if (!state.truck || !state.truck.body) return;
+  const angle = state.truck.body.angle;
+  const pos   = state.truck.body.position;
+  const cos   = Math.cos(angle), sin = Math.sin(angle);
+
+  // Winch position in local truck space
+  const lx = 132, ly = -12;
+  const wx = pos.x + lx * cos - ly * sin;
+  const wy = pos.y + lx * sin + ly * cos;
+
+  // Emit 4-6 particles per frame
+  const count = 4 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < count; i++) {
+    const spread  = (Math.random() - 0.5) * 0.55;
+    const speed   = 3.5 + Math.random() * 4;
+    const fa      = angle + spread;
+    const phase   = Math.random(); // 0=core, 1=tip
+    state.flames.push({
+      x:     wx + (Math.random() - 0.5) * 4,
+      y:     wy + (Math.random() - 0.5) * 4,
+      vx:    Math.cos(fa) * speed,
+      vy:    Math.sin(fa) * speed - 0.4,
+      life:  1.0,
+      decay: 1.8 + Math.random() * 1.4,
+      size:  5 + Math.random() * 7,
+      phase,
+    });
+  }
+}
+
+function updateFlames(dt) {
+  state.flames = state.flames.filter(p => {
+    p.life -= p.decay * dt;
+    p.x   += p.vx;
+    p.y   += p.vy;
+    p.vx  *= 0.93;
+    p.vy  *= 0.93;
+    p.vy  -= 0.06;          // slight upward drift as heat rises
+    p.size *= 0.955;
+    return p.life > 0;
+  });
+}
