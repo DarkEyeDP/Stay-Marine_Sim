@@ -59,11 +59,13 @@ body { position: relative; touch-action: none; }
 /* ── Overlays ── */
 .overlay {
   position: fixed; inset: 0; display: flex;
-  align-items: center; justify-content: center; padding: 20px;
+  align-items: flex-start; justify-content: center;
+  padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch;
   background: radial-gradient(ellipse at top, rgba(74,135,65,0.06), transparent 55%),
               rgba(9, 13, 10, 0.84);
   z-index: 4;
 }
+.overlay .panel { margin: auto 0; }
 .overlay.hidden { display: none; }
 
 .panel {
