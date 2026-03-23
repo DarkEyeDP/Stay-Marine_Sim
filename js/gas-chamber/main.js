@@ -1,3 +1,36 @@
+/* ── Landscape orientation prompt ───────────────── */
+(function () {
+  const screen = document.getElementById('rotate-screen');
+  const skip   = document.getElementById('rotate-skip');
+  let dismissed = false;
+  let autoTimer = null;
+
+  function isPortraitMobile() {
+    return window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+  }
+
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimeout(autoTimer);
+    screen.classList.remove('visible');
+  }
+
+  function check() {
+    if (dismissed) return;
+    if (isPortraitMobile()) {
+      screen.classList.add('visible');
+      autoTimer = setTimeout(dismiss, 5000);
+    } else {
+      dismiss();
+    }
+  }
+
+  skip.addEventListener('click', dismiss);
+  window.addEventListener('resize', () => { if (!dismissed && !isPortraitMobile()) dismiss(); });
+  check();
+})();
+
 /* ── Matter.js destructure ──────────────────────── */
 const { Engine, World, Bodies, Body, Composites, Constraint, Vector, Events } = Matter;
 
@@ -31,11 +64,14 @@ let state = {
   camera: { x: 0, y: 0 },
   input: {
     accelerate: false,
-    brake:      false,    // Down arrow / mobile left half
-    reverse:    false,    // Left arrow only
+    brake:      false,
+    reverse:    false,
     keyboardAccelerate: false,
     keyboardBrake:      false,
     keyboardReverse:    false,
+    btnAccelerate: false,
+    btnBrake:      false,
+    btnReverse:    false,
     pointers: new Map()
   },
   stunt: { preloadTimer: 0, wheelieBoostTimer: 0, lastDrive: 0 },
@@ -213,7 +249,7 @@ function updateGameState(dt) {
 function updateHud() {
   const n = state.marineCount;
   hudMarines.textContent = n + ' / ' + WORLD.totalMarines;
-  hudMarines.className   = 'hud-value ' + (n >= WORLD.totalMarines ? 'good' : n > 0 ? 'warn' : 'bad');
+  hudMarines.className   = 'hud-marines ' + (n >= WORLD.totalMarines ? 'good' : n > 0 ? 'warn' : 'bad');
 
   const tiltDeg = Math.abs(state.truck.body.angle) * (180 / Math.PI);
   const skidMsg = state.isSkidding ? ' — SKIDDING' : '';
@@ -328,10 +364,9 @@ function pointerDrive(side) {
 }
 
 function updateTouchFromPointers() {
-  state.input.accelerate = state.input.keyboardAccelerate || pointerDrive('right');
-  // Mobile left half = brake (same heavy-braking behavior as Down arrow)
-  state.input.brake      = state.input.keyboardBrake      || pointerDrive('left');
-  state.input.reverse    = state.input.keyboardReverse;
+  state.input.accelerate = state.input.keyboardAccelerate || state.input.btnAccelerate || pointerDrive('right');
+  state.input.brake      = state.input.keyboardBrake      || state.input.btnBrake      || pointerDrive('left');
+  state.input.reverse    = state.input.keyboardReverse    || state.input.btnReverse;
 }
 
 function keyHandler(e, pressed) {
@@ -347,7 +382,7 @@ document.addEventListener('keydown', e => keyHandler(e, true),  { passive: false
 document.addEventListener('keyup',   e => keyHandler(e, false), { passive: false });
 
 window.addEventListener('pointerdown', e => {
-  if (e.target.closest('button')) return;
+  if (e.target.closest('button, [data-ctrl]')) return;
   state.input.pointers.set(e.pointerId, pointerSide(e.clientX));
   updateTouchFromPointers(); e.preventDefault();
 }, { passive: false });
@@ -361,6 +396,21 @@ window.addEventListener('pointermove', e => {
 function clearPointer(e) { if (state.input.pointers.delete(e.pointerId)) updateTouchFromPointers(); }
 window.addEventListener('pointerup',     clearPointer, { passive: true });
 window.addEventListener('pointercancel', clearPointer, { passive: true });
+
+/* ── Mobile control buttons ─────────────────────── */
+[
+  { id: 'ctrl-reverse', flag: 'btnReverse'    },
+  { id: 'ctrl-brake',   flag: 'btnBrake'      },
+  { id: 'ctrl-accel',   flag: 'btnAccelerate' },
+].forEach(({ id, flag }) => {
+  const el = document.getElementById(id);
+  function press(e)   { e.preventDefault(); state.input[flag] = true;  el.classList.add('active');    updateTouchFromPointers(); }
+  function release(e) {                      state.input[flag] = false; el.classList.remove('active'); updateTouchFromPointers(); }
+  el.addEventListener('pointerdown',   press,   { passive: false });
+  el.addEventListener('pointerup',     release, { passive: true });
+  el.addEventListener('pointercancel', release, { passive: true });
+  el.addEventListener('pointerleave',  release, { passive: true });
+});
 
 document.getElementById('start-button').addEventListener('click', initGame);
 document.getElementById('restart-button').addEventListener('click', initGame);

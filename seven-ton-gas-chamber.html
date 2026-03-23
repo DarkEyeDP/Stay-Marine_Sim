@@ -11,19 +11,15 @@
 <body>
   <canvas id="game"></canvas>
 
-  <div class="hud">
-    <div class="hud-row">
-      <span class="hud-label">Marines</span>
-      <span class="hud-value" id="hud-marines">6 / 6</span>
-    </div>
-    <hr class="hud-divider">
-    <div class="hud-row hud-warning" id="hud-warning"></div>
-    <div class="hud-actions">
-      <button id="hud-restart-button" class="hud-button" type="button">↺ Restart</button>
-    </div>
-  </div>
+  <div class="hud-marines" id="hud-marines">6 / 6</div>
+  <button class="hud-restart" id="hud-restart-button" type="button">↺</button>
+  <div class="hud-warning" id="hud-warning"></div>
 
-  <div class="mobile-banner"><strong>◀ reverse</strong> &nbsp;|&nbsp; <strong>▼ brake</strong> &nbsp;|&nbsp; <strong>accelerate ▶</strong></div>
+  <div class="mobile-controls">
+    <div class="ctrl-btn" id="ctrl-reverse" data-ctrl>◀ Reverse</div>
+    <div class="ctrl-btn" id="ctrl-brake"   data-ctrl>▼ Brake</div>
+    <div class="ctrl-btn" id="ctrl-accel"   data-ctrl>Accelerate ▶</div>
+  </div>
 
   <!-- Briefing screen -->
   <div class="overlay" id="menu-screen">
@@ -70,6 +66,14 @@
         <button class="secondary" id="menu-button">Back To The Unit</button>
       </div>
     </div>
+  </div>
+
+  <!-- Landscape prompt -->
+  <div id="rotate-screen">
+    <div class="rotate-icon">📱</div>
+    <p class="rotate-title">Rotate Your Device</p>
+    <p class="rotate-sub">This game plays best in landscape mode</p>
+    <button class="rotate-skip" id="rotate-skip">Play in portrait anyway</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
