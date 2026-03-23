@@ -418,12 +418,21 @@ window.addEventListener('pointercancel', clearPointer, { passive: true });
   { id: 'ctrl-accel',   flag: 'btnAccelerate' },
 ].forEach(({ id, flag }) => {
   const el = document.getElementById(id);
-  function press(e)   { e.preventDefault(); state.input[flag] = true;  el.classList.add('active');    updateTouchFromPointers(); }
-  function release(e) {                      state.input[flag] = false; el.classList.remove('active'); updateTouchFromPointers(); }
+  function press(e) {
+    e.preventDefault();
+    el.setPointerCapture(e.pointerId); // lock pointer to this element for the full hold
+    state.input[flag] = true;
+    el.classList.add('active');
+    updateTouchFromPointers();
+  }
+  function release(e) {
+    state.input[flag] = false;
+    el.classList.remove('active');
+    updateTouchFromPointers();
+  }
   el.addEventListener('pointerdown',   press,   { passive: false });
   el.addEventListener('pointerup',     release, { passive: true });
   el.addEventListener('pointercancel', release, { passive: true });
-  el.addEventListener('pointerleave',  release, { passive: true });
 });
 
 document.getElementById('start-button').addEventListener('click', initGame);
