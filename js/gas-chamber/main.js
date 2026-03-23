@@ -1,36 +1,3 @@
-/* ── Landscape orientation prompt ───────────────── */
-(function () {
-  const screen = document.getElementById('rotate-screen');
-  const skip   = document.getElementById('rotate-skip');
-  let dismissed = false;
-  let autoTimer = null;
-
-  function isPortraitMobile() {
-    return window.innerWidth < 768 && window.innerHeight > window.innerWidth;
-  }
-
-  function dismiss() {
-    if (dismissed) return;
-    dismissed = true;
-    clearTimeout(autoTimer);
-    screen.classList.remove('visible');
-  }
-
-  function check() {
-    if (dismissed) return;
-    if (isPortraitMobile()) {
-      screen.classList.add('visible');
-      autoTimer = setTimeout(dismiss, 5000);
-    } else {
-      dismiss();
-    }
-  }
-
-  skip.addEventListener('click', dismiss);
-  window.addEventListener('resize', () => { if (!dismissed && !isPortraitMobile()) dismiss(); });
-  check();
-})();
-
 /* ── Matter.js destructure ──────────────────────── */
 const { Engine, World, Bodies, Body, Composites, Constraint, Vector, Events } = Matter;
 
@@ -418,21 +385,18 @@ window.addEventListener('pointercancel', clearPointer, { passive: true });
   { id: 'ctrl-accel',   flag: 'btnAccelerate' },
 ].forEach(({ id, flag }) => {
   const el = document.getElementById(id);
-  function press(e) {
-    e.preventDefault();
-    el.setPointerCapture(e.pointerId); // lock pointer to this element for the full hold
-    state.input[flag] = true;
-    el.classList.add('active');
-    updateTouchFromPointers();
-  }
-  function release(e) {
-    state.input[flag] = false;
-    el.classList.remove('active');
-    updateTouchFromPointers();
-  }
-  el.addEventListener('pointerdown',   press,   { passive: false });
-  el.addEventListener('pointerup',     release, { passive: true });
-  el.addEventListener('pointercancel', release, { passive: true });
+  function activate()   { state.input[flag] = true;  el.classList.add('active');    updateTouchFromPointers(); }
+  function deactivate() { state.input[flag] = false; el.classList.remove('active'); updateTouchFromPointers(); }
+
+  // Touch events — most reliable for held buttons on iOS/Android
+  el.addEventListener('touchstart',  e => { e.preventDefault(); activate(); },   { passive: false });
+  el.addEventListener('touchend',    () => deactivate(), { passive: true });
+  el.addEventListener('touchcancel', () => deactivate(), { passive: true });
+
+  // Mouse events for desktop
+  el.addEventListener('mousedown',  e => { activate(); });
+  el.addEventListener('mouseup',    () => deactivate());
+  el.addEventListener('mouseleave', () => deactivate());
 });
 
 document.getElementById('start-button').addEventListener('click', initGame);
