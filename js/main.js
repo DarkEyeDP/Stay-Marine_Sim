@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 6200);
   } else {
     gasChamberBtn.addEventListener('click', () => {
-      Main.startGasChamberMiniGame(() => UI.showScreen('screen-title'));
+      window.location.href = 'seven-ton-gas-chamber.html?mode=practice';
     });
   }
 
@@ -300,8 +300,41 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.showScreen('screen-title');
   });
 
+  // ── Gas Chamber return (direct navigation, no iframe) ────────────
+  let _gcHandled = false;
+  const _gcRaw = localStorage.getItem('gc_result');
+  if (_gcRaw) {
+    localStorage.removeItem('gc_result');
+    try {
+      const gcData = JSON.parse(_gcRaw);
+      if (gcData.mode === 'story' && State.load()) {
+        const m = State.game.marine;
+        const { win, marineCount, totalMarines, score } = gcData;
+        let effects;
+        if (!win)                                   effects = { morale: -8, stress: 10, disciplineRisk: 8 };
+        else if (marineCount >= totalMarines)        effects = { morale: 6,  profConduct: 3, mosProficiency: 2 };
+        else if (marineCount >= totalMarines - 1)    effects = { morale: 3,  profConduct: 1 };
+        else if (marineCount >= 1)                   effects = { morale: -2, disciplineRisk: 5, stress: 3 };
+        else                                         effects = { morale: -6, disciplineRisk: 12, stress: 8 };
+        Character.applyEffects(m, effects);
+        m.gasChamberDone = true;
+        if (State.game.log) State.game.log.unshift({
+          text: win
+            ? `Gas Chamber run: ${marineCount}/${totalMarines} Marines delivered. Score: ${score.toLocaleString()}`
+            : 'Gas Chamber run: truck flipped. Convoy aborted.',
+          major: false
+        });
+        State.save();
+        UI.initTabs();
+        UI.showGameScreen();
+        Main._checkEASAndRun();
+        _gcHandled = true;
+      }
+    } catch (e) { /* malformed result — ignore */ }
+  }
+
   // ── Init title screen ─────────────────────────
-  UI.showScreen('screen-title');
+  if (!_gcHandled) UI.showScreen('screen-title');
 
   // ── Tooltips ──────────────────────────────────
   UI.initTooltips();
@@ -375,9 +408,10 @@ const Main = {
       return;
     }
 
-    // 2. Gas chamber convoy — fires once per contract, TIS >= 7, not deployed
+    // 2. Gas chamber convoy — fires once per contract, TIS >= 7, not deployed (desktop only)
     if (!m.gasChamberDone && m.timeInService >= 7 && !m.isDeployed && window.innerWidth >= 768) {
-      Main.startGasChamberMiniGame(() => Main._checkEASAndRun());
+      State.save();
+      window.location.href = 'seven-ton-gas-chamber.html?mode=story';
       return;
     }
     if (!m.gasChamberDone) m.gasChamberDone = true; // skip silently on mobile
@@ -747,56 +781,6 @@ const Main = {
       `,
       choices,
     });
-  },
-
-  startGasChamberMiniGame(onComplete) {
-    const m = State.game && State.game.marine;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'gas-chamber-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#090d0a;display:flex;flex-direction:column;';
-
-    const iframe = document.createElement('iframe');
-    iframe.src = 'seven-ton-gas-chamber.html';
-    iframe.style.cssText = 'width:100%;flex:1;border:none;';
-    iframe.setAttribute('allow', 'autoplay');
-    overlay.appendChild(iframe);
-    document.body.appendChild(overlay);
-
-    function applyResult(data) {
-      if (!m) return; // practice mode — no active career to affect
-      const { win, marineCount } = data;
-      let effects;
-      if (!win)                                        effects = { morale: -8,  stress:  10, disciplineRisk:  8 };
-      else if (marineCount >= data.totalMarines)     effects = { morale:  6,  profConduct: 3, mosProficiency: 2 };
-      else if (marineCount >= data.totalMarines - 1) effects = { morale:  3,  profConduct: 1 };
-      else if (marineCount >= 1)                       effects = { morale: -2,  disciplineRisk: 5, stress: 3 };
-      else                                             effects = { morale: -6,  disciplineRisk: 12, stress: 8 };
-
-      Character.applyEffects(m, effects);
-      m.gasChamberDone = true;
-
-      const label = win
-        ? `Gas Chamber run: ${marineCount}/${data.totalMarines} Marines delivered. Score: ${data.score.toLocaleString()}`
-        : 'Gas Chamber run: truck flipped. Convoy aborted.';
-      if (State.game.log) State.game.log.unshift({ text: label, major: false });
-      State.save();
-    }
-
-    function handleMessage(e) {
-      if (!e.data || (e.data.type !== 'gasChamberResult' && e.data.type !== 'gasChamberClosed')) return;
-      if (e.data.type === 'gasChamberResult') {
-        applyResult(e.data);
-        // Stay on AAR until player clicks Back To Main Menu
-      } else {
-        // Player clicked Back To Main Menu
-        window.removeEventListener('message', handleMessage);
-        applyResult({ win: false, marineCount: 0, totalMarines: 6, score: 0 });
-        document.body.removeChild(overlay);
-        onComplete();
-      }
-    }
-    window.addEventListener('message', handleMessage);
   },
 
   triggerRetirement() {

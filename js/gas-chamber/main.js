@@ -311,13 +311,10 @@ function endGame(win, message) {
   resultText.textContent   = message;
   resultScreen.classList.remove('hidden');
 
-  if (window.parent !== window) {
-    window.parent.postMessage({
-      type: 'gasChamberResult', win,
-      marineCount: state.marineCount,
-      totalMarines: WORLD.totalMarines, score
-    }, '*');
-  }
+  const _gcMode = new URLSearchParams(window.location.search).get('mode') || 'practice';
+  localStorage.setItem('gc_result', JSON.stringify({
+    win, marineCount: state.marineCount, totalMarines: WORLD.totalMarines, score, mode: _gcMode
+  }));
 
   // Build breakdown rows
   const rows = [
@@ -430,14 +427,7 @@ document.getElementById('start-button').addEventListener('click', initGame);
 document.getElementById('restart-button').addEventListener('click', initGame);
 document.getElementById('hud-restart-button').addEventListener('click', initGame);
 document.getElementById('menu-button').addEventListener('click', () => {
-  if (window.parent !== window) {
-    window.parent.postMessage({ type: 'gasChamberClosed' }, '*');
-    return;
-  }
-  resultScreen.classList.add('hidden');
-  menuScreen.classList.remove('hidden');
-  state.started = false;
-  cancelAnimationFrame(state.rafId);
+  window.location.href = 'index.html';
 });
 
 window.addEventListener('resize', resizeCanvas);
