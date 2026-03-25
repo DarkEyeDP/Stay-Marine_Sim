@@ -274,15 +274,9 @@ function createTruck(x, y) {
   };
 
   function createTreadWheel(wx, wy) {
-    const radius = 28, outerRadius = 30, toothCount = 18;
-    const verts  = [];
-    for (let i = 0; i < toothCount * 2; i++) {
-      const angle = (Math.PI * 2 * i) / (toothCount * 2);
-      const r     = i % 2 === 0 ? outerRadius : radius;
-      verts.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r });
-    }
-    const wheel = Bodies.fromVertices(wx, wy, [verts], wheelOpts, true);
-    wheel.renderRadius = radius;
+    const radius = 28, outerRadius = 30;
+    const wheel  = Bodies.circle(wx, wy, radius, wheelOpts, 18);
+    wheel.renderRadius      = radius;
     wheel.renderOuterRadius = outerRadius;
     return wheel;
   }
