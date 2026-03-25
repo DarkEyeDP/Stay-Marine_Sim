@@ -105,7 +105,8 @@ function initGame() {
     dust: [], obstacles: [], terrainBodies: [], terrainSurfaces: [],
     bridgePlanks: [], bridgeConstraints: [], marines: [], truckSplats: [],
     marineCount: WORLD.totalMarines, totalPukes: 0,
-    waitMarine: { speech: null, idleTimer: 3 + Math.random() * 5, reacted: false }
+    waitMarine: { speech: null, idleTimer: 3 + Math.random() * 5, reacted: false },
+    physAccum: 0
   });
   state.input.accelerate = false;
   state.input.brake      = false;
@@ -124,13 +125,24 @@ function initGame() {
 }
 
 /* ── Game loop ──────────────────────────────────── */
+const PHYS_STEP = 1000 / 60; // always simulate at 16.67ms regardless of render fps
+
 function gameLoop(now) {
   if (!state.started) return;
-  const deltaMs = Math.min(33, now - state.lastTime || 16.67);
+  const deltaMs = Math.min(50, now - state.lastTime || PHYS_STEP);
   state.lastTime  = now;
   state.elapsedMs = now - state.startTime;
-  updateControls(deltaMs);
-  Engine.update(state.engine, deltaMs);
+
+  // Fixed-timestep physics: accumulate real time, drain in 16.67ms steps (max 3)
+  state.physAccum += deltaMs;
+  let steps = 0;
+  while (state.physAccum >= PHYS_STEP && steps < 3) {
+    updateControls(PHYS_STEP);
+    Engine.update(state.engine, PHYS_STEP);
+    state.physAccum -= PHYS_STEP;
+    steps++;
+  }
+
   updateGameState(deltaMs / 1000);
   render();
   if (!state.gameOver) state.rafId = requestAnimationFrame(gameLoop);
@@ -157,10 +169,9 @@ function updateControls(deltaMs) {
   const frontComp    = state.truck.frontWheel.position.y - state.truck.body.position.y;
   const grounded     = rearComp > 18 || frontComp > 18;
   const dt           = deltaMs / 1000;
-  const dtScale      = Math.max(1.0, deltaMs / 16.67); // never below 1× (clamps 120fps); 2× at 30fps
-  const fg           = frontGrip * dtScale;
-  const rg           = rearGrip  * dtScale;
-  const cd           = Math.pow(coastDrag, dtScale);
+  const fg           = frontGrip;
+  const rg           = rearGrip;
+  const cd           = coastDrag;
 
   state.stunt.preloadTimer      = Math.max(0, state.stunt.preloadTimer      - dt);
   state.stunt.wheelieBoostTimer = Math.max(0, state.stunt.wheelieBoostTimer - dt);
@@ -184,8 +195,8 @@ function updateControls(deltaMs) {
       // Restore grip + normal slow brake
       state.truck.frontWheel.friction = 1.04;
       state.truck.rearWheel.friction  = 1.04;
-      Body.setAngularVelocity(state.truck.frontWheel, state.truck.frontWheel.angularVelocity * Math.pow(0.72, dtScale));
-      Body.setAngularVelocity(state.truck.rearWheel,  state.truck.rearWheel.angularVelocity  * Math.pow(0.72, dtScale));
+      Body.setAngularVelocity(state.truck.frontWheel, state.truck.frontWheel.angularVelocity * 0.72);
+      Body.setAngularVelocity(state.truck.rearWheel,  state.truck.rearWheel.angularVelocity  * 0.72);
       state.isSkidding = false;
     }
     state.stunt.lastDrive = 0;
@@ -202,7 +213,7 @@ function updateControls(deltaMs) {
     const nr = state.truck.rearWheel.angularVelocity  + (-maxRearSpin  * 0.55 - state.truck.rearWheel.angularVelocity)  * rg;
     Body.setAngularVelocity(state.truck.frontWheel, nf);
     Body.setAngularVelocity(state.truck.rearWheel,  nr);
-    Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * Math.pow(0.995, dtScale));
+    Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * 0.995);
     state.stunt.lastDrive = -1;
     return;
   }
@@ -213,7 +224,7 @@ function updateControls(deltaMs) {
     const nr = state.truck.rearWheel.angularVelocity  + (maxRearSpin  - state.truck.rearWheel.angularVelocity)  * rg;
     Body.setAngularVelocity(state.truck.frontWheel, nf);
     Body.setAngularVelocity(state.truck.rearWheel,  nr);
-    Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * Math.pow(0.992, dtScale));
+    Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * 0.992);
 
     // Wheelie preload mechanic
     if (fwdSpeed < 1.1 && state.input.reverse) state.stunt.preloadTimer = 0.28;
