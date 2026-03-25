@@ -105,8 +105,7 @@ function initGame() {
     dust: [], obstacles: [], terrainBodies: [], terrainSurfaces: [],
     bridgePlanks: [], bridgeConstraints: [], marines: [], truckSplats: [],
     marineCount: WORLD.totalMarines, totalPukes: 0,
-    waitMarine: { speech: null, idleTimer: 3 + Math.random() * 5, reacted: false },
-    physAccum: 0
+    waitMarine: { speech: null, idleTimer: 3 + Math.random() * 5, reacted: false }
   });
   state.input.accelerate = false;
   state.input.brake      = false;
@@ -125,24 +124,16 @@ function initGame() {
 }
 
 /* ── Game loop ──────────────────────────────────── */
-const PHYS_STEP = 1000 / 60; // always simulate at 16.67ms regardless of render fps
+const PHYS_STEP = 1000 / 60; // cap physics timestep — prevents instability on slow devices
 
 function gameLoop(now) {
   if (!state.started) return;
-  const deltaMs = Math.min(50, now - state.lastTime || PHYS_STEP);
+  const deltaMs   = Math.min(33, now - state.lastTime || PHYS_STEP);
+  const physStep  = Math.min(deltaMs, PHYS_STEP); // never feed Matter.js more than 16.67ms
   state.lastTime  = now;
   state.elapsedMs = now - state.startTime;
-
-  // Fixed-timestep physics: accumulate real time, drain in 16.67ms steps (max 3)
-  state.physAccum += deltaMs;
-  let steps = 0;
-  while (state.physAccum >= PHYS_STEP && steps < 3) {
-    updateControls(PHYS_STEP);
-    Engine.update(state.engine, PHYS_STEP);
-    state.physAccum -= PHYS_STEP;
-    steps++;
-  }
-
+  updateControls(physStep);
+  Engine.update(state.engine, physStep);
   updateGameState(deltaMs / 1000);
   render();
   if (!state.gameOver) state.rafId = requestAnimationFrame(gameLoop);
