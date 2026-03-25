@@ -125,13 +125,25 @@ function initGame() {
 }
 
 /* ── Game loop ──────────────────────────────────── */
+// Physics is stepped at ≤16.667ms per tick (Matter.js recommended max).
+// At 30fps: 2 steps of ~16.67ms. At 60fps: 1 step of ~16.67ms. At 120fps: 1 step of ~8.33ms.
+// This keeps physics deterministic and eliminates the delta warning across all frame rates.
+const PHYS_STEP = 1000 / 60;  // 16.667ms
+
 function gameLoop(now) {
   if (!state.started) return;
-  const deltaMs = Math.min(33, now - state.lastTime || 16.67);
+  const raw     = now - state.lastTime;
+  const deltaMs = raw > 0.5 ? Math.min(50, raw) : 16.667;
   state.lastTime  = now;
   state.elapsedMs = now - state.startTime;
-  updateControls(deltaMs);
-  Engine.update(state.engine, deltaMs);
+
+  const steps     = Math.max(1, Math.round(deltaMs / PHYS_STEP));
+  const stepDelta = deltaMs / steps;
+  for (let i = 0; i < steps; i++) {
+    updateControls(stepDelta);
+    Engine.update(state.engine, stepDelta);
+  }
+
   updateGameState(deltaMs / 1000);
   render();
   if (!state.gameOver) state.rafId = requestAnimationFrame(gameLoop);
@@ -145,11 +157,11 @@ function gameLoop(now) {
 function updateControls(deltaMs) {
   if (!state.truck || state.gameOver) return;
 
-  const MAX_SPIN     = 0.80;
-  const MAX_SPIN_REV = 0.45;
-  const scale        = deltaMs / 16.67;                        // 1.0 at 60fps, 2.0 at 30fps
-  const ACCEL        = 0.006  * scale;                         // ~2.2 s to full speed at 60fps
-  const ACCEL_REV    = 0.004  * scale;
+  const MAX_SPIN     = 1.2;
+  const MAX_SPIN_REV = 0.6;
+  const scale        = deltaMs / 16.67;                        // 1.0 at 60fps, 1.0 per step at 30fps
+  const ACCEL        = 0.018  * scale;                         // ~1.1 s to full speed at 60fps
+  const ACCEL_REV    = 0.009  * scale;
   const decayBrake   = Math.pow(0.72, scale);                  // frame-rate-independent decay
   const decayCoast   = Math.pow(0.990, scale);
 

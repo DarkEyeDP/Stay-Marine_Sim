@@ -79,7 +79,9 @@ function terrainHeightAt(x) {
   return 560;
 }
 
-function getTruckSpawnY(x) { return terrainHeightAt(x) - 56; }
+// wheelOffY=34, wheel radius=30 → spawn so wheel center starts exactly at terrain surface (terrainY-30)
+// spawnY + 34 = terrainY - 30  →  spawnY = terrainY - 64
+function getTruckSpawnY(x) { return terrainHeightAt(x) - 64; }
 
 function zeroBodyMotion(body) {
   Body.setVelocity(body, { x: 0, y: 0 });
@@ -87,7 +89,7 @@ function zeroBodyMotion(body) {
 }
 
 function settleTruck(truck) {
-  for (let i = 0; i < 80; i++) Engine.update(state.engine, 1000 / 60);
+  for (let i = 0; i < 150; i++) Engine.update(state.engine, 1000 / 60);
   zeroBodyMotion(truck.body);
   zeroBodyMotion(truck.frontWheel);
   zeroBodyMotion(truck.rearWheel);
@@ -297,9 +299,12 @@ function createTruck(x, y) {
   // Two constraints per wheel offset ±12 in X — prevents pendulum swing.
   // length:0 = wheel pulled toward attachment point; gravity provides the
   // restoring force at equilibrium. One stable equilibrium, no oscillation modes.
+  // damping: 0.25 dissipates oscillation energy each step — prevents frame-rate aliasing
+  // where different display rates sample the spring at different phases, making
+  // the wheel appear at different depths across machines.
   const mkC = (lx, ly, wheel) => Constraint.create({
     bodyA: body, pointA: { x: lx, y: ly },
-    bodyB: wheel, length: 0, stiffness: 0.25
+    bodyB: wheel, length: 0, stiffness: 0.25, damping: 0.25
   });
 
   const suspension = [
