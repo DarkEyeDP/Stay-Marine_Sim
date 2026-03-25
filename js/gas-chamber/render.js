@@ -499,6 +499,7 @@ function renderHeadlights() {
 }
 
 function renderTruck() {
+  if (!state.truck) return;
   const p = worldToScreen(state.truck.body.position);
 
   function bodyAnchor(lx, ly) {
@@ -857,6 +858,7 @@ function renderMarines() {
 }
 
 function renderWaitMarine() {
+  if (!state.waitMarine) return;
   const wx  = WAIT_MARINE_X - state.camera.x;
   const gnd = terrainHeightAt(WAIT_MARINE_X) - state.camera.y;
   const wy  = gnd - 14;   // feet at ground, body top 14px above

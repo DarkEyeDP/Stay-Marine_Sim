@@ -87,7 +87,7 @@ function zeroBodyMotion(body) {
 }
 
 function settleTruck(truck) {
-  for (let i = 0; i < 28; i++) Engine.update(state.engine, 1000 / 60);
+  for (let i = 0; i < 80; i++) Engine.update(state.engine, 1000 / 60);
   zeroBodyMotion(truck.body);
   zeroBodyMotion(truck.frontWheel);
   zeroBodyMotion(truck.rearWheel);
@@ -274,7 +274,7 @@ function createTruck(x, y) {
   };
 
   function createTreadWheel(wx, wy) {
-    const radius = 28, outerRadius = 30;
+    const radius = 30, outerRadius = 30;
     const wheel  = Bodies.circle(wx, wy, radius, wheelOpts, 18);
     wheel.renderRadius      = radius;
     wheel.renderOuterRadius = outerRadius;
@@ -284,20 +284,17 @@ function createTruck(x, y) {
   const rearWheel  = createTreadWheel(x + rearAxleX,  y + 34);
   const frontWheel = createTreadWheel(x + frontAxleX, y + 34);
 
-  const mk = (ax, ay, wheel, len, stiff, damp) => Constraint.create({
+  // length:0 constraints — one stable equilibrium regardless of timestep (no spring-length oscillation)
+  const mk = (ax, ay, wheel) => Constraint.create({
     bodyA: body, pointA: { x: ax, y: ay }, bodyB: wheel,
-    stiffness: stiff, damping: damp, length: len
+    length: 0, stiffness: 0.25
   });
 
   const suspension = [
-    mk(rearAxleX,      12, rearWheel,  22, 0.68, 0.26),
-    mk(frontAxleX,     12, frontWheel, 22, 0.68, 0.26),
-    mk(rearAxleX  - 8, -2, rearWheel,  38, 0.34, 0.22),
-    mk(rearAxleX  + 8, -2, rearWheel,  38, 0.34, 0.22),
-    mk(frontAxleX - 8, -2, frontWheel, 38, 0.34, 0.22),
-    mk(frontAxleX + 8, -2, frontWheel, 38, 0.34, 0.22),
-    mk(rearAxleX,       8, rearWheel,  26, 0.92, 0.28),
-    mk(frontAxleX,      8, frontWheel, 26, 0.92, 0.28)
+    mk(rearAxleX  - 10, 14, rearWheel),
+    mk(rearAxleX  + 10, 14, rearWheel),
+    mk(frontAxleX - 10, 14, frontWheel),
+    mk(frontAxleX + 10, 14, frontWheel),
   ];
 
   World.add(state.world, [body, rearWheel, frontWheel, ...suspension]);

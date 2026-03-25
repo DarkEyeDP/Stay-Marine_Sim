@@ -87,7 +87,8 @@ let state = {
   startTime:       0,
   elapsedMs:       0,
   rafId:           0,
-  lastTime:        0
+  lastTime:        0,
+  waitMarine:      { speech: null, idleTimer: 5, reacted: false }
 };
 
 /* ── Park hold constant ─────────────────────────── */
@@ -124,119 +125,77 @@ function initGame() {
 }
 
 /* ── Game loop ──────────────────────────────────── */
-const PHYS_STEP = 1000 / 60; // cap physics timestep — prevents instability on slow devices
-
 function gameLoop(now) {
   if (!state.started) return;
-  const deltaMs   = Math.min(33, now - state.lastTime || PHYS_STEP);
-  const physStep  = Math.min(deltaMs, PHYS_STEP); // never feed Matter.js more than 16.67ms
+  const deltaMs = Math.min(33, now - state.lastTime || 16.67);
   state.lastTime  = now;
   state.elapsedMs = now - state.startTime;
-  updateControls(physStep);
-  Engine.update(state.engine, physStep);
+  updateControls(deltaMs);
+  Engine.update(state.engine, deltaMs);
   updateGameState(deltaMs / 1000);
   render();
   if (!state.gameOver) state.rafId = requestAnimationFrame(gameLoop);
 }
 
-/* ── Input handling ─────────────────────────────────
-   Desktop:
-     Right Arrow  = accelerate
-     Down Arrow   = brake (skid when fast)
-     Left Arrow   = reverse
-   Mobile:
-     Right half of screen = accelerate
-     Left half of screen  = brake
+/* ── Input / drive controls ──────────────────────────
+   Mirrors the reference implementation pattern:
+   linear angular-velocity increment per frame, capped at max,
+   all values scaled by (deltaMs/16.67) for frame-rate independence.
 ─────────────────────────────────────────────────── */
 function updateControls(deltaMs) {
   if (!state.truck || state.gameOver) return;
 
-  const maxFrontSpin = 0.92, maxRearSpin = 0.80;  // top speed unchanged
-  const frontGrip    = 0.022, rearGrip   = 0.020; // per-frame grip at 60fps
-  const coastDrag    = 0.988;                      // per-frame coast drag at 60fps
-  const fwdSpeed     = state.truck.body.velocity.x;
-  const speed        = Math.abs(fwdSpeed);
-  const rearComp     = state.truck.rearWheel.position.y  - state.truck.body.position.y;
-  const frontComp    = state.truck.frontWheel.position.y - state.truck.body.position.y;
-  const grounded     = rearComp > 18 || frontComp > 18;
-  const dt           = deltaMs / 1000;
-  const fg           = frontGrip;
-  const rg           = rearGrip;
-  const cd           = coastDrag;
+  const MAX_SPIN     = 0.80;
+  const MAX_SPIN_REV = 0.45;
+  const scale        = deltaMs / 16.67;                        // 1.0 at 60fps, 2.0 at 30fps
+  const ACCEL        = 0.006  * scale;                         // ~2.2 s to full speed at 60fps
+  const ACCEL_REV    = 0.004  * scale;
+  const decayBrake   = Math.pow(0.72, scale);                  // frame-rate-independent decay
+  const decayCoast   = Math.pow(0.990, scale);
 
-  state.stunt.preloadTimer      = Math.max(0, state.stunt.preloadTimer      - dt);
-  state.stunt.wheelieBoostTimer = Math.max(0, state.stunt.wheelieBoostTimer - dt);
+  const rAV = state.truck.rearWheel.angularVelocity;
+  const fAV = state.truck.frontWheel.angularVelocity;
+  const spd = Math.abs(state.truck.body.velocity.x);
 
-  // ── BRAKE (Down arrow / mobile left half) ──────────────────
+  // ── BRAKE ──────────────────────────────────────────────────
   if (state.input.brake && !state.input.accelerate) {
-    const isHardBrake = speed > WORLD.skidSpeedThreshold;
-    if (isHardBrake) {
-      // Wheel lock — reduce tyre friction so the chassis slides but still stops
-      state.truck.frontWheel.friction = 0.18;
-      state.truck.rearWheel.friction  = 0.18;
-      Body.setAngularVelocity(state.truck.frontWheel, state.truck.frontWheel.angularVelocity * 0.10);
-      Body.setAngularVelocity(state.truck.rearWheel,  state.truck.rearWheel.angularVelocity  * 0.10);
-      // Weight-transfer nose-dive
-      Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * 0.96 + 0.003);
-      // Small momentum carry — feels heavy but still decelerates
-      Body.applyForce(state.truck.body, state.truck.body.position,
-        { x: fwdSpeed * 0.0005, y: 0 });
-      state.isSkidding = true;
+    const hardBrake = spd > WORLD.skidSpeedThreshold;
+    const decay     = hardBrake ? Math.pow(0.10, scale) : decayBrake;
+    Body.setAngularVelocity(state.truck.rearWheel,  rAV * decay);
+    Body.setAngularVelocity(state.truck.frontWheel, fAV * decay);
+    if (hardBrake) {
+      state.truck.rearWheel.friction  = 0.15;
+      state.truck.frontWheel.friction = 0.15;
     } else {
-      // Restore grip + normal slow brake
-      state.truck.frontWheel.friction = 1.04;
-      state.truck.rearWheel.friction  = 1.04;
-      Body.setAngularVelocity(state.truck.frontWheel, state.truck.frontWheel.angularVelocity * 0.72);
-      Body.setAngularVelocity(state.truck.rearWheel,  state.truck.rearWheel.angularVelocity  * 0.72);
-      state.isSkidding = false;
+      state.truck.rearWheel.friction  = 0.9;
+      state.truck.frontWheel.friction = 0.9;
     }
-    state.stunt.lastDrive = 0;
+    state.isSkidding = hardBrake;
     return;
   }
-  // Restore grip when brake released
-  state.truck.frontWheel.friction = 1.04;
-  state.truck.rearWheel.friction  = 1.04;
+
+  // Restore grip
+  state.truck.rearWheel.friction  = 0.9;
+  state.truck.frontWheel.friction = 0.9;
   state.isSkidding = false;
 
-  // ── REVERSE (Left arrow only) ────────────────────────────
+  // ── REVERSE ────────────────────────────────────────────────
   if (state.input.reverse && !state.input.accelerate) {
-    const nf = state.truck.frontWheel.angularVelocity + (-maxFrontSpin * 0.55 - state.truck.frontWheel.angularVelocity) * rg;
-    const nr = state.truck.rearWheel.angularVelocity  + (-maxRearSpin  * 0.55 - state.truck.rearWheel.angularVelocity)  * rg;
-    Body.setAngularVelocity(state.truck.frontWheel, nf);
-    Body.setAngularVelocity(state.truck.rearWheel,  nr);
-    Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * 0.995);
-    state.stunt.lastDrive = -1;
+    Body.setAngularVelocity(state.truck.rearWheel,  Math.max(rAV - ACCEL_REV, -MAX_SPIN_REV));
+    Body.setAngularVelocity(state.truck.frontWheel, Math.max(fAV - ACCEL_REV, -MAX_SPIN_REV));
     return;
   }
 
-  // ── ACCELERATE (Right arrow / mobile right half) ─────────
+  // ── ACCELERATE ─────────────────────────────────────────────
   if (state.input.accelerate) {
-    const nf = state.truck.frontWheel.angularVelocity + (maxFrontSpin - state.truck.frontWheel.angularVelocity) * fg;
-    const nr = state.truck.rearWheel.angularVelocity  + (maxRearSpin  - state.truck.rearWheel.angularVelocity)  * rg;
-    Body.setAngularVelocity(state.truck.frontWheel, nf);
-    Body.setAngularVelocity(state.truck.rearWheel,  nr);
-    Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity * 0.992);
-
-    // Wheelie preload mechanic
-    if (fwdSpeed < 1.1 && state.input.reverse) state.stunt.preloadTimer = 0.28;
-    if (state.stunt.lastDrive <= 0 && state.stunt.preloadTimer > 0) {
-      state.stunt.wheelieBoostTimer = 0.24;
-      state.stunt.preloadTimer = 0;
-    }
-    if (state.stunt.wheelieBoostTimer > 0 && grounded && fwdSpeed > 0.15 && state.truck.body.angle > -1.28) {
-      Body.setAngularVelocity(state.truck.body, state.truck.body.angularVelocity - 0.013);
-      Body.applyForce(state.truck.body,
-        { x: state.truck.body.position.x - 72, y: state.truck.body.position.y + 4 },
-        { x: 0, y: -0.00022 }
-      );
-    }
-    state.stunt.lastDrive = 1;
-  } else {
-    // Coasting
-    Body.setAngularVelocity(state.truck.frontWheel, state.truck.frontWheel.angularVelocity * cd);
-    Body.setAngularVelocity(state.truck.rearWheel,  state.truck.rearWheel.angularVelocity  * cd);
-    state.stunt.lastDrive = 0;
+    Body.setAngularVelocity(state.truck.rearWheel,  Math.min(rAV + ACCEL, MAX_SPIN));
+    Body.setAngularVelocity(state.truck.frontWheel, Math.min(fAV + ACCEL, MAX_SPIN));
+    return;
   }
+
+  // ── COAST ──────────────────────────────────────────────────
+  Body.setAngularVelocity(state.truck.rearWheel,  rAV * decayCoast);
+  Body.setAngularVelocity(state.truck.frontWheel, fAV * decayCoast);
 }
 
 function updateGameState(dt) {
