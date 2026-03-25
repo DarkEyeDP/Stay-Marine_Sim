@@ -253,7 +253,9 @@ function createTruck(x, y) {
   const group      = Body.nextGroup(true);
   const rearAxleX  = -80;
   const frontAxleX = 74;
+  const wheelOffY  = 34; // wheel center Y below spawn point
 
+  // Build compound chassis — Matter.js computes centroid and sets body.position to it
   const body = Body.create({
     parts: [
       Bodies.rectangle(x,       y,      214, 22),
@@ -263,38 +265,48 @@ function createTruck(x, y) {
       Bodies.rectangle(x - 98,  y - 38,  10, 46),
       Bodies.rectangle(x + 16,  y - 38,  12, 46)
     ],
-    density: 0.0039, friction: 0.42, frictionAir: 0.02,
+    density: 0.004, friction: 0.3, frictionAir: 0.015,
     restitution: 0.02, collisionFilter: { group }, label: 'truckBody'
   });
 
+  // Wheel spawn positions in world space
+  const rwx = x + rearAxleX,  rwy = y + wheelOffY;
+  const fwx = x + frontAxleX, fwy = y + wheelOffY;
+
+  // Convert wheel world positions to body LOCAL coordinates.
+  // body.position is the centroid Matter.js computed — this is the key fix.
+  // Constraint pointA must be in local coords relative to the centroid.
+  const rLocal = { x: rwx - body.position.x, y: rwy - body.position.y };
+  const fLocal = { x: fwx - body.position.x, y: fwy - body.position.y };
+
   const wheelOpts = {
-    friction: 1.04, frictionStatic: 1.22, frictionAir: 0.012,
-    restitution: 0.1, density: 0.0028,
+    friction: 0.9, frictionStatic: 1.0, frictionAir: 0.01,
+    restitution: 0.05, density: 0.002,
     collisionFilter: { group }, label: 'wheel'
   };
 
-  function createTreadWheel(wx, wy) {
-    const radius = 30, outerRadius = 30;
-    const wheel  = Bodies.circle(wx, wy, radius, wheelOpts, 18);
-    wheel.renderRadius      = radius;
-    wheel.renderOuterRadius = outerRadius;
-    return wheel;
+  function mkWheel(wx, wy) {
+    const w = Bodies.circle(wx, wy, 30, wheelOpts, 20);
+    w.renderRadius = 30; w.renderOuterRadius = 30;
+    return w;
   }
 
-  const rearWheel  = createTreadWheel(x + rearAxleX,  y + 34);
-  const frontWheel = createTreadWheel(x + frontAxleX, y + 34);
+  const rearWheel  = mkWheel(rwx, rwy);
+  const frontWheel = mkWheel(fwx, fwy);
 
-  // length:0 constraints — one stable equilibrium regardless of timestep (no spring-length oscillation)
-  const mk = (ax, ay, wheel) => Constraint.create({
-    bodyA: body, pointA: { x: ax, y: ay }, bodyB: wheel,
-    length: 0, stiffness: 0.25
+  // Two constraints per wheel offset ±12 in X — prevents pendulum swing.
+  // length:0 = wheel pulled toward attachment point; gravity provides the
+  // restoring force at equilibrium. One stable equilibrium, no oscillation modes.
+  const mkC = (lx, ly, wheel) => Constraint.create({
+    bodyA: body, pointA: { x: lx, y: ly },
+    bodyB: wheel, length: 0, stiffness: 0.25
   });
 
   const suspension = [
-    mk(rearAxleX  - 10, 14, rearWheel),
-    mk(rearAxleX  + 10, 14, rearWheel),
-    mk(frontAxleX - 10, 14, frontWheel),
-    mk(frontAxleX + 10, 14, frontWheel),
+    mkC(rLocal.x - 12, rLocal.y, rearWheel),
+    mkC(rLocal.x + 12, rLocal.y, rearWheel),
+    mkC(fLocal.x - 12, fLocal.y, frontWheel),
+    mkC(fLocal.x + 12, fLocal.y, frontWheel),
   ];
 
   World.add(state.world, [body, rearWheel, frontWheel, ...suspension]);
