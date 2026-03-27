@@ -264,7 +264,8 @@ const Events = {
 
   /** Pick one random intro event for the first-turn pre-load */
   rollIntroEvent() {
-    const pool = EVENTS_DATA.filter(e => e.introOnly);
+    const marine = State.game && State.game.marine;
+    const pool = EVENTS_DATA.filter(e => e.introOnly && Events._meetsConditions(e, marine));
     if (!pool.length) return null;
     return pool[Math.floor(Math.random() * pool.length)];
   },

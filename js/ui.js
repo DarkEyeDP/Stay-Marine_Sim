@@ -1549,14 +1549,16 @@ UI.renderAchievementsScreen = function() {
       const descHtml = rank.unlocked
         ? `<div class="rank-ach-desc">${rank.desc}</div>`
         : '';
+      const rankTierLabel = (typeof TIER_LABELS !== 'undefined' && TIER_LABELS[rank.tier]) || '';
+      const rankTierBadge = rankTierLabel ? `<span class="ach-tier-badge tier-${rank.tier}">${rankTierLabel}</span>` : '';
       const popoverHtml = rank.unlocked
-        ? `<div class="ach-popover" role="tooltip"><div class="ach-popover-label">Unlocked By</div><div class="ach-popover-text">${rank.unlockHint}</div></div>`
+        ? `<div class="ach-popover" role="tooltip">${rankTierBadge}<div class="ach-popover-label">Unlocked By</div><div class="ach-popover-text">${rank.unlockHint}</div></div>`
         : '';
       const interactiveAttrs = rank.unlocked
         ? `tabindex="0" role="button" aria-label="${rank.title}. Unlocked by ${rank.unlockHint}"`
         : '';
       return `
-        <div class="rank-ach-card ${rank.unlocked ? 'unlocked ach-popover-host' : 'locked'}" ${interactiveAttrs}>
+        <div class="rank-ach-card ${rank.unlocked ? 'unlocked ach-popover-host' : 'locked'}" data-tier="${rank.tier || ''}" ${interactiveAttrs}>
           <div class="rank-ach-art">
             <img src="img/${rank.asset}" alt="${rank.title}" class="rank-ach-img">
           </div>
@@ -1576,8 +1578,11 @@ UI.renderAchievementsScreen = function() {
   if (groupsEl) {
     groupsEl.innerHTML = groups.map(group => {
       const unlockedCount = group.items.filter(i => i.unlocked).length;
+      const _tierIconColors = { issued: '7a8a6a', earned: 'c8a96e', hard_charged: '4caf50', blood_stripe: 'e53935', legend: 'f0b429' };
+      const _tierLabel = (typeof TIER_LABELS !== 'undefined' && TIER_LABELS[group.id]) || group.label;
+      const _tierBadge = `<span class="ach-tier-badge tier-${group.id}">${_tierLabel}</span>`;
       const cards = group.items.map(item => {
-        const iconColor = item.unlocked ? 'c8a96e' : '6f766d';
+        const iconColor = item.unlocked ? (_tierIconColors[group.id] || 'c8a96e') : '6f766d';
         const iconHtml = item.iconifyIcon
           ? `<img src="${Achievements.buildIconUrl(item.iconifyIcon, iconColor)}" alt="${item.title}" class="ach-card-icon-img">`
           : '<span class="ach-card-icon-fallback">ACH</span>';
@@ -1585,7 +1590,7 @@ UI.renderAchievementsScreen = function() {
           ? `<div class="ach-card-desc">${item.desc}</div>`
           : `<div class="ach-card-hint">${item.unlockHint}</div>`;
         const popoverHtml = item.unlocked
-          ? `<div class="ach-popover" role="tooltip"><div class="ach-popover-label">How to Unlock</div><div class="ach-popover-text">${item.unlockHint}</div></div>`
+          ? `<div class="ach-popover" role="tooltip">${_tierBadge}<div class="ach-popover-label">How to Unlock</div><div class="ach-popover-text">${item.unlockHint}</div></div>`
           : '';
         const interactiveAttrs = item.unlocked
           ? `tabindex="0" role="button" aria-label="${item.title}. How to unlock: ${item.unlockHint}"`
@@ -1621,9 +1626,15 @@ UI._achievementToastNext = function() {
   }
   UI._achievementToastActive = true;
   const achievement = UI._achievementToastQueue.shift();
-  const toastIconUrl = achievement.iconifyIcon ? Achievements.buildIconUrl(achievement.iconifyIcon, 'f0b429') : '';
+  const _toastTierColors = { issued: '7a8a6a', earned: 'c8a96e', hard_charged: '4caf50', blood_stripe: 'e53935', legend: 'f0b429' };
+  const toastColor = _toastTierColors[achievement.tier] || 'f0b429';
+  const toastIconUrl = achievement.iconifyIcon ? Achievements.buildIconUrl(achievement.iconifyIcon, toastColor) : '';
   const toastIconHtml = toastIconUrl ? '<img src="' + toastIconUrl + '" alt="" class="achievement-toast-icon">' : '';
+  const toastTierLabel = (typeof TIER_LABELS !== 'undefined' && TIER_LABELS[achievement.tier]) || '';
+  const toastTierBadge = toastTierLabel ? `<span class="ach-tier-badge tier-${achievement.tier}">${toastTierLabel}</span>` : '';
+  toast.className = `achievement-toast toast-tier-${achievement.tier || 'legend'}`;
   toast.innerHTML = '<div class="achievement-toast-label">Achievement Unlocked</div>' +
+    toastTierBadge +
     toastIconHtml +
     '<div class="achievement-toast-title">' + achievement.title + '</div>' +
     '<div class="achievement-toast-desc">' + achievement.desc + '</div>';

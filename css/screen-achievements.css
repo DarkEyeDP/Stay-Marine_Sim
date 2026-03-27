@@ -748,3 +748,46 @@
   letter-spacing: 0.02em;
   font-style: italic;
 }
+
+/* ── Tier-colored icon container on unlocked achievement cards ── */
+.ach-card.unlocked .ach-card-icon {
+  border-color: var(--tier-accent, rgba(200,169,110,0.22));
+  background: var(--tier-glow, rgba(200,169,110,0.08));
+}
+
+/* ── Rank card tier accent variables + border ── */
+.rank-ach-card[data-tier="issued"]       { --tier-accent: var(--muted);  }
+.rank-ach-card[data-tier="earned"]       { --tier-accent: var(--tan);    }
+.rank-ach-card[data-tier="hard_charged"] { --tier-accent: var(--green);  }
+.rank-ach-card[data-tier="blood_stripe"] { --tier-accent: var(--red);    }
+.rank-ach-card[data-tier="legend"]       { --tier-accent: var(--yellow); }
+.rank-ach-card.unlocked { border-left-color: var(--tier-accent, var(--tan)); }
+
+/* ── Tier badges (shown in popovers and toast) ── */
+.ach-tier-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 2px;
+  margin-bottom: 0.45rem;
+}
+
+.ach-tier-badge.tier-issued       { color: var(--muted);  background: rgba(122,138,106,0.15); border: 1px solid rgba(122,138,106,0.3); }
+.ach-tier-badge.tier-earned       { color: var(--tan);    background: rgba(200,169,110,0.15); border: 1px solid rgba(200,169,110,0.3); }
+.ach-tier-badge.tier-hard_charged { color: var(--green);  background: rgba(76,175,80,0.12);   border: 1px solid rgba(76,175,80,0.3);  }
+.ach-tier-badge.tier-blood_stripe { color: var(--red);    background: rgba(229,57,53,0.12);   border: 1px solid rgba(229,57,53,0.3);  }
+.ach-tier-badge.tier-legend       { color: var(--yellow); background: rgba(240,180,41,0.12);  border: 1px solid rgba(240,180,41,0.3); }
+
+.achievement-toast .ach-tier-badge { margin-bottom: 0.3rem; }
+
+/* ── Toast tier coloring — border + label color ── */
+.achievement-toast { --toast-tier-color: var(--yellow); }
+.achievement-toast.toast-tier-issued       { --toast-tier-color: var(--muted);  border-color: rgba(122,138,106,0.5); border-top-color: var(--muted);  }
+.achievement-toast.toast-tier-earned       { --toast-tier-color: var(--tan);    border-color: rgba(200,169,110,0.6); border-top-color: var(--tan);    }
+.achievement-toast.toast-tier-hard_charged { --toast-tier-color: var(--green);  border-color: rgba(76,175,80,0.5);   border-top-color: var(--green);  }
+.achievement-toast.toast-tier-blood_stripe { --toast-tier-color: var(--red);    border-color: rgba(229,57,53,0.5);   border-top-color: var(--red);    }
+.achievement-toast.toast-tier-legend       { --toast-tier-color: var(--yellow); border-color: rgba(240,180,41,0.6);  border-top-color: var(--yellow); }
+.achievement-toast-label { color: var(--toast-tier-color); }

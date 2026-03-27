@@ -523,7 +523,7 @@ const EVENTS_CORE = [
     title: 'First Real Paycheck',
     introOnly: true,
     weight: 1,
-    trigger: {},
+    trigger: { maxTIS: 48 },
     narrative: 'First full paycheck as a Marine — more money than you\'ve ever had in one place. The guys in the barracks are already talking about what to buy. There\'s a car lot just off base and a predatory "military friendly" lender sitting right next to it.',
     choices: [
       {
@@ -550,7 +550,7 @@ const EVENTS_CORE = [
     title: 'Checking In to the Fleet',
     introOnly: true,
     weight: 1,
-    trigger: {},
+    trigger: { maxTIS: 48 },
     narrative: 'You\'ve checked in to your first unit. The platoon sergeant looked you over in about four seconds and already made up his mind about something. The other junior Marines are watching to see how you carry yourself.',
     choices: [
       {
@@ -577,7 +577,7 @@ const EVENTS_CORE = [
     title: 'Gear Accountability — Already',
     introOnly: true,
     weight: 1,
-    trigger: {},
+    trigger: { maxTIS: 48 },
     narrative: 'First gear accountability muster and something is already wrong. A piece of your issued kit is either missing or was never actually issued — the armory record says it\'s yours. Your section leader is watching.',
     choices: [
       {
@@ -604,7 +604,7 @@ const EVENTS_CORE = [
     title: 'First Weekend Liberty',
     introOnly: true,
     weight: 1,
-    trigger: {},
+    trigger: { maxTIS: 48 },
     narrative: 'End of your first full week. Liberty call hits and everyone\'s already making plans. Poker night in the barracks, a road trip three hours out, or just decompress for two days before Monday owns you again.',
     choices: [
       {
@@ -631,7 +631,7 @@ const EVENTS_CORE = [
     title: 'Barracks Room Draw',
     introOnly: true,
     weight: 1,
-    trigger: {},
+    trigger: { maxTIS: 48 },
     narrative: 'Room assignments are random. You don\'t pick your roommate — you get what you get. Yours shows up with a PlayStation, three energy drink cases, and a worldview that will either motivate you or drag you sideways.',
     choices: [
       {
