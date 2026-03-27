@@ -312,6 +312,19 @@
   animation: rifle-scan 4.5s ease-in-out infinite;
   pointer-events: none;
 }
+/* Under-construction sub-label inside the 7-ton button */
+#btn-gas-chamber-practice {
+  line-height: 1;
+  padding-top: 0.68rem;
+  padding-bottom: 0.68rem;
+}
+.btn-under-construction {
+  display: block;
+  font-size: 0.65em;
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
 .title-buttons .btn-tertiary:not(:disabled):hover {
   border-left-color: var(--red);
   background:
